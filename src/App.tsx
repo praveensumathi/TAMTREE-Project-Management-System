@@ -1,9 +1,27 @@
+import { Routes, Route, BrowserRouter as Router } from "react-router-dom";
 import "./App.css";
-import Board from "./pages/board/Board";
+import Layout from "./layout/Layout";
 import Projects from "./pages/projects/Projects";
-import { Routes, Route } from "react-router-dom";
+import Board from "./pages/board/Board";
+
+
+
+
 function App() {
-  return <></>;
+  return (
+    <>
+    <Router>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Projects />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/boards" element={<Board />} />
+          </Route>
+        </Routes>
+        </Router>
+      
+    </>
+  );
 }
 
 export default App;
