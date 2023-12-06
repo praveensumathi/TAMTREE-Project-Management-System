@@ -30,7 +30,7 @@ const menus = [
   },
   {
     name: "Boards",
-    url: "/boards",
+    url: "/boards/:projectId",
    
   },
 
