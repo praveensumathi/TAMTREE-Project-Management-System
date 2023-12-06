@@ -72,7 +72,7 @@ const NavBar = () => {
           <Typography variant="h5" style={{ margin: "0" }}>TAMTREE TASK MANAGEMENT</Typography>
         </Toolbar>
       </AppBar>
-      
+      <Toolbar/>
       <Drawer
         anchor="left"
         open={drawerOpen}
