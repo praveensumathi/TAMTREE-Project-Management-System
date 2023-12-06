@@ -1,8 +1,8 @@
-import React from 'react'
+import { Box } from "@mui/material"
 
 function Projects() {
   return (
-    <div>Projects</div>
+    <Box>Projects</Box>
   )
 }
 
