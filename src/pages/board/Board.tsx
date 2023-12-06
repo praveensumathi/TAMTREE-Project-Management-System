@@ -1,6 +1,6 @@
 
 function Board() {
-  return <div>Board</div>;
+  return <div>Boards</div>;
 }
 
 export default Board;

@@ -22,7 +22,19 @@ import { blue} from "@mui/material/colors";
 
 
 
-const menu = ["Projects", "Boards"];
+const menus = [
+  {
+    name: "Projects",
+    url: "/projects",
+    
+  },
+  {
+    name: "Boards",
+    url: "/boards/:projectId",
+   
+  },
+
+];
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -36,8 +48,8 @@ const NavBar = () => {
     setDrawerOpen(false);
   };
 
-  const handleMenuItemClick = (text: string) => {
-    navigate(`/${text}`);
+  const handleMenuItemClick = (url: string) => {
+    navigate(`${url}`);
     handleDrawerClose();
   };
 
@@ -60,7 +72,7 @@ const NavBar = () => {
           <Typography variant="h5" style={{ margin: "0" }}>TAMTREE TASK MANAGEMENT</Typography>
         </Toolbar>
       </AppBar>
-      
+      <Toolbar/>
       <Drawer
         anchor="left"
         open={drawerOpen}
@@ -91,16 +103,16 @@ const NavBar = () => {
           </Box>
           <Box paddingTop={2}>
           <List>
-  {menu.map((text, index) => (
-    <div key={text}>
-      <ListItem onClick={() => handleMenuItemClick(text)}>
+  {menus.map((menu, index) => (
+    <div key={index}>
+      <ListItem onClick={() => handleMenuItemClick(menu.url)}>
         <ListItemButton sx={{ width: 150 }}>
           <ListItemIcon>
             {index === 0 ?  <EventNoteIcon sx={{ color: blue[500] }} />  : <AddCardIcon sx={{ color: blue[500] }} />}
             
           </ListItemIcon>
           <ListItemText
-            primary={text}
+            primary={menu.name}
             primaryTypographyProps={{ color: 'black', fontSize: '20px' }}
           />
         </ListItemButton>
