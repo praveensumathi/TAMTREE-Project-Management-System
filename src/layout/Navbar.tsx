@@ -99,9 +99,9 @@ const NavBar = () => {
           </Box>
           <Box paddingTop={2}>
             <List>
-              {menus.map((text, index) => (
-                <div key={text.name}>
-                  <ListItem onClick={() => handleMenuItemClick(text.url)}>
+              {menus.map((menu, index) => (
+                <div key={index}>
+                  <ListItem onClick={() => handleMenuItemClick(menu.url)}>
                     <ListItemButton sx={{ width: 150 }}>
                       <ListItemIcon>
                         {index === 0 ? (
@@ -111,7 +111,7 @@ const NavBar = () => {
                         )}
                       </ListItemIcon>
                       <ListItemText
-                        primary={text.name}
+                        primary={menu.name}
                         primaryTypographyProps={{
                           color: "black",
                           fontSize: "20px",
@@ -123,32 +123,6 @@ const NavBar = () => {
               ))}
             </List>
           </Box>
-        </Box>
-        <Box paddingTop={2}>
-          <List>
-            {menus.map((menu, index) => (
-              <div key={index}>
-                <ListItem onClick={() => handleMenuItemClick(menu.url)}>
-                  <ListItemButton sx={{ width: 150 }}>
-                    <ListItemIcon>
-                      {index === 0 ? (
-                        <EventNoteIcon sx={{ color: blue[500] }} />
-                      ) : (
-                        <AddCardIcon sx={{ color: blue[500] }} />
-                      )}
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={menu.name}
-                      primaryTypographyProps={{
-                        color: "black",
-                        fontSize: "20px",
-                      }}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              </div>
-            ))}
-          </List>
         </Box>
       </Drawer>
     </Box>
