@@ -13,16 +13,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Project } from "../../../types/type";
+import { Project, ProjectProps } from "../types/type";
 import Button from "@mui/material/Button";
 
 import CloseIcon from "@mui/icons-material/Close";
-
-interface ProjectProps {
-  projectDrawerOpen: boolean;
-  projectDetail: Project;
-  onDrawerClose: () => void;
-}
 
 const validationSchema = yup.object().shape({
   title: yup.string().required(),
@@ -105,7 +99,7 @@ function ProjectDrawer({
                     {...register("title", { required: true })}
                     error={!!errors.title}
                     helperText={errors.title?.message}
-                    style={{ marginBottom: "10px" }}
+                    sx={{ marginBottom: "10px" }}
                   />
                   <TextField
                     fullWidth
@@ -113,7 +107,7 @@ function ProjectDrawer({
                     {...register("description", { required: true })}
                     error={!!errors.description}
                     helperText={errors.description?.message}
-                    style={{ marginBottom: "10px" }}
+                    sx={{ marginBottom: "10px" }}
                   />
                   <TextField
                     fullWidth
@@ -121,7 +115,7 @@ function ProjectDrawer({
                     {...register("assignedTo", { required: true })}
                     error={!!errors.assignedTo}
                     helperText={errors.assignedTo?.message}
-                    style={{ marginBottom: "10px" }}
+                    sx={{ marginBottom: "10px" }}
                   />
                   <TextField
                     fullWidth
@@ -129,35 +123,35 @@ function ProjectDrawer({
                     {...register("status", { required: true })}
                     error={!!errors.status}
                     helperText={errors.status?.message}
-                    style={{ marginBottom: "10px" }}
+                    sx={{ marginBottom: "10px" }}
                   />
                   <Typography variant="h5">stories</Typography>
-                  <Box display={"flex"} justifyContent={"space-between"}>
-                    <Box display={"flex"}>
-                      <TextField
-                        fullWidth
-                        label="name"
-                        {...register("stories.name", { required: true })}
-                        error={!!errors.stories?.name}
-                        helperText={errors.stories?.name?.message}
-                        style={{ marginRight: "10px" }}
-                      />
-                      <TextField
-                        fullWidth
-                        label="description"
-                        {...register("stories.description", { required: true })}
-                        error={!!errors.stories?.description}
-                        helperText={errors.stories?.description?.message}
-                        style={{ marginBottom: "10px" }}
-                      />
-                    </Box>
-                    <Box>
-                      <IconButton aria-label="settings">
-                        <DeleteIcon />
-                      </IconButton>
-                    </Box>
+                  <Box>
+                    {projectDetail.stories.map((story, index) => (
+                      <Box key={index} display={"flex"} alignItems={"center"}>
+                        <TextField
+                          fullWidth
+                          label="name"
+                          {...register("stories.name", { required: true })}
+                          error={!!errors.stories?.name}
+                          helperText={errors.stories?.name?.message}
+                          sx={{ marginRight: "10px", marginBottom: "10px" }}
+                        />
+                        <TextField
+                          fullWidth
+                          label="description"
+                          {...register("stories.description", {
+                            required: true,
+                          })}
+                          error={!!errors.stories?.description}
+                          helperText={errors.stories?.description?.message}
+                        />
+                        <IconButton aria-label="settings">
+                          <DeleteIcon />
+                        </IconButton>
+                      </Box>
+                    ))}
                   </Box>
-
                   <Box position={"absolute"} bottom={0} right={0} padding={2}>
                     <Button
                       variant="contained"

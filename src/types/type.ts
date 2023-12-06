@@ -12,3 +12,15 @@ export type Storie = {
   name: string;
   description: string;
 };
+
+export type ProjectProps {
+  projectDrawerOpen: boolean;
+  projectDetail: Project;
+  onDrawerClose: () => void;
+},
+
+export type ProjectBoardProps {
+ 
+  projectDetail: Project;
+  
+}

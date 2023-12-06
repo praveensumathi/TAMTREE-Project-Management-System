@@ -12,24 +12,25 @@ import EditIcon from "@mui/icons-material/Edit";
 import CardHeader from "@mui/material/CardHeader";
 import Grid from "@mui/material/Grid";
 
-// import Board from "../board/Board";
+import Board from "../board/Board";
 
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import ProjectDrawer from "../board/drawer/ProjectDrawer";
+import ProjectDrawer from "../../drawer/ProjectDrawer";
 import ProjectDialogBox from "../../commonDialogBox/ProjectDialogBox";
 
 function Projects() {
-  const [projectDetail, setProjectDetail] = useState<Project[] | undefined>();
+  const navigate = useNavigate();
+
+  const [projectDetails, setProjectDetails] = useState<Project>();
   const [projectDrawerOpen, setProjectDrawerOpen] = useState(false);
   const [deleteDialogConfirmationOpen, setDeleteDialogConfirmationOpen] =
     useState(false);
   const [deleteConfirmation, setDeleteConfirmation] =
-    useState<project | null>();
-  const navigate = useNavigate();
+    useState<Project | null>();
 
   const handleEditClick = (project: Project) => {
-    setProjectDetail(project);
+    setProjectDetails(project);
     setProjectDrawerOpen(true);
   };
   const handleDeleteCancel = () => {
@@ -44,15 +45,15 @@ function Projects() {
       <Grid container spacing={2}>
         {projects.map((project) => (
           <Grid item xs={8} key={project._id}>
-            <Card
-              sx={{ minWidth: 275 }}
-              onClick={() => navigate(`board/${project._id}`)}
-            >
+            <Card sx={{ minWidth: 275 }} onClick={() => navigate("/boards")}>
               <CardContent>
                 <CardHeader
                   action={
                     <>
-                      <IconButton aria-label="settings">
+                      <IconButton
+                        aria-label="settings"
+                        onClick={() => handleDeleteClick(project)}
+                      >
                         <DeleteIcon />
                       </IconButton>
                       <IconButton
@@ -88,11 +89,11 @@ function Projects() {
         handleDeleteCancel={handleDeleteCancel}
         handleDeleteClickConfirm={handleDeleteClickConfirm}
       />
-      {/* <Board projectDetail={projectDetail} /> */}
+      <Board projectDetail={projectDetails} />
       {projectDrawerOpen && (
         <ProjectDrawer
           projectDrawerOpen={projectDrawerOpen}
-          projectDetail={projectDetail}
+          projectDetail={projectDetails}
           onDrawerClose={() => setProjectDrawerOpen(false)}
         />
       )}
