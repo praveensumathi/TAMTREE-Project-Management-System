@@ -19,7 +19,16 @@ import EventNoteIcon from "@mui/icons-material/EventNote";
 import AddCardIcon from "@mui/icons-material/AddCard";
 import { blue } from "@mui/material/colors";
 
-const menu = ["Projects", "Boards"];
+const menus = [
+  {
+    name: "Projects",
+    url: "/projects",
+  },
+  {
+    name: "Boards",
+    url: "/boards/:projectId",
+  },
+];
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -33,8 +42,8 @@ const NavBar = () => {
     setDrawerOpen(false);
   };
 
-  const handleMenuItemClick = (text: string) => {
-    navigate(`/${text}`);
+  const handleMenuItemClick = (url: string) => {
+    navigate(`${url}`);
     handleDrawerClose();
   };
 
@@ -59,65 +68,89 @@ const NavBar = () => {
           </Typography>
         </Toolbar>
       </AppBar>
-
-      <Toolbar>
-        <Drawer
-          anchor="left"
-          open={drawerOpen}
-          onClose={handleDrawerClose}
-          sx={{
-            width: 250,
-            flexShrink: 0,
-            "& .MuiDrawer-paper": {
-              height: 700,
-              width: 200,
-              display: "flex",
-              justifyItems: "flex-start",
-              alignItems: "center",
-              cursor: "pointer",
-            },
-          }}
-        >
-          <Box width={200}>
-            <Box display={"flex"} flexDirection={"row"} padding={1}>
-              <IconButton
-                color="inherit"
-                edge="end"
-                onClick={handleDrawerClose}
-                sx={{ position: "absolute", right: 15, top: 10 }}
-              >
-                <KeyboardArrowLeftIcon />
-              </IconButton>
-            </Box>
-            <Box paddingTop={2}>
-              <List>
-                {menu.map((text, index) => (
-                  <div key={text}>
-                    <ListItem onClick={() => handleMenuItemClick(text)}>
-                      <ListItemButton sx={{ width: 150 }}>
-                        <ListItemIcon>
-                          {index === 0 ? (
-                            <EventNoteIcon sx={{ color: blue[500] }} />
-                          ) : (
-                            <AddCardIcon sx={{ color: blue[500] }} />
-                          )}
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={text}
-                          primaryTypographyProps={{
-                            color: "black",
-                            fontSize: "20px",
-                          }}
-                        />
-                      </ListItemButton>
-                    </ListItem>
-                  </div>
-                ))}
-              </List>
-            </Box>
+      <Toolbar />
+      <Drawer
+        anchor="left"
+        open={drawerOpen}
+        onClose={handleDrawerClose}
+        sx={{
+          width: 250,
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            height: 700,
+            width: 200,
+            display: "flex",
+            justifyItems: "flex-start",
+            alignItems: "center",
+            cursor: "pointer",
+          },
+        }}
+      >
+        <Box width={200}>
+          <Box display={"flex"} flexDirection={"row"} padding={1}>
+            <IconButton
+              color="inherit"
+              edge="end"
+              onClick={handleDrawerClose}
+              sx={{ position: "absolute", right: 15, top: 10 }}
+            >
+              <KeyboardArrowLeftIcon />
+            </IconButton>
           </Box>
-        </Drawer>
-      </Toolbar>
+          <Box paddingTop={2}>
+            <List>
+              {menus.map((text, index) => (
+                <div key={text.name}>
+                  <ListItem onClick={() => handleMenuItemClick(text.url)}>
+                    <ListItemButton sx={{ width: 150 }}>
+                      <ListItemIcon>
+                        {index === 0 ? (
+                          <EventNoteIcon sx={{ color: blue[500] }} />
+                        ) : (
+                          <AddCardIcon sx={{ color: blue[500] }} />
+                        )}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={text.name}
+                        primaryTypographyProps={{
+                          color: "black",
+                          fontSize: "20px",
+                        }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                </div>
+              ))}
+            </List>
+          </Box>
+        </Box>
+        <Box paddingTop={2}>
+          <List>
+            {menus.map((menu, index) => (
+              <div key={index}>
+                <ListItem onClick={() => handleMenuItemClick(menu.url)}>
+                  <ListItemButton sx={{ width: 150 }}>
+                    <ListItemIcon>
+                      {index === 0 ? (
+                        <EventNoteIcon sx={{ color: blue[500] }} />
+                      ) : (
+                        <AddCardIcon sx={{ color: blue[500] }} />
+                      )}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={menu.name}
+                      primaryTypographyProps={{
+                        color: "black",
+                        fontSize: "20px",
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              </div>
+            ))}
+          </List>
+        </Box>
+      </Drawer>
     </Box>
   );
 };

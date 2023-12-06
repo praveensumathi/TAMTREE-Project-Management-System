@@ -7,13 +7,13 @@ import Board from "./pages/board/Board";
 function App() {
   return (
     <>
-      {/* <Board /> */}
       <Router>
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Projects />} />
-            <Route path="/Projects" element={<Projects />} />
-            <Route path="/Boards/:projectId" element={<Board />}></Route>
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/boards/:projectId" element={<Board />} />
+            
           </Route>
         </Routes>
       </Router>

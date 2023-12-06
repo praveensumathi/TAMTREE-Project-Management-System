@@ -11,6 +11,7 @@ import {
 import { useNavigate } from "react-router";
 import { ProjectStatus } from "../../seed-data/seed-data";
 function Board() {
+  
   const { projectId } = useParams();
   const navigate = useNavigate();
 
