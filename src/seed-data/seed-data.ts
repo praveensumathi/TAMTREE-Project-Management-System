@@ -2,7 +2,7 @@ import { Project } from "../types/type";
 
 export const projects: Project[] = [
   {
-    title: "Tamtreee",
+    title: "Tamtree management system Tamtree management system",
     description: "Project Description 1",
     _id: "p1",
     startDate: new Date('2023-01-10'),
@@ -85,3 +85,9 @@ export const projects: Project[] = [
   },
 ];
 
+export const ProjectStatus = [
+  { status: "To Do", description: " the upcoming stages of the project. " },
+  { status: "IN PROGRESS", description: "Stroies that are currently being worked on " },
+  { status: "DEPLOYED", description: "Stories that have been completed " },
+  { status: "DONE", description: " successfully completed and verified." }
+]

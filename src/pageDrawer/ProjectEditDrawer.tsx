@@ -144,7 +144,7 @@ export const ProjectEditDrawer = ({
                               defaultValue={story.title}
                               render={({ field }) => (
                                 <TextField
-                                  label={`Story ${index + 1} Title`}
+                                  label={`Title`}
                                   fullWidth
                                   margin="normal"
                                   variant="outlined"
@@ -159,7 +159,7 @@ export const ProjectEditDrawer = ({
                               defaultValue={story.description}
                               render={({ field }) => (
                                 <TextField
-                                  label={`Story ${index + 1} Description`}
+                                  label={`Description`}
                                   fullWidth
                                   margin="normal"
                                   variant="outlined"
@@ -175,7 +175,7 @@ export const ProjectEditDrawer = ({
                     </Box>
                   </Box>
                 </Box>
-                <Box display={"flex"} gap={5}>
+                <Box display={"flex"} gap={5} justifyContent={"flex-end"}>
                   <Button type="submit" variant="contained" color="primary">
                     Save
                   </Button>

@@ -72,45 +72,57 @@ function Projects() {
       <Container>
         <Box>
           <Box textAlign={"center"}>
-            <Typography fontSize={50}>PROJECTS</Typography>
+            <Typography fontSize={50} fontWeight={"bold"}>
+              PROJECTS
+            </Typography>
           </Box>
           <Box sx={{ display: "flex", flexWrap: "wrap" }}>
             {projects.map((project, index) => (
               <Grid key={index}>
                 <Card
                   key={index}
-                  sx={{ minWidth: 275, margin: 2, height: 200 }}
+                  sx={{ width: 275, margin: 2, height: 200 }}
                   onClick={(e) => {
                     e.stopPropagation();
-                    navigate(`/board/${project._id}`);
+                    navigate(`/Boards/${project._id}`);
                   }}
                 >
                   <CardHeader
+                    sx={{ display: "flex", justifyContent: "space-between" }}
                     action={
-                      <Grid container>
-                        <Grid item xs={6}>
-                          <IconButton
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleOpenDrawer(project);
-                            }}
-                          >
-                            <EditIcon />
-                          </IconButton>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <IconButton
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDialogOpen(project);
-                            }}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </Grid>
-                      </Grid>
+                      <>
+                        <IconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenDrawer(project);
+                          }}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDialogOpen(project);
+                          }}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </>
                     }
-                    title={project.title}
+                    title={
+                      <Box
+                        sx={{
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          maxWidth: "70%",
+                        }}
+                      >
+                        <Typography variant="h6" component="div">
+                          {project.title}
+                        </Typography>
+                      </Box>
+                    }
                   />
                   <CardContent>
                     <Typography variant="body2" color="text.secondary">
