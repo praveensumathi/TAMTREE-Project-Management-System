@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Project, ProjectDrawerProps } from "../types/type";
+import { Project, ProjectDrawerProps, Story } from "../types/type";
 import {
   Box,
   Button,
@@ -19,7 +19,10 @@ export const ProjectEditDrawer = ({
   onClose,
 }: ProjectDrawerProps) => {
   const { control, handleSubmit, setValue } = useForm<Project>();
+  const [projects, setProjects] = useState<Project[]>([]);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [deleteStoryIndex, setDeleteStoryIndex] = useState<number | null>(null);
+  const [storyToDelete, setStoryToDelete] = useState<Story | null>(null);
 
   useEffect(() => {
     if (project) {
@@ -37,13 +40,38 @@ export const ProjectEditDrawer = ({
     console.log(data);
   };
 
-  const handleDeleteProject = () => {
-    setDialogOpen(true);
+  const handleDeleteProject = (index: number | null) => {
+    if (
+      index !== null &&
+      project &&
+      project.stories &&
+      project.stories[index]
+    ) {
+      const storyToDelete = project.stories[index];
+      setDeleteStoryIndex(index);
+      setStoryToDelete(storyToDelete);
+      setDialogOpen(true);
+    }
   };
+  const deleteStory = (projectId: string, storyId: string) => {
+    setProjects((prevProjects) => {
+      const updatedProjects = prevProjects.map((project) => {
+        3;
+        if (project._id === projectId) {
+          const updatedStories = project.stories.filter(
+            (story) => story._id !== storyId
+          );
+          console.log(project._id);
 
-  const handleDialogClose = () => {
-    setDialogOpen(false);
-    onClose();
+          return {
+            ...project,
+            stories: updatedStories,
+          };
+        }
+        return project;
+      });
+      return updatedProjects;
+    });
   };
 
   return (
@@ -129,8 +157,14 @@ export const ProjectEditDrawer = ({
                   />
                 </Box>
                 <Box>
-                  <Box>
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    marginBottom={2}
+                  >
                     <Typography variant="h6">STORIES</Typography>
+                    <Button variant="contained">+ Add Stories</Button>
                   </Box>
                   <Box>
                     <Box>
@@ -167,7 +201,9 @@ export const ProjectEditDrawer = ({
                                 />
                               )}
                             />
-                            <IconButton onClick={handleDeleteProject}>
+                            <IconButton
+                              onClick={() => handleDeleteProject(index)}
+                            >
                               <DeleteIcon />
                             </IconButton>
                           </Box>
@@ -176,11 +212,11 @@ export const ProjectEditDrawer = ({
                   </Box>
                 </Box>
                 <Box display={"flex"} gap={5} justifyContent={"flex-end"}>
+                  <Button variant="outlined" color="primary" onClick={onClose}>
+                    cancel
+                  </Button>
                   <Button type="submit" variant="contained" color="primary">
                     Save
-                  </Button>
-                  <Button variant="contained" color="primary" onClick={onClose}>
-                    cancel
                   </Button>
                 </Box>
               </Box>
@@ -191,8 +227,20 @@ export const ProjectEditDrawer = ({
       <ProjectDialog
         open={dialogOpen}
         project={project}
-        onClose={handleDialogClose}
-        onDelete={handleDeleteProject}
+        story={storyToDelete}
+        onClose={() => {
+          setDialogOpen(false);
+          setDeleteStoryIndex(null);
+          setStoryToDelete(null);
+        }}
+        onDelete={() => {
+          if (deleteStoryIndex !== null && project && storyToDelete) {
+            deleteStory(project._id, storyToDelete._id);
+            setDialogOpen(false);
+          } else {
+            setDialogOpen(false);
+          }
+        }}
       />
     </>
   );

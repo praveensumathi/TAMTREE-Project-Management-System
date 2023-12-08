@@ -1,23 +1,18 @@
 import { useParams } from "react-router-dom";
 import { projects } from "../../seed-data/seed-data";
-import {
-  Box,
-  Breadcrumbs,
-  Container,
-  Divider,
-  Link,
-  Typography,
-} from "@mui/material";
+import { useState } from "react";
+import { Box, Breadcrumbs, Container, Link, Typography } from "@mui/material";
 import { useNavigate } from "react-router";
-import { ProjectStatus } from "../../seed-data/seed-data";
+import { Story } from "../../types/type";
+import StoriesList from "../../dragDrop/StoriesList";
+import { TaskStatusList } from "../../seed-data/seed-data";
+
 function Board() {
-  
   const { projectId } = useParams();
   const navigate = useNavigate();
-
   const selectedProject = projects.find((project) => project._id === projectId);
-  console.log(projects);
-  console.log(projectId);
+
+  const [selectedProjectStory, setSelectedProjectStory] = useState<Story[]>([]);
 
   return (
     <>
@@ -29,38 +24,68 @@ function Board() {
         </Box>
         <Box>
           {selectedProject && (
-            <Box>
-              <Breadcrumbs>
-                <Typography>Boards</Typography>
-                <Link
-                  onClick={() => navigate("/Projects")}
-                  sx={{ cursor: "pointer" }}
-                >
-                  Projects
-                </Link>
-                <Typography>{selectedProject.title}</Typography>
-              </Breadcrumbs>
-            </Box>
+            <>
+              <Box>
+                <Breadcrumbs>
+                  <Typography>Boards</Typography>
+                  <Link
+                    onClick={() => navigate("/Projects")}
+                    sx={{ cursor: "pointer" }}
+                  >
+                    Projects
+                  </Link>
+                  <Typography>{selectedProject.title}</Typography>
+                </Breadcrumbs>
+              </Box>
+              <Box display={"flex"} gap={3}>
+                {TaskStatusList.map((task) => (
+                  <Box sx={{ backgroundColor: "gray", width: "25%" }}>
+                    <Typography>{task.status}</Typography>
+                    <Typography>{task.description}</Typography>
+                  </Box>
+                ))}
+              </Box>
+              <Box>
+                {selectedProject.stories.map((story) => (
+                  <Box>
+                    <Box>
+                      <Typography>{story.title}</Typography>
+                    </Box>
+                    <Box display={"flex"} gap={2}>
+                      {story.tasks.map((taskStatus) =>
+                        taskStatus.status === "TO DO" ? (
+                          <Box
+                            sx={{ backgroundColor: "skyblue", width: "25%" }}
+                          >
+                            <Typography>{taskStatus.title}</Typography>
+                          </Box>
+                        ) : taskStatus.status === "IN PROGRESS" ? (
+                          <Box
+                            sx={{ backgroundColor: "steelblue", width: "25%" }}
+                          >
+                            <Typography>{taskStatus.title}</Typography>
+                          </Box>
+                        ) : taskStatus.status === "DEPLOYED" ? (
+                          <Box sx={{ backgroundColor: "blue", width: "25%" }}>
+                            <Typography>{taskStatus.title}</Typography>
+                          </Box>
+                        ) : (
+                          taskStatus.status === "DONE" && (
+                            <Box
+                              sx={{ backgroundColor: "green", width: "25%" }}
+                            >
+                              <Typography>{taskStatus.title}</Typography>
+                            </Box>
+                          )
+                        )
+                      )}
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+            </>
           )}
         </Box>
-        <Container sx={{ paddingY: "20px" }}>
-          <Box display={"flex"} flexWrap={"wrap"} width={"100vw"} gap={3}>
-            {ProjectStatus.map((status) => (
-              <Box
-                key={status.status}
-                border={"1px solid black"}
-                width={"20%"}
-                height={250}
-              >
-                <Typography fontWeight={"bold"}>{status.status}</Typography>
-                <Typography variant="body2" fontWeight={"lighter"}>
-                  {status.description}
-                </Typography>
-                <Divider />
-              </Box>
-            ))}
-          </Box>
-        </Container>
       </Container>
     </>
   );

@@ -19,6 +19,9 @@
     "drag-drop": "^7.2.0",
     "immutability-helper": "^3.1.1",
     "react": "^18.2.0",
+    "react-beautiful-dnd": "^13.1.1",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.2.0",
     "react-router": "^6.17.0",
     "react-router-dom": "^6.17.0"
