@@ -78,13 +78,19 @@ function Projects() {
                     <>
                       <IconButton
                         aria-label="settings"
-                        onClick={() => handleProjectDeleteClick(project)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleProjectDeleteClick(project);
+                        }}
                       >
                         <DeleteIcon />
                       </IconButton>
                       <IconButton
                         aria-label="settings"
-                        onClick={() => handleEditClick(project)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditClick(project);
+                        }}
                       >
                         <EditIcon />
                       </IconButton>
