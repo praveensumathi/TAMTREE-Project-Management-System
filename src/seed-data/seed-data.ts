@@ -1,4 +1,4 @@
-import { Project } from "../types/type";
+import { Employee, Project } from "../types/type";
 
 export const projects: Project[] = [
   {
@@ -152,4 +152,35 @@ export const projects: Project[] = [
 ];
 
 
-// export const employees
+export const employees: Employee[] = [
+  {
+    _id: "db1",
+    employeeId: "employeId1",
+    first_name: "kavi",
+    last_name: "priya",
+    email: "kaviinfotechit@gmail.com",
+    age: 26,
+    gender: "female",
+
+  },
+  {
+    _id: "db2",
+    employeeId: "employeId2",
+    first_name: "soundharya",
+    last_name: "siva",
+    email: "sountarya@gmail.com",
+    age: 27,
+    gender: "female",
+
+  },
+  {
+    _id: "db3",
+    employeeId: "employeId3",
+    first_name: "logesh",
+    last_name: "logesh",
+    email: "logesh@gmail.com",
+    age: 22,
+    gender: "male",
+
+  },
+]

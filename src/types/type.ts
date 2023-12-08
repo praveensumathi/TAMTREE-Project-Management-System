@@ -25,10 +25,11 @@ export type Task = {
 export type Employee = {
   _id: string,
   employeeId: string,
-  name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   age: number;
-
+  gender: string;
 }
 
 export type ProjectProps = {

@@ -5,6 +5,7 @@ import Projects from "./pages/projects/Projects";
 import Board from "./pages/board/Board";
 import DragAndDrop from "./DragAndDrop";
 import "./style.css";
+import Employee from "./pages/employee/Employee";
 // import { useParams } from "react-router-dom";
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
             <Route index element={<Projects />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/board/:projectId" element={<Board />} />
+            <Route path="/employees" element={<Employee />} />
           </Route>
         </Routes>
       </Router>
