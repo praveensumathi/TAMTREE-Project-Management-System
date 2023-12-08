@@ -25,8 +25,8 @@ const menus = [
     url: "/projects",
   },
   {
-    name: "Boards",
-    url: "/boards/:projectId",
+    name: "Employees",
+    url: "/employees",
   },
 ];
 

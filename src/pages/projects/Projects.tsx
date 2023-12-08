@@ -68,7 +68,9 @@ function Projects() {
           <Grid item xs={8} key={project._id}>
             <Card
               sx={{ minWidth: 275 }}
-              onClick={() => navigate(`/board/${project._id}`)}
+              onClick={() => {
+                navigate(`/board/${project._id}`);
+              }}
             >
               <CardContent>
                 <CardHeader

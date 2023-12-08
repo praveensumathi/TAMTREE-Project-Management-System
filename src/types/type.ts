@@ -22,9 +22,19 @@ export type Task = {
   status: number;
 };
 
+export type Employee = {
+  _id: string,
+  employeeId: string,
+  name: string;
+  email: string;
+  age: number;
+
+}
+
 export type ProjectProps = {
   projectDrawerOpen: boolean;
   projectDetail: Project;
   onDrawerClose: () => void;
   onSaveClick: (project: Project) => void;
 };
+
