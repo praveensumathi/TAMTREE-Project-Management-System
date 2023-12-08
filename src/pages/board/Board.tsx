@@ -8,7 +8,6 @@ import { useParams } from "react-router-dom";
 import { projects } from "../../seed-data/seed-data";
 import { Project, Task } from "../../types/type";
 import { useState, useEffect } from "react";
-
 import { Card, CardContent } from "@mui/material";
 import CustomAccordion from "../../common/components/CustomAccordion";
 

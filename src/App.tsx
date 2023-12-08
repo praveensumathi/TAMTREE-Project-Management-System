@@ -3,17 +3,14 @@ import "./App.css";
 import Layout from "./layout/Layout";
 import Projects from "./pages/projects/Projects";
 import Board from "./pages/board/Board";
-import DragAndDrop from "./DragAndDrop";
 import "./style.css";
-import Employee from "./pages/employee/Employee";
-// import { useParams } from "react-router-dom";
+import Employee from "./pages/employee/Employees";
+import { Toaster } from "react-hot-toast";
 
 function App() {
-  // const { projectId } = useParams();
-
   return (
     <>
-      {/* <DragAndDrop /> */}
+      <Toaster />
       <Router>
         <Routes>
           <Route path="/" element={<Layout />}>

@@ -152,7 +152,7 @@ export const projects: Project[] = [
 ];
 
 
-export const employees: Employee[] = [
+export const employee: Employee[] = [
   {
     _id: "db1",
     employeeId: "employeId1",
@@ -161,6 +161,7 @@ export const employees: Employee[] = [
     email: "kaviinfotechit@gmail.com",
     age: 26,
     gender: "female",
+    contact: 1234567890
 
   },
   {
@@ -171,6 +172,8 @@ export const employees: Employee[] = [
     email: "sountarya@gmail.com",
     age: 27,
     gender: "female",
+    contact: 9874102536
+
 
   },
   {
@@ -181,6 +184,8 @@ export const employees: Employee[] = [
     email: "logesh@gmail.com",
     age: 22,
     gender: "male",
+    contact: 9513264870
+
 
   },
 ]
