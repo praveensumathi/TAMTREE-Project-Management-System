@@ -8,66 +8,30 @@ import { useParams } from "react-router-dom";
 import { projects } from "../../seed-data/seed-data";
 import { Project, Task } from "../../types/type";
 import { useState, useEffect } from "react";
-import { styled } from "@mui/material/styles";
-import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
-import MuiAccordion, { AccordionProps } from "@mui/material/Accordion";
-import MuiAccordionSummary, {
-  AccordionSummaryProps,
-} from "@mui/material/AccordionSummary";
-import MuiAccordionDetails from "@mui/material/AccordionDetails";
 
-const Accordion = styled((props: AccordionProps) => (
-  <MuiAccordion disableGutters elevation={0} square {...props} />
-))(({ theme }) => ({
-  border: `1px solid ${theme.palette.divider}`,
-  "&:not(:last-child)": {
-    borderBottom: 0,
-  },
-  "&:before": {
-    display: "none",
-  },
-}));
-
-const AccordionSummary = styled((props: AccordionSummaryProps) => (
-  <MuiAccordionSummary
-    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: "0.9rem" }} />}
-    {...props}
-  />
-))(({ theme }) => ({
-  backgroundColor:
-    theme.palette.mode === "dark"
-      ? "rgba(255, 255, 255, .05)"
-      : "rgba(0, 0, 0, .03)",
-  flexDirection: "row-reverse",
-  "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
-    transform: "rotate(90deg)",
-  },
-  "& .MuiAccordionSummary-content": {
-    marginLeft: theme.spacing(1),
-  },
-}));
-
-const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
-  padding: theme.spacing(2),
-  borderTop: "1px solid rgba(0, 0, 0, .125)",
-}));
+import { Card, CardContent } from "@mui/material";
+import CustomAccordion from "../../common/components/CustomAccordion";
 
 const projectStatusList = [
   {
     status: "To Do",
     description: "this item has not been started",
+    color: "#ffc8ea",
   },
   {
     status: "In Progress",
     description: " this actively being worked on",
+    color: "#fcfec7",
+  },
+  {
+    status: "Done",
+    description: "this have been completed",
+    color: "#e0ffda",
   },
   {
     status: "Deployed",
     description: "code deployede into server",
-  },
-  {
-    status: "Completed",
-    description: "this have been completed",
+    color: "#efd5ff",
   },
 ];
 
@@ -121,8 +85,9 @@ function Board() {
       var emptyDiv = document.createElement("div");
       emptyDiv.classList.add("empty");
       emptyDiv.style.height = "100px";
-      emptyDiv.style.width = "100px";
-      emptyDiv.style.backgroundColor = "yellow";
+      emptyDiv.style.width = "280px";
+      emptyDiv.style.margin = "0 28px";
+      emptyDiv.style.backgroundColor = "lightgrey";
 
       evt.currentTarget.appendChild(emptyDiv);
     }
@@ -181,7 +146,7 @@ function Board() {
     });
   };
 
-  const renderTasks = (taskList: Task[], status: number) => {
+  const renderTasks = (taskList: Task[], status: number, color: string) => {
     return (
       <Box
         className={`small-box`}
@@ -197,19 +162,27 @@ function Board() {
               <Box className="drag_row">
                 {taskList?.map((task: Task) => (
                   <>
-                    <Box
-                      className={"card"}
+                    <Card
+                      elevation={3}
+                      sx={{
+                        width: 280,
+                        cursor: "grab",
+                        my: 1,
+                        backgroundColor: color,
+                      }}
                       key={task._id}
                       id={task._id}
                       draggable
                       onDragStart={onDragStart}
                     >
-                      <Box className="card_right">
-                        <Typography>{task.tname}</Typography>
-                        <Box className="days">{task.description}</Box>
-                        <Box className="time">{task.duration}</Box>
-                      </Box>
-                    </Box>
+                      <CardContent>
+                        <Box>
+                          <Typography>{task.tname}</Typography>
+                          <Box className="days">{task.description}</Box>
+                          <Box className="time">{task.duration}</Box>
+                        </Box>
+                      </CardContent>
+                    </Card>
                   </>
                 ))}
               </Box>
@@ -226,7 +199,7 @@ function Board() {
     };
 
   return (
-    <Container maxWidth={false}>
+    <Container maxWidth={false} sx={{mb:3}}>
       <Breadcrumbs aria-label="breadcrumb">
         <Typography>Boards</Typography>
         <Link
@@ -240,18 +213,21 @@ function Board() {
         <Typography>{selectedProjectedData?.title}</Typography>
       </Breadcrumbs>
       <>
-        <Box display={"flex"} gap={4}>
+        <Box display={"flex"} gap={2}>
           {projectStatusList.map((projectStatus, index) => (
             <Box
               key={index}
               sx={{
-                backgroundColor: "#F8F8F8",
+                backgroundColor: projectStatus.color,
                 p: 2,
-                width: "22%",
+                width: "24%",
               }}
             >
               <Typography variant="h6">{projectStatus.status}</Typography>
-              <Typography variant="h6" sx={{ opacity: 0.6, lineHeight: 1 }}>
+              <Typography
+                variant="subtitle2"
+                sx={{ opacity: 0.6, lineHeight: 1, fontWeight: "lighter" }}
+              >
                 {projectStatus.description}
               </Typography>
             </Box>
@@ -261,39 +237,48 @@ function Board() {
 
       <Box className="container">
         {selectedProjectedData && (
-          <Box mt={2}>
+          <Box mt={1}>
             {selectedProjectedData.stories?.map((s) => (
-              <Accordion
-                expanded={expanded === s._id}
-                onChange={handleChange(s._id)}
+              <CustomAccordion.Accordion
+                // expanded={expanded === s._id}
+                expanded
+                onChange={handleChange(s._id!)}
               >
-                <AccordionSummary
+                <CustomAccordion.AccordionSummary
                   aria-controls="panel1d-content"
                   id="panel1d-header"
                 >
-                  <Typography>Collapsible Group Item #1</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Box display={"flex"} gap={4}>
-                    {renderTasks(
-                      s.tasks.filter((t) => t.status == 1),
-                      1
-                    )}
-                    {renderTasks(
-                      s.tasks.filter((t) => t.status == 2),
-                      2
-                    )}
-                    {renderTasks(
-                      s.tasks.filter((t) => t.status == 3),
-                      3
-                    )}
-                    {renderTasks(
-                      s.tasks.filter((t) => t.status == 4),
-                      4
-                    )}
+                  <Typography>{s.name}</Typography>
+                </CustomAccordion.AccordionSummary>
+                <CustomAccordion.AccordionDetails>
+                  <Box display={"flex"} gap={2}>
+                    {s.tasks &&
+                      renderTasks(
+                        s.tasks.filter((t) => t.status == 1),
+                        1,
+                        "#ff7ecd"
+                      )}
+                    {s.tasks &&
+                      renderTasks(
+                        s.tasks.filter((t) => t.status == 2),
+                        2,
+                        "#fdffb6"
+                      )}
+                    {s.tasks &&
+                      renderTasks(
+                        s.tasks.filter((t) => t.status == 3),
+                        3,
+                        "#caffbf"
+                      )}
+                    {s.tasks &&
+                      renderTasks(
+                        s.tasks.filter((t) => t.status == 4),
+                        4,
+                        "#ce81ff"
+                      )}
                   </Box>
-                </AccordionDetails>
-              </Accordion>
+                </CustomAccordion.AccordionDetails>
+              </CustomAccordion.Accordion>
             ))}
           </Box>
         )}

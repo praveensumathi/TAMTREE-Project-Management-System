@@ -11,7 +11,7 @@ export type Storie = {
   _id?: string;
   name: string;
   description: string;
-  tasks: Task[];
+  tasks?: Task[];
 };
 
 export type Task = {

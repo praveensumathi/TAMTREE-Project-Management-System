@@ -117,7 +117,7 @@ function Projects() {
       {projectDrawerOpen && (
         <ProjectDrawer
           projectDrawerOpen={projectDrawerOpen}
-          projectDetail={projectDetails}
+          projectDetail={projectDetails!}
           onDrawerClose={() => setProjectDrawerOpen(false)}
           onSaveClick={handleSaveClick}
         />

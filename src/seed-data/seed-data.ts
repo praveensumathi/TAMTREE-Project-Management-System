@@ -28,6 +28,13 @@ export const projects: Project[] = [
             duration: "2 month",
             status: 2,
           },
+          {
+            _id: "task3_1",
+            tname: "About body section update update",
+            description: "About body section description",
+            duration: "2 month",
+            status: 2,
+          },
         ],
       },
       {

@@ -27,6 +27,9 @@ const validationSchema = yup.object().shape({
     yup.object().shape({
       name: yup.string().required(),
       description: yup.string().required(),
+      // tasks: yup.array().of(yup.object().shape({
+      //   tname:yup.string()
+      // }))
     })
   ),
 });
