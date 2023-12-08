@@ -68,7 +68,9 @@ function Projects() {
           <Grid item xs={8} key={project._id}>
             <Card
               sx={{ minWidth: 275 }}
-              onClick={() => navigate(`/board/${project._id}`)}
+              onClick={() => {
+                navigate(`/board/${project._id}`);
+              }}
             >
               <CardContent>
                 <CardHeader
@@ -76,13 +78,19 @@ function Projects() {
                     <>
                       <IconButton
                         aria-label="settings"
-                        onClick={() => handleProjectDeleteClick(project)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleProjectDeleteClick(project);
+                        }}
                       >
                         <DeleteIcon />
                       </IconButton>
                       <IconButton
                         aria-label="settings"
-                        onClick={() => handleEditClick(project)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditClick(project);
+                        }}
                       >
                         <EditIcon />
                       </IconButton>
