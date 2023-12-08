@@ -12,8 +12,6 @@ import EditIcon from "@mui/icons-material/Edit";
 import CardHeader from "@mui/material/CardHeader";
 import Grid from "@mui/material/Grid";
 
-import Board from "../board/Board";
-
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ProjectDrawer from "../../drawer/ProjectDrawer";
@@ -22,6 +20,7 @@ import ProjectDialogBox from "../../commonDialogBox/ProjectDialogBox";
 function Projects() {
   const navigate = useNavigate();
 
+  const [myProjectData, setMyProjectData] = useState<Project[]>(projects);
   const [projectDetails, setProjectDetails] = useState<Project>();
   const [projectDrawerOpen, setProjectDrawerOpen] = useState(false);
   const [deleteDialogConfirmationOpen, setDeleteDialogConfirmationOpen] =
@@ -36,23 +35,48 @@ function Projects() {
   const handleDeleteCancel = () => {
     setDeleteDialogConfirmationOpen(false);
   };
-  const handleDeleteClickConfirm = async () => {
-    setDeleteConfirmation(null);
+
+  const handleDeleteClickConfirm = () => {
+    setMyProjectData((prevProjects) => {
+      const updatedProjects = prevProjects.filter(
+        (project) => project._id !== deleteConfirmation?._id
+      );
+      return updatedProjects;
+    });
     setDeleteDialogConfirmationOpen(false);
+  };
+
+  const handleProjectDeleteClick = (project: Project) => {
+    setDeleteConfirmation(project);
+    setDeleteDialogConfirmationOpen(true);
+  };
+
+  const handleSaveClick = (updatedProject: Project) => {
+    setMyProjectData((prevProjects) => {
+      const updatedProjects = prevProjects.map((project) =>
+        project._id === updatedProject._id ? updatedProject : project
+      );
+      return updatedProjects;
+    });
+
+    setProjectDrawerOpen(false);
   };
   return (
     <Container>
       <Grid container spacing={2}>
-        {projects.map((project) => (
+        {myProjectData.map((project) => (
           <Grid item xs={8} key={project._id}>
-            <Card sx={{ minWidth: 275 }} onClick={() => navigate("/boards")}>
+            <Card
+              sx={{ minWidth: 275 }}
+              onClick={() => navigate(`/board/${project._id}`)}
+            >
               <CardContent>
                 <CardHeader
                   action={
                     <>
                       <IconButton
                         aria-label="settings"
-                        onClick={() => handleDeleteClick(project)}
+                        onClick={() => handleProjectDeleteClick(project)}
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -76,7 +100,7 @@ function Projects() {
                   Status: {project.status}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Story Count: {project.stories.length}
+                  Story Count: {project.stories?.length}
                 </Typography>
               </CardContent>
             </Card>
@@ -89,12 +113,13 @@ function Projects() {
         handleDeleteCancel={handleDeleteCancel}
         handleDeleteClickConfirm={handleDeleteClickConfirm}
       />
-      <Board projectDetail={projectDetails} />
+
       {projectDrawerOpen && (
         <ProjectDrawer
           projectDrawerOpen={projectDrawerOpen}
           projectDetail={projectDetails}
           onDrawerClose={() => setProjectDrawerOpen(false)}
+          onSaveClick={handleSaveClick}
         />
       )}
     </Container>

@@ -13,47 +13,121 @@ export const projects: Project[] = [
         _id: "story1",
         name: "About page",
         description: "About page description",
+        tasks: [
+          {
+            _id: "task1",
+            tname: "About header section",
+            description: "About header section description",
+            duration: "1 month",
+            status: 1,
+          },
+          {
+            _id: "task2",
+            tname: "About body section",
+            description: "About body section description",
+            duration: "2 month",
+            status: 2,
+          },
+        ],
       },
       {
         _id: "story2",
         name: "Contact page",
         description: "Contact page description",
+        tasks: [
+          {
+            _id: "task3",
+            tname: "Contact header section",
+            description: "Contact header section description",
+            duration: "1 month",
+            status: 2,
+          },
+          {
+            _id: "task4",
+            tname: "Contact body section",
+            description: "Contact body section description",
+            duration: "2 month",
+            status: 1,
+          },
+        ],
       },
     ],
   },
-  {
-    _id: "p2",
-    title: "ahimsa",
-    description: "ahimsa Description",
-    assignedTo: "kavi",
-    status: "In Progress",
+  // {
+  //   _id: "p2",
+  //   title: "ahimsa",
+  //   description: "ahimsa Description",
+  //   assignedTo: "kavi",
+  //   status: "In Progress",
 
-    stories: [
-      {
-        _id: "story3",
-        name: "Contact page",
-        description: "Contact page description",
-      },
-      {
-        _id: "story5",
-        name: "Home page",
-        description: "Home page description",
-      },
-    ],
-  },
-  {
-    _id: "p3",
-    title: "chennai silks",
-    description: "chennai silks Description",
-    assignedTo: "usena",
-    status: "Done",
+  //   stories: [
+  //     {
+  //       _id: "story3",
+  //       name: "Contact page",
+  //       description: "Contact page description",
+  //       tasks: [
+  //         {
+  //           _id: "task5",
+  //           tname: "Contact header section",
+  //           description: "Contact header section description",
+  //           duration: "1 month",
+  //         },
+  //         {
+  //           _id: "task6",
+  //           tname: "Contact body section",
+  //           description: "Contact body section description",
+  //           duration: "2 month",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       _id: "story5",
+  //       name: "Home page",
+  //       description: "Home page description",
+  //       tasks: [
+  //         {
+  //           _id: "task7",
+  //           tname: "Home header section",
+  //           description: "Home header section description",
+  //           duration: "1 month",
+  //         },
+  //         {
+  //           _id: "task8",
+  //           tname: "Home body section",
+  //           description: "Home body section description",
+  //           duration: "2 month",
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // },
+  // {
+  //   _id: "p3",
+  //   title: "chennai silks",
+  //   description: "chennai silks Description",
+  //   assignedTo: "usena",
+  //   status: "Done",
 
-    stories: [
-      {
-        _id: "story4",
-        name: "Home page",
-        description: "Home page description",
-      },
-    ],
-  },
+  //   stories: [
+  //     {
+  //       _id: "story4",
+  //       name: "Footer page",
+  //       description: "Home page description",
+  //       tasks: [
+  //         {
+  //           _id: "task9",
+  //           tname: "Footer header section",
+  //           description: "Footer header section description",
+  //           duration: "1 month",
+  //         },
+  //         {
+  //           _id: "task10",
+  //           tname: "Footer body section",
+  //           description: "Footer body section description",
+  //           duration: "2 month",
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // },
 ];

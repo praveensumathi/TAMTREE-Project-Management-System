@@ -4,23 +4,27 @@ export type Project = {
   description: string;
   assignedTo: string;
   status: string;
-  stories: Storie[];
+  stories?: Storie[];
 };
 
 export type Storie = {
   _id?: string;
   name: string;
   description: string;
+  tasks: Task[];
 };
 
-export type ProjectProps {
+export type Task = {
+  _id: string;
+  tname: string;
+  description: string;
+  duration: string;
+  status: number;
+};
+
+export type ProjectProps = {
   projectDrawerOpen: boolean;
   projectDetail: Project;
   onDrawerClose: () => void;
-},
-
-export type ProjectBoardProps {
- 
-  projectDetail: Project;
-  
-}
+  onSaveClick: (project: Project) => void;
+};
