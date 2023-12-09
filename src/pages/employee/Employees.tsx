@@ -20,9 +20,18 @@ import EmployeeDrawer from "../../drawer/EmployeeDrawer";
 import ProjectDialogBox from "../../commonDialogBox/ProjectDialogBox";
 import toast from "react-hot-toast";
 
+const newEmployee: Employee = {
+  _id: "id6",
+  employeeId: "",
+  email: "mohi@gmail.com",
+  age: 1,
+  contact: "6374723428",
+  first_name: "Mohi",
+  gender: "Male",
+  last_name: "Kavi",
+};
 const Employees = () => {
   const [employees, setEmployees] = useState(employee);
-
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
     null
@@ -39,17 +48,6 @@ const Employees = () => {
   };
 
   const handleEmployeeAddClick = () => {
-    const newEmployee: Employee = {
-      _id: "new_id22777777778852",
-      employeeId: "id4",
-      email: "mohi@gmail.com",
-      age: 1,
-      contact: 6374723428,
-      first_name: "Mohi",
-      gender: "Male",
-      last_name: "Kavi",
-    };
-
     setSelectedEmployee(newEmployee);
     setIsDrawerOpen(true);
     setIsDrawerOpen(true);
@@ -71,7 +69,7 @@ const Employees = () => {
     setdeleteDialogConfirmationOpen(false);
   };
 
-  const handleEmployeeUpdate = (updatedEmployee: Employee) => {
+  const onSaveClick = (updatedEmployee: Employee) => {
     setEmployees((prevEmployees) => {
       const updatedEmployees = prevEmployees.map((employee) =>
         employee._id === updatedEmployee._id ? updatedEmployee : employee
@@ -115,7 +113,7 @@ const Employees = () => {
           }}
         >
           <Table>
-            <TableHead>
+            <TableHead className="table_head">
               <TableRow>
                 <TableCell align="center">EMPLOYEE ID</TableCell>
                 <TableCell align="center">FIRST NAME</TableCell>
@@ -165,7 +163,7 @@ const Employees = () => {
           isDrawerOpen={isDrawerOpen}
           handleDrawerClose={() => setIsDrawerOpen(false)}
           selectedEmployee={selectedEmployee}
-          handleEmployeeUpdate={handleEmployeeUpdate}
+          onSaveClick={onSaveClick}
         />
       )}
     </>

@@ -21,14 +21,16 @@ const schema = Yup.object().shape({
   email: Yup.string().required("email is required"),
   gender: Yup.string().required("gender is required"),
   age: Yup.number().required("age is required"),
-  contact: Yup.number().required("contact is required"),
+  contact: Yup.string()
+    .matches(/^[6-9]\d{9}$/, "Invalid contact number")
+    .required("Contact is required"),
 });
 
 const EmployeeDrawer = ({
   isDrawerOpen,
   handleDrawerClose,
   selectedEmployee,
-  handleEmployeeUpdate,
+  onSaveClick,
 }: EmployeeDrawerProps) => {
   const {
     control,
@@ -44,10 +46,7 @@ const EmployeeDrawer = ({
     setValue("employeeId", selectedEmployee?.employeeId || "");
     setValue("email", selectedEmployee?.email || "");
     setValue("age", selectedEmployee?.age || 1);
-    setValue(
-      "contact",
-      selectedEmployee?.contact ? Number(selectedEmployee.contact) : 0
-    );
+    setValue("contact", selectedEmployee?.contact || "");
     setValue("first_name", selectedEmployee?.first_name || "");
     setValue("last_name", selectedEmployee?.last_name || "");
     setValue("gender", selectedEmployee?.gender || "");
@@ -55,7 +54,7 @@ const EmployeeDrawer = ({
 
   const onSubmit: SubmitHandler<Employee> = async (formData) => {
     if (selectedEmployee) {
-      handleEmployeeUpdate({ ...selectedEmployee, ...formData });
+      onSaveClick({ ...selectedEmployee, ...formData });
       if (selectedEmployee._id) {
         toast.success("Employee updated successfully");
       } else {
@@ -81,8 +80,8 @@ const EmployeeDrawer = ({
         onClose={handleDrawerClose}
       >
         <Box padding={2} display={"flex"} justifyContent={"space-between"}>
-          <Typography variant="h5">
-            {selectedEmployee?._id ? "Edit Employee" : "Add Employee"}
+          <Typography variant="h5" fontWeight={"bold"}>
+            {selectedEmployee?.employeeId ? "Edit Employee" : "Add Employee"}
           </Typography>
           <Box onClick={handleDrawerClose}>
             <CloseIcon />
