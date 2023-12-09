@@ -36,8 +36,8 @@ const projectStatusList = [
 
 function Board() {
   const navigate = useNavigate();
-  const { projectId } = useParams();
 
+  const { projectId } = useParams();
   const [selectedProjectedData, setSelectedProjectedData] = useState<Project>();
   const [expanded, setExpanded] = useState<string | false>("");
 
@@ -45,6 +45,7 @@ function Board() {
     const project = projects.find((project) => project._id! == projectId)!;
     setSelectedProjectedData(project!);
   }, [projectId]);
+
 
   const onDragStart = (evt: any) => {
     let element = evt.currentTarget;
@@ -64,6 +65,7 @@ function Board() {
   // };
 
   const onDragEnter = (evt: any) => {
+    
     console.log("enter");
 
     evt.preventDefault();
@@ -93,6 +95,7 @@ function Board() {
   };
 
   const onDragLeave = (evt: any) => {
+    
     let currentTarget = evt.currentTarget;
     let newTarget = evt.relatedTarget;
     if (newTarget.parentNode === currentTarget || newTarget === currentTarget)

@@ -54,15 +54,18 @@ const EmployeeDrawer = ({
   }, [selectedEmployee]);
 
   const onSubmit: SubmitHandler<Employee> = async (formData) => {
-    handleEmployeeUpdate({ ...selectedEmployee, ...formData });
-    if (selectedEmployee?._id) {
-      toast.success("Employee updated successfully");
-    } else {
-      toast.success("Employee created successfully");
+    if (selectedEmployee) {
+      handleEmployeeUpdate({ ...selectedEmployee, ...formData });
+      if (selectedEmployee._id) {
+        toast.success("Employee updated successfully");
+      } else {
+        toast.success("Employee created successfully");
+      }
     }
 
     handleDrawerClose();
   };
+
   return (
     <>
       <Drawer
@@ -97,7 +100,7 @@ const EmployeeDrawer = ({
                     render={({ field }) => (
                       <TextField
                         fullWidth
-                        label="employee id"
+                        label="Employee Id"
                         {...field}
                         error={!!errors.employeeId}
                         helperText={errors.employeeId?.message}
@@ -115,7 +118,7 @@ const EmployeeDrawer = ({
                       <TextField
                         fullWidth
                         type="text"
-                        label="first_name"
+                        label="First Name"
                         {...field}
                         error={!!errors.first_name}
                         helperText={errors.first_name?.message}
@@ -132,7 +135,7 @@ const EmployeeDrawer = ({
                     render={({ field }) => (
                       <TextField
                         fullWidth
-                        label="last_name"
+                        label="Last Name"
                         type="text"
                         {...field}
                         error={!!errors.last_name}
@@ -149,7 +152,7 @@ const EmployeeDrawer = ({
                     render={({ field }) => (
                       <TextField
                         fullWidth
-                        label="email"
+                        label="Email"
                         type="email"
                         {...field}
                         error={!!errors.email}
@@ -166,7 +169,7 @@ const EmployeeDrawer = ({
                     render={({ field }) => (
                       <TextField
                         fullWidth
-                        label="age"
+                        label="Age"
                         {...field}
                         error={!!errors.age}
                         helperText={errors.age?.message}
@@ -182,7 +185,7 @@ const EmployeeDrawer = ({
                     render={({ field }) => (
                       <TextField
                         fullWidth
-                        label="gender"
+                        label="Gender"
                         {...field}
                         error={!!errors.gender}
                         helperText={errors.gender?.message}
@@ -198,7 +201,7 @@ const EmployeeDrawer = ({
                     render={({ field }) => (
                       <TextField
                         fullWidth
-                        label="contact"
+                        label="Contact"
                         {...field}
                         error={!!errors.contact}
                         helperText={errors.contact?.message}

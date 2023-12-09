@@ -40,18 +40,18 @@ const Employees = () => {
 
   const handleEmployeeAddClick = () => {
     const newEmployee: Employee = {
-      _id: "new_id",
-      employeeId: "",
-      email: "",
-      age: 0,
-      contact: 0,
-      first_name: "",
-      gender: "",
-      last_name: "",
+      _id: "new_id22777777778852",
+      employeeId: "id4",
+      email: "mohi@gmail.com",
+      age: 1,
+      contact: 6374723428,
+      first_name: "Mohi",
+      gender: "Male",
+      last_name: "Kavi",
     };
 
-    setEmployees((prevEmployees) => [...prevEmployees, newEmployee]);
     setSelectedEmployee(newEmployee);
+    setIsDrawerOpen(true);
     setIsDrawerOpen(true);
   };
 
@@ -76,8 +76,15 @@ const Employees = () => {
       const updatedEmployees = prevEmployees.map((employee) =>
         employee._id === updatedEmployee._id ? updatedEmployee : employee
       );
+      if (
+        !prevEmployees.some((employee) => employee._id === updatedEmployee._id)
+      ) {
+        updatedEmployees.push(updatedEmployee);
+      }
+
       return updatedEmployees;
     });
+
     setSelectedEmployee(updatedEmployee);
   };
 
