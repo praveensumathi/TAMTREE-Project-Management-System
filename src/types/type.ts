@@ -28,3 +28,10 @@ export type ProjectProps = {
   onDrawerClose: () => void;
   onSaveClick: (project: Project) => void;
 };
+export type ITaskDrawerProps = {
+  openDrawer: boolean;
+  onClose: () => void;
+  onNewSave: (task: Task, storyId: string) => void;
+
+  SelectedStoryId: string;
+};

@@ -8,9 +8,13 @@ import { useParams } from "react-router-dom";
 import { projects } from "../../seed-data/seed-data";
 import { Project, Task } from "../../types/type";
 import { useState, useEffect } from "react";
-
-import { Card, CardContent } from "@mui/material";
+import { Button, Card, CardContent } from "@mui/material";
 import CustomAccordion from "../../common/components/CustomAccordion";
+import React from "react";
+import Drawer from "@mui/material/Drawer";
+
+import AddTaskDrawer from "./AddTaskDrawer";
+import Projects from "../projects/Projects";
 
 const projectStatusList = [
   {
@@ -38,13 +42,16 @@ const projectStatusList = [
 function Board() {
   const navigate = useNavigate();
   const { projectId } = useParams();
-
-  const [selectedProjectedData, setSelectedProjectedData] = useState<Project>();
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const [SelectedStoryId, setSelectedStoryId] = useState("");
+  const [selectedProjectData, setSelectedProjectData] = useState<
+    Project | undefined
+  >(undefined);
   const [expanded, setExpanded] = useState<string | false>("");
 
   useEffect(() => {
     const project = projects.find((project) => project._id! == projectId)!;
-    setSelectedProjectedData(project!);
+    setSelectedProjectData(project);
   }, [projectId]);
 
   const onDragStart = (evt: any) => {
@@ -120,7 +127,7 @@ function Board() {
     evt.currentTarget.classList.remove("dragged-over");
     let id = evt.dataTransfer.getData("text/plain");
 
-    var _stories = selectedProjectedData?.stories ?? [];
+    var _stories = selectedProjectData?.stories ?? [];
 
     var updatedStories = _stories.map((story) => {
       story.tasks?.map((task) => {
@@ -134,16 +141,41 @@ function Board() {
     });
 
     var _selectedProjectedData = {
-      ...selectedProjectedData,
+      ...selectedProjectData,
       stories: [...updatedStories],
     } as Project;
 
-    setSelectedProjectedData({ ..._selectedProjectedData });
+    setSelectedProjectData({ ..._selectedProjectedData });
 
     const children = evt.currentTarget.querySelectorAll(".empty");
     children.forEach((child: any) => {
       evt.currentTarget.removeChild(child);
     });
+  };
+
+  const handleAddTask = (storyId: string) => {
+    setSelectedStoryId(storyId);
+    setOpenDrawer(true);
+  };
+
+  const handleNewTaskSaveProcess = (newTask: any, selectedStoryId: any) => {
+    setSelectedProjectData((prevData) => {
+      if (!prevData) return prevData;
+
+      const updatedStories = prevData.stories?.map((story) => {
+        if (story._id === selectedStoryId) {
+          return {
+            ...story,
+            tasks: [...(story.tasks || []), newTask],
+          };
+        }
+        return story;
+      });
+      console.log(updatedStories);
+      return { ...prevData, stories: updatedStories };
+    });
+
+    setOpenDrawer(false);
   };
 
   const renderTasks = (taskList: Task[], status: number, color: string) => {
@@ -199,91 +231,127 @@ function Board() {
     };
 
   return (
-    <Container maxWidth={false} sx={{mb:3}}>
-      <Breadcrumbs aria-label="breadcrumb">
-        <Typography>Boards</Typography>
-        <Link
-          underline="hover"
-          color="inherit"
-          href="/"
-          onClick={() => navigate("/projects")}
-        >
-          projects
-        </Link>
-        <Typography>{selectedProjectedData?.title}</Typography>
-      </Breadcrumbs>
-      <>
-        <Box display={"flex"} gap={2}>
-          {projectStatusList.map((projectStatus, index) => (
-            <Box
-              key={index}
-              sx={{
-                backgroundColor: projectStatus.color,
-                p: 2,
-                width: "24%",
-              }}
-            >
-              <Typography variant="h6">{projectStatus.status}</Typography>
-              <Typography
-                variant="subtitle2"
-                sx={{ opacity: 0.6, lineHeight: 1, fontWeight: "lighter" }}
+    <>
+      <Container maxWidth={false} sx={{ mb: 3 }}>
+        <Breadcrumbs aria-label="breadcrumb">
+          <Typography>Boards</Typography>
+          <Link
+            underline="hover"
+            color="inherit"
+            href="/"
+            onClick={() => navigate("/projects")}
+          >
+            projects
+          </Link>
+          <Typography>{selectedProjectData?.title}</Typography>
+        </Breadcrumbs>
+        <>
+          <Box display={"flex"} gap={2}>
+            {projectStatusList.map((projectStatus, index) => (
+              <Box
+                key={index}
+                sx={{
+                  backgroundColor: projectStatus.color,
+                  p: 2,
+                  width: "24%",
+                }}
               >
-                {projectStatus.description}
-              </Typography>
-            </Box>
-          ))}
-        </Box>
-      </>
+                <Box display={"flex"} gap={10}>
+                  <Box>
+                    <Typography variant="h6">{projectStatus.status}</Typography>
 
-      <Box className="container">
-        {selectedProjectedData && (
-          <Box mt={1}>
-            {selectedProjectedData.stories?.map((s) => (
-              <CustomAccordion.Accordion
-                // expanded={expanded === s._id}
-                expanded
-                onChange={handleChange(s._id!)}
-              >
-                <CustomAccordion.AccordionSummary
-                  aria-controls="panel1d-content"
-                  id="panel1d-header"
-                >
-                  <Typography>{s.name}</Typography>
-                </CustomAccordion.AccordionSummary>
-                <CustomAccordion.AccordionDetails>
-                  <Box display={"flex"} gap={2}>
-                    {s.tasks &&
-                      renderTasks(
-                        s.tasks.filter((t) => t.status == 1),
-                        1,
-                        "#ff7ecd"
-                      )}
-                    {s.tasks &&
-                      renderTasks(
-                        s.tasks.filter((t) => t.status == 2),
-                        2,
-                        "#fdffb6"
-                      )}
-                    {s.tasks &&
-                      renderTasks(
-                        s.tasks.filter((t) => t.status == 3),
-                        3,
-                        "#caffbf"
-                      )}
-                    {s.tasks &&
-                      renderTasks(
-                        s.tasks.filter((t) => t.status == 4),
-                        4,
-                        "#ce81ff"
-                      )}
+                    <Typography
+                      variant="subtitle2"
+                      sx={{
+                        opacity: 0.6,
+                        lineHeight: 1,
+                        fontWeight: "lighter",
+                      }}
+                    >
+                      {projectStatus.description}
+                    </Typography>
                   </Box>
-                </CustomAccordion.AccordionDetails>
-              </CustomAccordion.Accordion>
+                </Box>
+              </Box>
             ))}
           </Box>
-        )}
-      </Box>
-    </Container>
+        </>
+
+        <Box className="container">
+          {selectedProjectData && (
+            <Box mt={1}>
+              {selectedProjectData.stories?.map((s) => (
+                <CustomAccordion.Accordion
+                  // expanded={expanded === s._id}
+
+                  expanded
+                  onChange={handleChange(s._id!)}
+                >
+                  <CustomAccordion.AccordionSummary
+                    aria-controls="panel1d-content"
+                    id="panel1d-header"
+                  >
+                    <Box display={"flex"} gap={4}>
+                      <Box>
+                        <Typography>{s.name}</Typography>
+                      </Box>
+                      <Box>
+                        {projectStatusList.map((projectStatus) => {
+                          if (projectStatus.status === "To Do") {
+                            return (
+                              <Button
+                                key={projectStatus.status}
+                                onClick={() => handleAddTask(s._id!)}
+                              >
+                              Add Task
+                              </Button>
+                            );
+                          }
+                        })}
+                      </Box>
+                    </Box>
+                  </CustomAccordion.AccordionSummary>
+                  <CustomAccordion.AccordionDetails>
+                    <Box display={"flex"} gap={2}>
+                      {s.tasks &&
+                        renderTasks(
+                          s.tasks.filter((t) => t.status == 1),
+                          1,
+                          "#ff7ecd"
+                        )}
+                      {s.tasks &&
+                        renderTasks(
+                          s.tasks.filter((t) => t.status == 2),
+                          2,
+                          "#fdffb6"
+                        )}
+                      {s.tasks &&
+                        renderTasks(
+                          s.tasks.filter((t) => t.status == 3),
+                          3,
+                          "#caffbf"
+                        )}
+                      {s.tasks &&
+                        renderTasks(
+                          s.tasks.filter((t) => t.status == 4),
+                          4,
+                          "#ce81ff"
+                        )}
+                    </Box>
+                  </CustomAccordion.AccordionDetails>
+                </CustomAccordion.Accordion>
+              ))}
+            </Box>
+          )}
+        </Box>
+      </Container>
+      <AddTaskDrawer
+        openDrawer={openDrawer}
+        onClose={() => setOpenDrawer(false)}
+        onNewSave={handleNewTaskSaveProcess}
+        SelectedStoryId={SelectedStoryId!}
+      />
+    </>
   );
 }
 
