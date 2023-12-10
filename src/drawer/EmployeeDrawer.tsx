@@ -3,6 +3,11 @@ import {
   Button,
   Container,
   Drawer,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
   TextField,
   Typography,
 } from "@mui/material";
@@ -42,14 +47,16 @@ const EmployeeDrawer = ({
     resolver: yupResolver(schema) as any,
     mode: "all",
   });
+  console.log(selectedEmployee);
+
   useEffect(() => {
     setValue("employeeId", selectedEmployee?.employeeId || "");
     setValue("email", selectedEmployee?.email || "");
     setValue("age", selectedEmployee?.age || 1);
-    setValue("contact", selectedEmployee?.contact || "");
+    setValue("contact", selectedEmployee?.contact || 0);
     setValue("first_name", selectedEmployee?.first_name || "");
     setValue("last_name", selectedEmployee?.last_name || "");
-    setValue("gender", selectedEmployee?.gender || "");
+    setValue("gender", selectedEmployee?.gender || "Male");
   }, [selectedEmployee]);
 
   const onSubmit: SubmitHandler<Employee> = async (formData) => {
@@ -182,16 +189,25 @@ const EmployeeDrawer = ({
                     name="gender"
                     control={control}
                     render={({ field }) => (
-                      <TextField
-                        fullWidth
-                        label="Gender"
-                        {...field}
-                        error={!!errors.gender}
-                        helperText={errors.gender?.message}
-                        {...register("gender", {
-                          required: true,
-                        })}
-                      />
+                      <FormControl component="fieldset">
+                        <FormLabel sx={{}}>Gender</FormLabel>
+                        <RadioGroup
+                          row
+                          value={field.value}
+                          onChange={(e) => setValue("gender", e.target.value)}
+                        >
+                          <FormControlLabel
+                            value="Male"
+                            control={<Radio />}
+                            label="Male"
+                          />
+                          <FormControlLabel
+                            value="Female"
+                            control={<Radio />}
+                            label="Female"
+                          />
+                        </RadioGroup>
+                      </FormControl>
                     )}
                   />
                   <Controller

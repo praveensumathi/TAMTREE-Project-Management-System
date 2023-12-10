@@ -160,8 +160,8 @@ export const employee: Employee[] = [
     last_name: "priya",
     email: "kaviinfotechit@gmail.com",
     age: 26,
-    gender: "female",
-    contact: 1234567890
+    gender: "Female",
+    contact: 6374723428
 
   },
   {
@@ -171,7 +171,7 @@ export const employee: Employee[] = [
     last_name: "siva",
     email: "sountarya@gmail.com",
     age: 27,
-    gender: "female",
+    gender: "Female",
     contact: 9874102536
 
 
@@ -183,7 +183,7 @@ export const employee: Employee[] = [
     last_name: "logesh",
     email: "logesh@gmail.com",
     age: 22,
-    gender: "male",
+    gender: "Male",
     contact: 9513264870
 
 

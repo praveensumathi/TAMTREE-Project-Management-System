@@ -21,13 +21,13 @@ import ProjectDialogBox from "../../commonDialogBox/ProjectDialogBox";
 import toast from "react-hot-toast";
 
 const newEmployee: Employee = {
-  _id: "id6",
+  _id: "id5",
   employeeId: "",
   email: "mohi@gmail.com",
   age: 1,
-  contact: "6374723428",
+  contact: 6374723428,
   first_name: "Mohi",
-  gender: "Male",
+  gender: "Female",
   last_name: "Kavi",
 };
 const Employees = () => {
@@ -93,6 +93,7 @@ const Employees = () => {
     setEmployees(updatedEmployees);
     toast.success("employee deleted succesfully");
   };
+
   return (
     <>
       <Container>

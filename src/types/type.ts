@@ -30,7 +30,7 @@ export type Employee = {
   email: string;
   age: number;
   gender: string;
-  contact: string
+  contact: number
 }
 
 export type ProjectProps = {
