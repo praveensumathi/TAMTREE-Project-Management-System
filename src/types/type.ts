@@ -15,7 +15,7 @@ export type Storie = {
 };
 
 export type Task = {
-  _id: string;
+  _id?: string;
   tname: string;
   description: string;
   duration: string;
@@ -32,6 +32,6 @@ export type ITaskDrawerProps = {
   openDrawer: boolean;
   onClose: () => void;
   onNewSave: (task: Task, storyId: string) => void;
-
+  selectedTask: Task;
   SelectedStoryId: string;
 };

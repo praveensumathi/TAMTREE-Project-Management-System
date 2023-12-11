@@ -8,13 +8,24 @@ import { useParams } from "react-router-dom";
 import { projects } from "../../seed-data/seed-data";
 import { Project, Task } from "../../types/type";
 import { useState, useEffect } from "react";
-import { Button, Card, CardContent } from "@mui/material";
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+} from "@mui/material";
 import CustomAccordion from "../../common/components/CustomAccordion";
 import React from "react";
 import Drawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 import AddTaskDrawer from "./AddTaskDrawer";
 import Projects from "../projects/Projects";
+import { set } from "react-hook-form";
 
 const projectStatusList = [
   {
@@ -44,15 +55,46 @@ function Board() {
   const { projectId } = useParams();
   const [openDrawer, setOpenDrawer] = useState(false);
   const [SelectedStoryId, setSelectedStoryId] = useState("");
+
   const [selectedProjectData, setSelectedProjectData] = useState<
     Project | undefined
   >(undefined);
   const [expanded, setExpanded] = useState<string | false>("");
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const [selectedTask, setSelectedTask] = useState<Task>();
+  const open = Boolean(anchorEl);
 
   useEffect(() => {
     const project = projects.find((project) => project._id! == projectId)!;
     setSelectedProjectData(project);
   }, [projectId]);
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleCardEditClick = (
+    event: React.MouseEvent<HTMLElement>,
+    task: Task
+  ) => {
+    event.stopPropagation();
+    setSelectedTask(task);
+    setOpenDrawer(true);
+  };
+
+  const handleDelete = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
+    handleClose();
+  };
+  const handleIconButton = (
+    event: React.MouseEvent<HTMLElement>,
+    task: Task
+  ) => {
+    event.stopPropagation();
+    setSelectedTask(task);
+    setAnchorEl(event.currentTarget);
+  };
 
   const onDragStart = (evt: any) => {
     let element = evt.currentTarget;
@@ -206,15 +248,41 @@ function Board() {
                       id={task._id}
                       draggable
                       onDragStart={onDragStart}
+                      onClick={(e) => handleCardEditClick(e, task)}
                     >
-                      <CardContent>
-                        <Box>
-                          <Typography>{task.tname}</Typography>
-                          <Box className="days">{task.description}</Box>
-                          <Box className="time">{task.duration}</Box>
-                        </Box>
+                      <CardHeader
+                        action={
+                          <IconButton
+                            id="basic-button"
+                            onClick={(e) => handleIconButton(e, task)}
+                          >
+                            <MoreVertIcon />
+                          </IconButton>
+                        }
+                        title={
+                          <Typography variant="body1">{task.tname}</Typography>
+                        }
+                      ></CardHeader>
+                      <CardContent sx={{ pt: 0 }}>
+                        <Typography variant="body2" color={"text.secondary"}>
+                          {task.description}
+                        </Typography>
+                        <Typography variant="body2" color={"text.secondary"}>
+                          {task.duration}
+                        </Typography>
                       </CardContent>
                     </Card>
+                    <Menu
+                      id="basic-menu"
+                      anchorEl={anchorEl}
+                      open={Boolean(anchorEl) && task._id == selectedTask?._id}
+                      onClose={handleClose}
+                      MenuListProps={{
+                        "aria-labelledby": "basic-button",
+                      }}
+                    >
+                      <MenuItem onClick={handleDelete}>Delete</MenuItem>
+                    </Menu>
                   </>
                 ))}
               </Box>
@@ -226,7 +294,7 @@ function Board() {
   };
 
   const handleChange =
-    (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
+    (panel: string) => (_event: React.SyntheticEvent, newExpanded: boolean) => {
       setExpanded(newExpanded ? panel : false);
     };
 
@@ -303,7 +371,7 @@ function Board() {
                                 key={projectStatus.status}
                                 onClick={() => handleAddTask(s._id!)}
                               >
-                              Add Task
+                                Add Task
                               </Button>
                             );
                           }
@@ -345,11 +413,13 @@ function Board() {
           )}
         </Box>
       </Container>
+
       <AddTaskDrawer
         openDrawer={openDrawer}
         onClose={() => setOpenDrawer(false)}
         onNewSave={handleNewTaskSaveProcess}
         SelectedStoryId={SelectedStoryId!}
+        selectedTask={selectedTask!}
       />
     </>
   );
