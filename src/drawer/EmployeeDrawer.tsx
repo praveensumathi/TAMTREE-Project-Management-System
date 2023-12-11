@@ -18,25 +18,29 @@ import { toast } from "react-hot-toast";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { Employee, EmployeeDrawerProps } from "../types/type";
+import { useCreateEmployee, useUpdateEmployee } from "../hooks/CustomRQHooks";
 
 const schema = Yup.object().shape({
   employeeId: Yup.string().required("employee id is required"),
-  first_name: Yup.string().required("first name is required"),
-  last_name: Yup.string().required("last name is required"),
+  firstName: Yup.string().required("first name is required"),
+  lastName: Yup.string().required("last name is required"),
   email: Yup.string().required("email is required"),
   gender: Yup.string().required("gender is required"),
   age: Yup.number().required("age is required"),
   contact: Yup.string()
     .matches(/^[6-9]\d{9}$/, "Invalid contact number")
     .required("Contact is required"),
+  address: Yup.string().required("Address is requried"),
 });
 
 const EmployeeDrawer = ({
   isDrawerOpen,
   handleDrawerClose,
   selectedEmployee,
-  onSaveClick,
+  refetchEmployees,
 }: EmployeeDrawerProps) => {
+  const updateEmployeeMutation = useUpdateEmployee();
+  const createEmployeeMutation = useCreateEmployee();
   const {
     control,
     handleSubmit,
@@ -53,22 +57,27 @@ const EmployeeDrawer = ({
     setValue("employeeId", selectedEmployee?.employeeId || "");
     setValue("email", selectedEmployee?.email || "");
     setValue("age", selectedEmployee?.age || 1);
-    setValue("contact", selectedEmployee?.contact || 0);
-    setValue("first_name", selectedEmployee?.first_name || "");
-    setValue("last_name", selectedEmployee?.last_name || "");
+    setValue("contact", selectedEmployee?.contact || "");
+    setValue("firstName", selectedEmployee?.firstName || "");
+    setValue("lastName", selectedEmployee?.lastName || "");
     setValue("gender", selectedEmployee?.gender || "Male");
+    setValue("address", selectedEmployee?.address || "");
   }, [selectedEmployee]);
 
-  const onSubmit: SubmitHandler<Employee> = async (formData) => {
+  const onSubmit: SubmitHandler<Employee> = (formData) => {
     if (selectedEmployee) {
-      onSaveClick({ ...selectedEmployee, ...formData });
       if (selectedEmployee._id) {
+        updateEmployeeMutation.mutate({
+          id: selectedEmployee._id,
+          formData,
+        });
         toast.success("Employee updated successfully");
       } else {
+        createEmployeeMutation.mutate(formData);
         toast.success("Employee created successfully");
       }
     }
-
+    refetchEmployees();
     handleDrawerClose();
   };
 
@@ -118,7 +127,7 @@ const EmployeeDrawer = ({
                   />
 
                   <Controller
-                    name="first_name"
+                    name="firstName"
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -126,9 +135,9 @@ const EmployeeDrawer = ({
                         type="text"
                         label="First Name"
                         {...field}
-                        error={!!errors.first_name}
-                        helperText={errors.first_name?.message}
-                        {...register("first_name", {
+                        error={!!errors.firstName}
+                        helperText={errors.firstName?.message}
+                        {...register("firstName", {
                           required: true,
                         })}
                       />
@@ -136,7 +145,7 @@ const EmployeeDrawer = ({
                   />
 
                   <Controller
-                    name="last_name"
+                    name="lastName"
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -144,9 +153,9 @@ const EmployeeDrawer = ({
                         label="Last Name"
                         type="text"
                         {...field}
-                        error={!!errors.last_name}
-                        helperText={errors.last_name?.message}
-                        {...register("last_name", {
+                        error={!!errors.lastName}
+                        helperText={errors.lastName?.message}
+                        {...register("lastName", {
                           required: true,
                         })}
                       />
@@ -221,6 +230,22 @@ const EmployeeDrawer = ({
                         error={!!errors.contact}
                         helperText={errors.contact?.message}
                         {...register("contact", {
+                          required: true,
+                        })}
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="address"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        fullWidth
+                        label="Address"
+                        {...field}
+                        error={!!errors.address}
+                        helperText={errors.address?.message}
+                        {...register("address", {
                           required: true,
                         })}
                       />

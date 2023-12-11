@@ -156,35 +156,35 @@ export const employee: Employee[] = [
   {
     _id: "db1",
     employeeId: "employeId1",
-    first_name: "kavi",
-    last_name: "priya",
+    firstName: "kavi",
+    lastName: "priya",
     email: "kaviinfotechit@gmail.com",
     age: 26,
     gender: "Female",
-    contact: 6374723428
-
+    contact: "6374723428",
+    location: "Paramathi"
   },
   {
     _id: "db2",
     employeeId: "employeId2",
-    first_name: "soundharya",
-    last_name: "siva",
+    firstName: "soundharya",
+    lastName: "siva",
     email: "sountarya@gmail.com",
     age: 27,
     gender: "Female",
-    contact: 9874102536
-
-
+    contact: "9874102536",
+    location: "velur"
   },
   {
     _id: "db3",
     employeeId: "employeId3",
-    first_name: "logesh",
-    last_name: "logesh",
+    firstName: "logesh",
+    lastName: "logesh",
     email: "logesh@gmail.com",
     age: 22,
     gender: "Male",
-    contact: 9513264870
+    contact: "9513264870",
+    location: "Namakkal"
 
 
   },

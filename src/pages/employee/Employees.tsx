@@ -13,25 +13,29 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { employee } from "../../seed-data/seed-data";
 import { useState } from "react";
 import { Employee } from "../../types/type";
 import EmployeeDrawer from "../../drawer/EmployeeDrawer";
 import ProjectDialogBox from "../../commonDialogBox/ProjectDialogBox";
 import toast from "react-hot-toast";
+import { useDeleteEmployee, useEmployeeQuery } from "../../hooks/CustomRQHooks";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const newEmployee: Employee = {
-  _id: "id5",
+  _id: "",
   employeeId: "",
   email: "mohi@gmail.com",
   age: 1,
-  contact: 6374723428,
-  first_name: "Mohi",
+  contact: "6374723428",
+  firstName: "Mohi",
   gender: "Female",
-  last_name: "Kavi",
+  lastName: "Kavi",
+  address: "Namakkal",
 };
 const Employees = () => {
-  const [employees, setEmployees] = useState(employee);
+  
+  const deleteEmployeeMutation = useDeleteEmployee();
+
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
     null
@@ -42,9 +46,9 @@ const Employees = () => {
     null
   );
 
-  const fetEmployee = () => {
-    
-  }
+  const { isLoading, error, data: employeeData, refetch } = useEmployeeQuery();
+
+  const employees = employeeData || [];
 
   const handleEmployeeEditClick = (employee: Employee) => {
     setSelectedEmployee(employee);
@@ -55,6 +59,7 @@ const Employees = () => {
     setSelectedEmployee(newEmployee);
     setIsDrawerOpen(true);
     setIsDrawerOpen(true);
+    refetch();
   };
 
   const handleEmployeeDeleteClick = (employee: Employee) => {
@@ -66,40 +71,35 @@ const Employees = () => {
     setdeleteDialogConfirmationOpen(false);
   };
 
-  const handleDeleteClickConfirm = () => {
-    if (deleteConfirmation) {
-      deleteEmployee(deleteConfirmation);
+  const handleDeleteConfirmClick = () => {
+    setdeleteDialogConfirmationOpen(true);
+
+    if (deleteConfirmation?._id) {
+      deleteEmployeeMutation.mutate(deleteConfirmation._id);
+      toast.success("Employee deleted successfully");
+      setDeleteConfirmation(null);
+      setdeleteDialogConfirmationOpen(false);
+      refetch();
     }
-    setdeleteDialogConfirmationOpen(false);
-  };
-
-  const onSaveClick = (updatedEmployee: Employee) => {
-    setEmployees((prevEmployees) => {
-      const updatedEmployees = prevEmployees.map((employee) =>
-        employee._id === updatedEmployee._id ? updatedEmployee : employee
-      );
-      if (
-        !prevEmployees.some((employee) => employee._id === updatedEmployee._id)
-      ) {
-        updatedEmployees.push(updatedEmployee);
-      }
-
-      return updatedEmployees;
-    });
-
-    setSelectedEmployee(updatedEmployee);
-  };
-
-  const deleteEmployee = (employeeToDelete: Employee) => {
-    const updatedEmployees = employees.filter(
-      (employee) => employee._id !== employeeToDelete._id
-    );
-    setEmployees(updatedEmployees);
-    toast.success("employee deleted succesfully");
   };
 
   return (
     <>
+      <>
+        {isLoading && (
+          <IconButton
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "100vh",
+              width: "100vw",
+            }}
+          >
+            <CircularProgress />
+          </IconButton>
+        )}
+      </>
       <Container>
         <Box display={"flex "} justifyContent={"space-between"}>
           <Typography variant="h6">Employees</Typography>
@@ -127,6 +127,7 @@ const Employees = () => {
                 <TableCell align="center">GENDER</TableCell>
                 <TableCell align="center">AGE</TableCell>
                 <TableCell align="center">CONTACT</TableCell>
+                <TableCell align="center">ADDRESS</TableCell>
                 <TableCell>ACTIONS</TableCell>
               </TableRow>
             </TableHead>
@@ -134,12 +135,13 @@ const Employees = () => {
               {employees.map((employee, index) => (
                 <TableRow key={index}>
                   <TableCell align="center">{employee.employeeId}</TableCell>
-                  <TableCell align="center">{employee.first_name}</TableCell>
-                  <TableCell align="center">{employee.last_name}</TableCell>
+                  <TableCell align="center">{employee.firstName}</TableCell>
+                  <TableCell align="center">{employee.lastName}</TableCell>
                   <TableCell align="center">{employee.email}</TableCell>
                   <TableCell align="center">{employee.gender}</TableCell>
                   <TableCell align="center">{employee.age}</TableCell>
                   <TableCell align="center">{employee.contact}</TableCell>
+                  <TableCell align="center">{employee.address}</TableCell>
                   <TableCell>
                     <IconButton
                       onClick={() => handleEmployeeEditClick(employee)}
@@ -161,14 +163,14 @@ const Employees = () => {
       <ProjectDialogBox
         deleteDialogConfirmationOpen={deleteDialogConfirmationOpen}
         handleDeleteCancel={handleDeleteCancel}
-        handleDeleteClickConfirm={handleDeleteClickConfirm}
+        handleDeleteClickConfirm={handleDeleteConfirmClick}
       />
       {isDrawerOpen && (
         <EmployeeDrawer
           isDrawerOpen={isDrawerOpen}
           handleDrawerClose={() => setIsDrawerOpen(false)}
           selectedEmployee={selectedEmployee}
-          onSaveClick={onSaveClick}
+          refetchEmployees={refetch}
         />
       )}
     </>

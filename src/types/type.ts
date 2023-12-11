@@ -25,12 +25,13 @@ export type Task = {
 export type Employee = {
   _id: string,
   employeeId: string,
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   age: number;
   gender: string;
-  contact: number
+  contact: string;
+  address: string
 }
 
 export type ProjectProps = {
@@ -45,6 +46,6 @@ export type EmployeeDrawerProps = {
   isDrawerOpen: boolean;
   selectedEmployee: Employee | null | undefined;
   handleDrawerClose: () => void;
-  onSaveClick: (employee: Employee) => void
+  refetchEmployees: () => Promise<any>;
 }
 
