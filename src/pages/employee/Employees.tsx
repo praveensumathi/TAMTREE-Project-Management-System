@@ -42,6 +42,10 @@ const Employees = () => {
     null
   );
 
+  const fetEmployee = () => {
+    
+  }
+
   const handleEmployeeEditClick = (employee: Employee) => {
     setSelectedEmployee(employee);
     setIsDrawerOpen(true);
