@@ -5,7 +5,7 @@ const Layout = () => {
   return (
     <>
       <NavBar/>
-      <Box sx={{ marginTop: "30px" }}>
+      <Box sx={{ marginTop: "10px" }}>
         <Outlet />
       </Box>
     </>

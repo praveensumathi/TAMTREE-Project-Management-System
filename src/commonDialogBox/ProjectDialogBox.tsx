@@ -4,19 +4,21 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
+import { Project } from "../types/type";
+
 
 type DialogProps = {
   deleteDialogConfirmationOpen: boolean;
-
   handleDeleteCancel: () => void;
-
   handleDeleteClickConfirm: () => void;
+  selectedProject: Project | null; 
 };
 
 function ProjectDialogBox({
   deleteDialogConfirmationOpen,
   handleDeleteCancel,
   handleDeleteClickConfirm,
+  selectedProject
 }: DialogProps) {
   return (
     <Dialog
@@ -24,10 +26,11 @@ function ProjectDialogBox({
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <DialogTitle id="alert-dialog-title">{"Delete"}</DialogTitle>
+      <DialogTitle id="alert-dialog-title">Delete</DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          Are you sure you want to delete?
+          Are you sure you want to delete project?
+          {selectedProject!.title}
         </DialogContentText>
       </DialogContent>
       <DialogActions>

@@ -1,10 +1,10 @@
 export type Project = {
-  _id?: string;
+  _id: string;
   title: string;
   description: string;
   assignedTo: string;
   status: string;
-  stories?: Storie[];
+  stories: Storie[];
 };
 
 export type Storie = {
@@ -31,10 +31,17 @@ export type Employee = {
 
 }
 
+export type ViewDialogProps = {
+  open: boolean;
+  onClose: () => void;
+  stories: Storie[];
+};
+
 export type ProjectProps = {
   projectDrawerOpen: boolean;
-  projectDetail: Project;
+  selectedProject: Project ;
   onDrawerClose: () => void;
-  onSaveClick: (project: Project) => void;
+ handleProjectUpdate: (handleProjectUpdate: Project) => void;
+ 
 };
 

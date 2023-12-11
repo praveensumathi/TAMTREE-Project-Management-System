@@ -1,93 +1,98 @@
-import { useEffect } from "react";
-import { SubmitHandler, useForm, useFormState } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { IconButton } from "@mui/material";
-import { useState } from "react";
 import {
   Box,
+  Button,
   Container,
-  Divider,
   Drawer,
+  IconButton,
   TextField,
   Typography,
 } from "@mui/material";
-import { Project, ProjectProps } from "../types/type";
-import Button from "@mui/material/Button";
-
+import { useEffect, useState } from "react";
+import * as yup from "yup";
 import CloseIcon from "@mui/icons-material/Close";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import { Project, ProjectProps, Storie } from "../types/type";
+import Delete from "@mui/icons-material/Delete";
 
 const validationSchema = yup.object().shape({
-  title: yup.string().required(),
-  description: yup.string().required(),
-  assignedTo: yup.string().required(),
-  status: yup.string().required(),
+  title: yup.string().required("title is required"),
+  description: yup.string().required("description is required"),
+  assignedTo: yup.string().required("assignedto is required"),
+  status: yup.string().required("status is required"),
   stories: yup.array().of(
     yup.object().shape({
       name: yup.string().required(),
       description: yup.string().required(),
-      // tasks: yup.array().of(yup.object().shape({
-      //   tname:yup.string()
-      // }))
     })
   ),
 });
 
-function ProjectDrawer({
+const ProjectDrawer = ({
   projectDrawerOpen,
-  projectDetail,
+  selectedProject,
   onDrawerClose,
-  onSaveClick,
-}: ProjectProps) {
-  const [myProjectDetail, setMyProjectDetail] =
-    useState<Project>(projectDetail);
-
+  handleProjectUpdate
+}: ProjectProps) => {
   const {
-    register,
+    control,
     handleSubmit,
-    formState: { errors },
     setValue,
-  } = useForm({
-    resolver: yupResolver(validationSchema),
-    mode: "all",
-    defaultValues: {
-      title: "sindhu kitchen",
-      description: "food app",
-      assignedTo: "praveen",
-      status: "completed",
-      stories: [],
-    } as Project,
+   
+    register,
+    formState: { errors }
+  } = useForm<Project>({
+    resolver: yupResolver(validationSchema) as any,
+    mode: "all"
   });
 
-  const handleDrawerCloseClick = () => {
+  const initialStories: Storie[] = selectedProject?.stories || [];
+
+  const [stories, setStories] = useState<Storie[]>(initialStories);
+  const [storyIndices, setStoryIndices] = useState<number[]>(initialStories.map((_, index) => index));
+
+
+  useEffect(() => {
+ 
+      setValue("title", selectedProject?.title ||"");
+      setValue("description", selectedProject?.description||"");
+      setValue("assignedTo", selectedProject?.assignedTo||"");
+      setValue("status", selectedProject?.status||"");
+      if (selectedProject && selectedProject.stories) {
+        selectedProject.stories.forEach((story, index) => {
+          setValue(`stories.${index}.name`, story?.name || "");
+          setValue(`stories.${index}.description`, story?.description || "");
+        });
+      }
+  }, [selectedProject]);
+
+  const onSubmit: SubmitHandler<Project> = async (formData) => {
+    const updatedProject: Project =({ ...selectedProject, ...formData,stories });
+    handleProjectUpdate(updatedProject);
     onDrawerClose();
   };
 
-  useEffect(() => {
-    if (myProjectDetail._id) {
-      setValue("title", myProjectDetail.title);
-      setValue("description", myProjectDetail.description);
-      setValue("assignedTo", myProjectDetail.assignedTo);
-      setValue("status", myProjectDetail.status);
-      if (myProjectDetail.stories) {
-        myProjectDetail.stories.forEach((story, index) => {
-          setValue(`stories.${index}.name`, story.name);
-          setValue(`stories.${index}.description`, story.description);
-        });
-      }
-    }
-  }, [myProjectDetail, setValue]);
-
-  const submitForm = (formData: Project) => {
-    console.log(formData);
-    onSaveClick(formData);
+  const handleAddStory = () => {
+    const newStories = [...stories, { name: "", description: "" }];
+    const newIndices = [...storyIndices, stories.length];
+    setStories(newStories);
+    setStoryIndices(newIndices);
   };
+
+  const handleRemoveStory = (indexToRemove: number) => {
+    const updatedStories = stories.filter((_, index) => index !== indexToRemove);
+    const updatedIndices = storyIndices.filter((index) => index !== indexToRemove);
+
+    setStories(updatedStories);
+    setStoryIndices(updatedIndices);
+  };
+
+
+  
 
   return (
     <>
-      <Box>
-        {myProjectDetail && (
+     {selectedProject && (
           <Drawer
             sx={{ position: "relative" }}
             anchor="right"
@@ -98,113 +103,183 @@ function ProjectDrawer({
                 height: "100%",
               },
             }}
+            onClose={onDrawerClose}
           >
             <Box padding={2} display={"flex"} justifyContent={"space-between"}>
               <Typography variant="h5">
-                {myProjectDetail._id != "" ? "  Edit Data" : "Add Project"}
+                {selectedProject._id ? "Edit Data" : "Add Project"}
               </Typography>
-              <Box onClick={handleDrawerCloseClick}>
+              <Box onClick={onDrawerClose}>
                 <CloseIcon />
               </Box>
             </Box>
-            <Divider />
+            
             <Container>
-              <Box py={3}>
+              {selectedProject&& (<Box display={"flex"} flexWrap={"wrap"} rowGap={2} >
                 <form
-                  onSubmit={handleSubmit((formdata) => submitForm(formdata))}
+                  onSubmit={handleSubmit(onSubmit)}
                 >
-                  <TextField
-                    fullWidth
-                    label="Title"
-                    {...register("title", { required: true })}
-                    error={!!errors.title}
-                    helperText={errors.title?.message}
-                    sx={{ marginBottom: "10px" }}
+                  <Box display={"flex"} flexWrap={"wrap"} rowGap={2}>
+                  <Box padding={1} >
+                  <Controller
+                    name="title"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        fullWidth
+                        label="title"
+                        {...field}
+                        error={!!errors.title}
+                        helperText={errors.title?.message}
+                        {...register("title", {
+                          required: true,
+                        })}
+                      />
+                    )}
                   />
-                  <TextField
-                    fullWidth
-                    label="description"
-                    {...register("description", { required: true })}
-                    error={!!errors.description}
-                    helperText={errors.description?.message}
-                    sx={{ marginBottom: "10px" }}
+                  </Box>
+                  <Box padding={1}>
+                  <Controller
+                    name="description"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        fullWidth
+                        label="description"
+                        {...field}
+                        error={!!errors.description}
+                        helperText={errors.description?.message}
+                        {...register("description", {
+                          required: true,
+                        })}
+                      />
+                    )}
                   />
-                  <TextField
-                    fullWidth
-                    label="assignedTo"
-                    {...register("assignedTo", { required: true })}
-                    error={!!errors.assignedTo}
-                    helperText={errors.assignedTo?.message}
-                    sx={{ marginBottom: "10px" }}
+                  </Box>
+                  <Box padding={1} >
+                  <Controller
+                    name="status"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        fullWidth
+                        label="status"
+                        {...field}
+                        error={!!errors.status}
+                        helperText={errors.status?.message}
+                        {...register("status", {
+                          required: true,
+                        })}
+                      />
+                    )}
                   />
-                  <TextField
-                    fullWidth
-                    label="status"
-                    {...register("status", { required: true })}
-                    error={!!errors.status}
-                    helperText={errors.status?.message}
-                    sx={{ marginBottom: "10px" }}
+                  </Box>
+                  <Box padding={1} >
+                  <Controller
+                    name="assignedTo"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        fullWidth
+                        label="assigned To"
+                        {...field}
+                        error={!!errors.assignedTo}
+                        helperText={errors.assignedTo?.message}
+                        {...register("assignedTo", {
+                          required: true,
+                        })}
+                      />
+                    )}
                   />
-                  <Typography variant="h5">stories</Typography>
+                  </Box>
+                  <Box display={"flex"} gap={30} marginBottom={"10px"}>
+
+                  <Typography variant="h5" >Stories</Typography>
+                  <Button variant="contained" onClick={handleAddStory}>Add Story</Button>
+
+                  </Box>
                   <Box>
-                    {myProjectDetail.stories?.map((story, index) => (
-                      <Box key={index} display={"flex"} alignItems={"center"}>
-                        <TextField
-                          fullWidth
-                          label="name"
-                          {...register(`stories.${index}.name`, {
-                            required: true,
-                          })}
-                          error={!!errors.stories?.[index]?.name}
-                          helperText={errors.stories?.[index]?.name?.message}
-                          sx={{ marginRight: "10px", marginBottom: "10px" }}
-                        />
-                        <TextField
-                          fullWidth
-                          label="description"
-                          {...register(`stories.${index}.description`, {
-                            required: true,
-                          })}
-                          error={!!errors.stories?.[index]?.description}
-                          helperText={
-                            errors.stories?.[index]?.description?.message
-                          }
-                        />
+                    {storyIndices.map((index) => (
+                      <Box key={index} display={"flex"} gap={2}justifyContent={"space-between"} alignItems={"center"} marginBottom={"10px"}>
+                        <Box>
+                        <Controller
+                    name={`stories.${index}.name`}
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        fullWidth
+                        label="name"
+                        {...field}
+                        error={!!errors.stories?.[index]?.name}
+                        helperText={errors.stories?.[index]?.name?.message}
+                        {...register(`stories.${index}.name`, {
+                          required: true,
+                        })}
+                      />
+                    )}
+                  />
+                        </Box>
+                        <Box>
+                        <Controller
+                    name={`stories.${index}.description`}
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        fullWidth
+                        label="description"
+                        {...field}
+                        error={!!errors.stories?.[index]?.description}
+                        helperText={errors.stories?.[index]?.description?.message}
+                        {...register(`stories.${index}.description`, {
+                          required: true,
+                        })}
+                      />
+                    )}
+                  />
+                        </Box>
                         <IconButton
                           aria-label="settings"
-                          // onClick={() => {
-                          //   handleStoryDeleteClick(story);
-                          // }}
+                          onClick={() => handleRemoveStory(index)}
                         >
-                          <DeleteIcon />
+                          <Delete />
                         </IconButton>
+                        
                       </Box>
+                      
                     ))}
+                    
                   </Box>
-                  <Box position={"absolute"} bottom={0} right={0} padding={2}>
+                  <Box display="flex"
+                    justifyContent="flex-end"
+                    gap={1}
+                    marginTop={2} >
+                    
                     <Button
                       variant="contained"
                       type="submit"
                       color="primary"
-                      style={{ margin: "10px" }}
+                      
                     >
                       Save
                     </Button>
                     <Button
                       color="primary"
                       variant="contained"
-                      type="submit"
-                      onClick={handleDrawerCloseClick}
+                      onClick={onDrawerClose}
                     >
                       cancel
                     </Button>
+                    
+                  </Box>
                   </Box>
                 </form>
               </Box>
+              )}
+              
             </Container>
           </Drawer>
         )}
-      </Box>
+     
     </>
   );
 }
