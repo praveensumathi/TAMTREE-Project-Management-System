@@ -22,18 +22,6 @@ export type Task = {
   status: number;
 };
 
-export type Employee = {
-  _id: string,
-  employeeId: string,
-  firstName: string;
-  lastName: string;
-  email: string;
-  age: number;
-  gender: string;
-  contact: string;
-  address: string
-}
-
 export type ProjectProps = {
   projectDrawerOpen: boolean;
   projectDetail: Project;
@@ -49,3 +37,15 @@ export type EmployeeDrawerProps = {
   refetchEmployees: () => Promise<any>;
 }
 
+//Use here
+export type Employee = {
+  _id: string;
+  employeeId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  age: number;
+  gender: string;
+  contact: number;
+  address: string;
+};
