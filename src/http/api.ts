@@ -1,11 +1,6 @@
 import { Employee } from "../types/type";
 import { base } from "./BaseUrl";
 
-
-// const baseUrl = import.meta.env.VITE_AXIOS_BASE_URL;
-// console.log(import.meta.env.VITE_AXIOS_BASE_URL);
-
-
 export const fetchEmployees = async () => {
     const baseUrl = import.meta.env.VITE_AXIOS_BASE_URL;
     console.log(baseUrl);
