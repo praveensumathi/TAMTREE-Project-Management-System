@@ -134,7 +134,7 @@ function Board() {
       var emptyDiv = document.createElement("div");
       emptyDiv.classList.add("empty");
       emptyDiv.style.height = "100px";
-      emptyDiv.style.width = "280px";
+      emptyDiv.style.width = "250px";
       emptyDiv.style.margin = "0 28px";
       emptyDiv.style.backgroundColor = "lightgrey";
 

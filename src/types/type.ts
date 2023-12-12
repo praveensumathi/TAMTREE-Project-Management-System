@@ -34,4 +34,17 @@ export type ITaskDrawerProps = {
   onNewSave: (task: Task, storyId: string) => void;
   selectedTask: Task;
   SelectedStoryId: string;
+}
+
+//Use here
+export type Employee = {
+  _id: string;
+  employeeId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  age: number;
+  gender: string;
+  contact: number;
+  address: string;
 };
