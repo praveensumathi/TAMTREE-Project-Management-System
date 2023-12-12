@@ -6,7 +6,7 @@ import Board from "./pages/board/Board";
 import "./style.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import EmployeeComponent from "./pages/employee/Employee";
+import EmployeeComponent from "./pages/employee/Employees";
 
 export const queryClient = new QueryClient();
 
