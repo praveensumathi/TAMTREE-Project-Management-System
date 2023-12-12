@@ -23,26 +23,22 @@ export type Task = {
   status: number;
 };
 
-export type Employee = {
-  _id: string,
-  employeeId: string,
-  name: string;
-  email: string;
-  age: number;
-
-}
-
-export type ViewDialogProps = {
-  open: boolean;
-  onClose: () => void;
-  stories: Story[];
-};
-
 export type ProjectProps = {
   projectDrawerOpen: boolean;
-  selectedProject: Project ;
+  projectDetail: Project;
   onDrawerClose: () => void;
- handleProjectUpdate: (handleProjectUpdate: Project) => void;
- 
+  onSaveClick: (project: Project) => void;
 };
 
+//Use here
+export type Employee = {
+  _id: string;
+  employeeId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  age: number;
+  gender: string;
+  contact: number;
+  address: string;
+};
