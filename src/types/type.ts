@@ -1,17 +1,18 @@
 export type Project = {
   _id: string;
-  title: string;
+  projectName: string;
   description: string;
-  assignedTo: string;
-  status: string;
-  stories: Storie[];
+ startDate:Date;
+ endDate:Date;
+ duration:string;
+  
 };
 
-export type Storie = {
-  _id?: string;
-  name: string;
+export type Story = {
+  _id: string;
+  title:string;
   description: string;
-  tasks?: Task[];
+  project:Project;
 };
 
 export type Task = {
@@ -34,7 +35,7 @@ export type Employee = {
 export type ViewDialogProps = {
   open: boolean;
   onClose: () => void;
-  stories: Storie[];
+  stories: Story[];
 };
 
 export type ProjectProps = {
