@@ -1,14 +1,22 @@
 import { Employee } from "../types/type";
 import { base } from "./BaseUrl";
 
-export const fetchEmployees = async <Employee>() => {
+
+// const baseUrl = import.meta.env.VITE_AXIOS_BASE_URL;
+// console.log(import.meta.env.VITE_AXIOS_BASE_URL);
+
+
+export const fetchEmployees = async () => {
+    const baseUrl = import.meta.env.VITE_AXIOS_BASE_URL;
+    console.log(baseUrl);
+
     const getApi = "/employee/getEmployee";
     try {
-        const response = await base.get<Employee[]>(getApi);
+        const response = await base.get(getApi);
         const employee = response.data;
         return employee;
     } catch (error) {
-        console.error("Error in fetchEmployeez:", error);
+        console.error("Error in fetchEmployees:", error);
         throw error;
     }
 };

@@ -33,7 +33,6 @@ const newEmployee: Employee = {
   address: "Namakkal",
 };
 const Employees = () => {
-  
   const deleteEmployeeMutation = useDeleteEmployee();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
@@ -49,6 +48,7 @@ const Employees = () => {
   const { isLoading, error, data: employeeData, refetch } = useEmployeeQuery();
 
   const employees = employeeData || [];
+  console.log(employees);
 
   const handleEmployeeEditClick = (employee: Employee) => {
     setSelectedEmployee(employee);
