@@ -6,8 +6,10 @@ import Board from "./pages/board/Board";
 import "./style.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import EmployeeComponent from "./pages/employee/Employee";
 
-const queryClient = new QueryClient();
+export const queryClient = new QueryClient();
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -17,11 +19,12 @@ function App() {
             <Route index element={<Projects />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/board/:projectId" element={<Board />} />
+            <Route path="/employee" element={<EmployeeComponent />} />
           </Route>
         </Routes>
       </Router>
 
-      <ReactQueryDevtools initialIsOpen buttonPosition="bottom-left"/>
+      <ReactQueryDevtools initialIsOpen buttonPosition="bottom-left" />
     </QueryClientProvider>
   );
 }
