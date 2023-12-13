@@ -34,7 +34,6 @@ export type EmployeeDrawerProps = {
   isDrawerOpen: boolean;
   selectedEmployee: Employee | null | undefined;
   handleDrawerClose: () => void;
-  refetchEmployees: () => Promise<any>;
 }
 
 //Use here

@@ -16,7 +16,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useState } from "react";
 import { Employee } from "../../types/type";
 import EmployeeDrawer from "../../drawer/EmployeeDrawer";
-import toast from "react-hot-toast";
 import {
   useGetAllEmployee,
   useDeleteEmployeeMutation,
@@ -47,15 +46,9 @@ const Employees = () => {
     null
   );
 
-  const {
-    data: employeeData,
-    isLoading,
-    refetch,
-    isFetching,
-  } = useGetAllEmployee();
+  const { data: employeeData, isLoading, isFetching } = useGetAllEmployee();
 
   const employees = employeeData || [];
-  console.log(employees);
 
   const handleEmployeeEditClick = (employee: Employee) => {
     setSelectedEmployee(employee);
@@ -64,7 +57,6 @@ const Employees = () => {
 
   const handleEmployeeAddClick = () => {
     setSelectedEmployee(newEmployee);
-    setIsDrawerOpen(true);
     setIsDrawerOpen(true);
   };
 
@@ -84,10 +76,8 @@ const Employees = () => {
       await deleteEmployeeMutation.mutateAsync(deleteConfirmation._id, {
         onError: (error) => console.log(error.message),
       });
-      toast.success("Employee deleted successfully");
       setDeleteConfirmation(null);
       setdeleteDialogConfirmationOpen(false);
-      refetch();
     }
   };
 
@@ -98,7 +88,7 @@ const Employees = () => {
       ) : (
         <>
           <Container>
-            <Box display={"flex "} justifyContent={"space-between"}>
+            <Box display="flex" justifyContent="space-between">
               <Typography variant="h6">Employees</Typography>
               <Button
                 variant="contained"
@@ -112,10 +102,19 @@ const Employees = () => {
               sx={{
                 boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
                 marginTop: 3,
+                height: "450px",
+                position: "relative",
               }}
             >
               <Table>
-                <TableHead>
+                <TableHead
+                  sx={{
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 1,
+                    backgroundColor: "ButtonFace",
+                  }}
+                >
                   <TableRow>
                     <TableCell align="center">EMPLOYEE ID</TableCell>
                     <TableCell align="center">FIRST NAME</TableCell>
@@ -171,7 +170,6 @@ const Employees = () => {
               isDrawerOpen={isDrawerOpen}
               handleDrawerClose={() => setIsDrawerOpen(false)}
               selectedEmployee={selectedEmployee}
-              refetchEmployees={refetch}
             />
           )}
         </>

@@ -15,7 +15,6 @@ import {
 import { useEffect } from "react";
 import * as Yup from "yup";
 import CloseIcon from "@mui/icons-material/Close";
-import { toast } from "react-hot-toast";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { Employee, EmployeeDrawerProps } from "../types/type";
@@ -25,12 +24,12 @@ import {
 } from "../hooks/CustomRQHooks";
 
 const schema = Yup.object().shape({
-  employeeId: Yup.string().required("employee id is required"),
-  firstName: Yup.string().required("first name is required"),
-  lastName: Yup.string().required("last name is required"),
-  email: Yup.string().required("email is required"),
-  gender: Yup.string().required("gender is required"),
-  age: Yup.number().required("age is required"),
+  employeeId: Yup.string().required("Employee id is required"),
+  firstName: Yup.string().required("First name is required"),
+  lastName: Yup.string().required("Last name is required"),
+  email: Yup.string().required("Email is required"),
+  gender: Yup.string().required("Gender is required"),
+  age: Yup.number().required("Age is required"),
   contact: Yup.string()
     .matches(/^[6-9]\d{9}$/, "Invalid contact number")
     .required("Contact is required"),
@@ -41,7 +40,6 @@ const EmployeeDrawer = ({
   isDrawerOpen,
   handleDrawerClose,
   selectedEmployee,
-  refetchEmployees,
 }: EmployeeDrawerProps) => {
   const createEmployeeMutation = useCreateEmployeeMutation();
   const updateEmployeeMutation = useUpdateEmployeeMutation();
@@ -82,15 +80,12 @@ const EmployeeDrawer = ({
             onError: (error) => console.log(error.message),
           }
         );
-        toast.success("Employee updated successfully");
       } else {
         await createEmployeeMutation.mutateAsync(employeeFormData, {
           onError: (error) => console.log(error.message),
         });
-        toast.success("Employee created successfully");
       }
     }
-    refetchEmployees();
     handleDrawerClose();
   };
 
@@ -121,91 +116,50 @@ const EmployeeDrawer = ({
             <Box display={"flex"} flexWrap={"wrap"}>
               <form onSubmit={handleSubmit(onSubmit)}>
                 <Box display={"flex"} flexWrap={"wrap"} rowGap={1}>
-                  <Controller
-                    name="employeeId"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        fullWidth
-                        label="Employee Id"
-                        {...field}
-                        error={!!errors.employeeId}
-                        helperText={errors.employeeId?.message}
-                        {...register("employeeId", {
-                          required: true,
-                        })}
-                      />
-                    )}
+                  <TextField
+                    fullWidth
+                    label="Employee Id"
+                    error={!!errors.employeeId}
+                    helperText={errors.employeeId?.message}
+                    {...register("employeeId")}
                   />
 
-                  <Controller
-                    name="firstName"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        fullWidth
-                        type="text"
-                        label="First Name"
-                        {...field}
-                        error={!!errors.firstName}
-                        helperText={errors.firstName?.message}
-                        {...register("firstName", {
-                          required: true,
-                        })}
-                      />
-                    )}
+                  <TextField
+                    fullWidth
+                    type="text"
+                    label="First Name"
+                    error={!!errors.firstName}
+                    helperText={errors.firstName?.message}
+                    {...register("firstName")}
                   />
 
-                  <Controller
-                    name="lastName"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        fullWidth
-                        label="Last Name"
-                        type="text"
-                        {...field}
-                        error={!!errors.lastName}
-                        helperText={errors.lastName?.message}
-                        {...register("lastName", {
-                          required: true,
-                        })}
-                      />
-                    )}
+                  <TextField
+                    fullWidth
+                    label="Last Name"
+                    type="text"
+                    error={!!errors.lastName}
+                    helperText={errors.lastName?.message}
+                    {...register("lastName")}
                   />
-                  <Controller
-                    name="email"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        fullWidth
-                        label="Email"
-                        type="email"
-                        {...field}
-                        error={!!errors.email}
-                        helperText={errors.email?.message}
-                        {...register("email", {
-                          required: true,
-                        })}
-                      />
-                    )}
+                  <TextField
+                    fullWidth
+                    label="Email"
+                    type="email"
+                    error={!!errors.email}
+                    helperText={errors.email?.message}
+                    {...register("email", {
+                      required: true,
+                    })}
                   />
-                  <Controller
-                    name="age"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        fullWidth
-                        label="Age"
-                        {...field}
-                        error={!!errors.age}
-                        helperText={errors.age?.message}
-                        {...register("age", {
-                          required: true,
-                        })}
-                      />
-                    )}
+
+                  <TextField
+                    fullWidth
+                    label="Age"
+                    error={!!errors.age}
+                    helperText={errors.age?.message}
+                    {...register("age")}
                   />
+
                   <Controller
                     name="gender"
                     control={control}
@@ -231,37 +185,19 @@ const EmployeeDrawer = ({
                       </FormControl>
                     )}
                   />
-                  <Controller
-                    name="contact"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        fullWidth
-                        label="Contact"
-                        {...field}
-                        error={!!errors.contact}
-                        helperText={errors.contact?.message}
-                        {...register("contact", {
-                          required: true,
-                        })}
-                      />
-                    )}
+                  <TextField
+                    fullWidth
+                    label="Contact"
+                    error={!!errors.contact}
+                    helperText={errors.contact?.message}
+                    {...register("contact")}
                   />
-                  <Controller
-                    name="address"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        fullWidth
-                        label="Address"
-                        {...field}
-                        error={!!errors.address}
-                        helperText={errors.address?.message}
-                        {...register("address", {
-                          required: true,
-                        })}
-                      />
-                    )}
+                  <TextField
+                    fullWidth
+                    label="Address"
+                    error={!!errors.address}
+                    helperText={errors.address?.message}
+                    {...register("address")}
                   />
                   <Box
                     position={"absolute"}

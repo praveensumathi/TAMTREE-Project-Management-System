@@ -2,10 +2,11 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { createEmployee, deleteEmployee, getAllEmplyees, updateEmployee } from "../http/EmployeeApi";
 import { Employee } from "../types/type";
 import { queryClient } from "../App";
+import toast from "react-hot-toast";
 
 export const useGetAllEmployee = () => {
   return useQuery({
-    queryKey: ["emplyeeList"],
+    queryKey: ["employeeList"],
     queryFn: getAllEmplyees,
     refetchOnWindowFocus: false,
   });
@@ -24,6 +25,7 @@ export const useCreateEmployeeMutation = () => {
     mutationFn: (newEmployee: Employee) => createEmployee(newEmployee),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["employeeList"] });
+      toast.success("Employee created successfully");
     },
   });
   return createEmployeeMutation;
@@ -36,7 +38,8 @@ export const useUpdateEmployeeMutation = () => {
     },
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["updateEmployee"] })
+      queryClient.invalidateQueries({ queryKey: ["employeeList"] })
+      toast.success("Employee updated successfully");
     }
   })
   return updateEmployeeMutation
@@ -46,7 +49,8 @@ export const useDeleteEmployeeMutation = () => {
   const deleteEmployeeMutation = useMutation({
     mutationFn: (id: string) => deleteEmployee(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["deleteEmployee"] })
+      queryClient.invalidateQueries({ queryKey: ["employeeList"] })
+      toast.success("Employee deleted successfully");
     }
   })
   return deleteEmployeeMutation
