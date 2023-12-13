@@ -46,6 +46,6 @@ export type Employee = {
   email: string;
   age: number;
   gender: string;
-  contact: number;
+  contact: string;
   address: string;
 };

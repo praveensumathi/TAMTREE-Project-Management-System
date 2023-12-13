@@ -31,11 +31,11 @@ function EmployeeComponent() {
   } as Employee;
 
   const handleAddnewEmployee = async () => {
-    await createEmployeeMutation.mutateAsync(newEmployee, {
+    await createEmployeeMutation.mutateAsync(newEmployee,{
       onError: (error) => console.log(error.message),
     });
   };
-
+ 
   return (
     <>
       {isLoading || (isFetching && <h1>Loading...</h1>)}

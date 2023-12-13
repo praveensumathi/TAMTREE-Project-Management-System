@@ -18,7 +18,10 @@ import { Employee } from "../../types/type";
 import EmployeeDrawer from "../../drawer/EmployeeDrawer";
 import ProjectDialogBox from "../../commonDialogBox/ProjectDialogBox";
 import toast from "react-hot-toast";
-import { useDeleteEmployee, useEmployeeQuery } from "../../hooks/CustomRQHooks";
+import {
+  useGetAllEmployee,
+  useDeleteEmployeeMutation,
+} from "../../hooks/CustomRQHooks";
 import CircularProgress from "@mui/material/CircularProgress";
 
 const newEmployee: Employee = {
@@ -33,8 +36,7 @@ const newEmployee: Employee = {
   address: "Namakkal",
 };
 const Employees = () => {
-  const deleteEmployeeMutation = useDeleteEmployee();
-
+  const deleteEmployeeMutation = useDeleteEmployeeMutation();
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
     null
@@ -45,7 +47,12 @@ const Employees = () => {
     null
   );
 
-  const { isLoading, error, data: employeeData, refetch } = useEmployeeQuery();
+  const {
+    data: employeeData,
+    isLoading,
+    refetch,
+    isFetching,
+  } = useGetAllEmployee();
 
   const employees = employeeData || [];
   console.log(employees);
@@ -59,7 +66,6 @@ const Employees = () => {
     setSelectedEmployee(newEmployee);
     setIsDrawerOpen(true);
     setIsDrawerOpen(true);
-    refetch();
   };
 
   const handleEmployeeDeleteClick = (employee: Employee) => {
@@ -71,11 +77,13 @@ const Employees = () => {
     setdeleteDialogConfirmationOpen(false);
   };
 
-  const handleDeleteConfirmClick = () => {
+  const handleDeleteConfirmClick = async () => {
     setdeleteDialogConfirmationOpen(true);
 
     if (deleteConfirmation?._id) {
-      deleteEmployeeMutation.mutate(deleteConfirmation._id);
+      await deleteEmployeeMutation.mutateAsync(deleteConfirmation._id, {
+        onError: (error) => console.log(error.message),
+      });
       toast.success("Employee deleted successfully");
       setDeleteConfirmation(null);
       setdeleteDialogConfirmationOpen(false);
@@ -85,93 +93,98 @@ const Employees = () => {
 
   return (
     <>
-      <>
-        {isLoading && (
-          <IconButton
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              height: "100vh",
-              width: "100vw",
-            }}
-          >
-            <CircularProgress />
-          </IconButton>
-        )}
-      </>
-      <Container>
-        <Box display={"flex "} justifyContent={"space-between"}>
-          <Typography variant="h6">Employees</Typography>
-          <Button
-            variant="contained"
-            sx={{ textTransform: "none" }}
-            onClick={handleEmployeeAddClick}
-          >
-            + Add Employee
-          </Button>
-        </Box>
-        <TableContainer
+      {isLoading || isFetching ? (
+        <IconButton
           sx={{
-            boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
-            marginTop: 3,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "100vh",
+            width: "100vw",
           }}
         >
-          <Table>
-            <TableHead className="table_head">
-              <TableRow>
-                <TableCell align="center">EMPLOYEE ID</TableCell>
-                <TableCell align="center">FIRST NAME</TableCell>
-                <TableCell align="center">LAST NAME</TableCell>
-                <TableCell align="center">EMAIL</TableCell>
-                <TableCell align="center">GENDER</TableCell>
-                <TableCell align="center">AGE</TableCell>
-                <TableCell align="center">CONTACT</TableCell>
-                <TableCell align="center">ADDRESS</TableCell>
-                <TableCell>ACTIONS</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {employees.map((employee, index) => (
-                <TableRow key={index}>
-                  <TableCell align="center">{employee.employeeId}</TableCell>
-                  <TableCell align="center">{employee.firstName}</TableCell>
-                  <TableCell align="center">{employee.lastName}</TableCell>
-                  <TableCell align="center">{employee.email}</TableCell>
-                  <TableCell align="center">{employee.gender}</TableCell>
-                  <TableCell align="center">{employee.age}</TableCell>
-                  <TableCell align="center">{employee.contact}</TableCell>
-                  <TableCell align="center">{employee.address}</TableCell>
-                  <TableCell>
-                    <IconButton
-                      onClick={() => handleEmployeeEditClick(employee)}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      onClick={() => handleEmployeeDeleteClick(employee)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Container>
-      <ProjectDialogBox
-        deleteDialogConfirmationOpen={deleteDialogConfirmationOpen}
-        handleDeleteCancel={handleDeleteCancel}
-        handleDeleteClickConfirm={handleDeleteConfirmClick}
-      />
-      {isDrawerOpen && (
-        <EmployeeDrawer
-          isDrawerOpen={isDrawerOpen}
-          handleDrawerClose={() => setIsDrawerOpen(false)}
-          selectedEmployee={selectedEmployee}
-          refetchEmployees={refetch}
-        />
+          <CircularProgress />
+        </IconButton>
+      ) : (
+        <>
+          <Container>
+            <Box display={"flex "} justifyContent={"space-between"}>
+              <Typography variant="h6">Employees</Typography>
+              <Button
+                variant="contained"
+                sx={{ textTransform: "none" }}
+                onClick={handleEmployeeAddClick}
+              >
+                + Add Employee
+              </Button>
+            </Box>
+            <TableContainer
+              sx={{
+                boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
+                marginTop: 3,
+              }}
+            >
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell align="center">EMPLOYEE ID</TableCell>
+                    <TableCell align="center">FIRST NAME</TableCell>
+                    <TableCell align="center">LAST NAME</TableCell>
+                    <TableCell align="center">EMAIL</TableCell>
+                    <TableCell align="center">GENDER</TableCell>
+                    <TableCell align="center">AGE</TableCell>
+                    <TableCell align="center">CONTACT</TableCell>
+                    <TableCell align="center">ADDRESS</TableCell>
+                    <TableCell>ACTIONS</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {employees.map((employee, index) => (
+                    <TableRow key={index}>
+                      <TableCell align="center">
+                        {employee.employeeId}
+                      </TableCell>
+                      <TableCell align="center">{employee.firstName}</TableCell>
+                      <TableCell align="center">{employee.lastName}</TableCell>
+                      <TableCell align="center">{employee.email}</TableCell>
+                      <TableCell align="center">{employee.gender}</TableCell>
+                      <TableCell align="center">{employee.age}</TableCell>
+                      <TableCell align="center">{employee.contact}</TableCell>
+                      <TableCell align="center">{employee.address}</TableCell>
+                      <TableCell>
+                        <IconButton
+                          onClick={() => handleEmployeeEditClick(employee)}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton
+                          onClick={() => handleEmployeeDeleteClick(employee)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Container>
+          {deleteDialogConfirmationOpen && (
+            <ProjectDialogBox
+              deleteDialogConfirmationOpen={deleteDialogConfirmationOpen}
+              handleDeleteCancel={handleDeleteCancel}
+              handleDeleteClickConfirm={handleDeleteConfirmClick}
+            />
+          )}
+          {isDrawerOpen && (
+            <EmployeeDrawer
+              isDrawerOpen={isDrawerOpen}
+              handleDrawerClose={() => setIsDrawerOpen(false)}
+              selectedEmployee={selectedEmployee}
+              refetchEmployees={refetch}
+            />
+          )}
+        </>
       )}
     </>
   );

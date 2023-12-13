@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createEmployee, getAllEmplyees } from "../http/EmployeeApi";
+import { createEmployee, deleteEmployee, getAllEmplyees, updateEmployee } from "../http/EmployeeApi";
 import { Employee } from "../types/type";
 import { queryClient } from "../App";
 
@@ -20,13 +20,34 @@ export const useCateringfetchProductData = (projectId: string) => {
 };
 
 export const useCreateEmployeeMutation = () => {
-  const createEmployeemutation = useMutation({
+  const createEmployeeMutation = useMutation({
     mutationFn: (newEmployee: Employee) => createEmployee(newEmployee),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["emplyeeList"] });
-      console.log("called inside onSuccess");
+      queryClient.invalidateQueries({ queryKey: ["employeeList"] });
     },
   });
-
-  return createEmployeemutation;
+  return createEmployeeMutation;
 };
+
+export const useUpdateEmployeeMutation = () => {
+  const updateEmployeeMutation = useMutation({
+    mutationFn: (updatedEmployee: Employee) => {
+      return updateEmployee(updatedEmployee);
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["updateEmployee"] })
+    }
+  })
+  return updateEmployeeMutation
+}
+
+export const useDeleteEmployeeMutation = () => {
+  const deleteEmployeeMutation = useMutation({
+    mutationFn: (id: string) => deleteEmployee(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["deleteEmployee"] })
+    }
+  })
+  return deleteEmployeeMutation
+}

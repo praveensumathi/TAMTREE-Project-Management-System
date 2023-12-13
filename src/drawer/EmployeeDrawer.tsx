@@ -6,6 +6,7 @@ import {
   FormControl,
   FormControlLabel,
   FormLabel,
+  IconButton,
   Radio,
   RadioGroup,
   TextField,
@@ -18,7 +19,10 @@ import { toast } from "react-hot-toast";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { Employee, EmployeeDrawerProps } from "../types/type";
-import { useCreateEmployee, useUpdateEmployee } from "../hooks/CustomRQHooks";
+import {
+  useCreateEmployeeMutation,
+  useUpdateEmployeeMutation,
+} from "../hooks/CustomRQHooks";
 
 const schema = Yup.object().shape({
   employeeId: Yup.string().required("employee id is required"),
@@ -39,8 +43,8 @@ const EmployeeDrawer = ({
   selectedEmployee,
   refetchEmployees,
 }: EmployeeDrawerProps) => {
-  const updateEmployeeMutation = useUpdateEmployee();
-  const createEmployeeMutation = useCreateEmployee();
+  const createEmployeeMutation = useCreateEmployeeMutation();
+  const updateEmployeeMutation = useUpdateEmployeeMutation();
   const {
     control,
     handleSubmit,
@@ -64,16 +68,25 @@ const EmployeeDrawer = ({
     setValue("address", selectedEmployee?.address || "");
   }, [selectedEmployee]);
 
-  const onSubmit: SubmitHandler<Employee> = (formData) => {
+  const onSubmit: SubmitHandler<Employee> = async (employeeFormData) => {
+    console.log("EmployeeUpdate", employeeFormData);
+
     if (selectedEmployee) {
       if (selectedEmployee._id) {
-        updateEmployeeMutation.mutate({
-          id: selectedEmployee._id,
-          formData,
-        });
+        await updateEmployeeMutation.mutateAsync(
+          {
+            ...employeeFormData,
+            _id: selectedEmployee._id,
+          },
+          {
+            onError: (error) => console.log(error.message),
+          }
+        );
         toast.success("Employee updated successfully");
       } else {
-        createEmployeeMutation.mutate(formData);
+        await createEmployeeMutation.mutateAsync(employeeFormData, {
+          onError: (error) => console.log(error.message),
+        });
         toast.success("Employee created successfully");
       }
     }
@@ -82,33 +95,32 @@ const EmployeeDrawer = ({
   };
 
   return (
-    <>
-      <Drawer
-        anchor="right"
-        sx={{ position: "relative" }}
-        open={isDrawerOpen}
-        PaperProps={{
-          sx: {
-            width: "500px",
-            height: "100%",
-          },
-        }}
-        onClose={handleDrawerClose}
-      >
-        <Box padding={2} display={"flex"} justifyContent={"space-between"}>
-          <Typography variant="h5" fontWeight={"bold"}>
-            {selectedEmployee?.employeeId ? "Edit Employee" : "Add Employee"}
-          </Typography>
-          <Box onClick={handleDrawerClose}>
-            <CloseIcon />
+    <Box>
+      {selectedEmployee && (
+        <Drawer
+          sx={{ position: "relative" }}
+          anchor="right"
+          open={isDrawerOpen}
+          PaperProps={{
+            sx: {
+              width: "400px",
+              height: "100%",
+            },
+          }}
+        >
+          <Box padding={2} display={"flex"} justifyContent={"space-between"}>
+            <Typography variant="h5" fontWeight={"bold"}>
+              {selectedEmployee?._id ? "Edit Employee" : "Add Employee"}
+            </Typography>
+            <IconButton onClick={handleDrawerClose}>
+              <CloseIcon />
+            </IconButton>
           </Box>
-        </Box>
 
-        <Container>
-          {selectedEmployee && (
-            <Box display={"flex"} flexWrap={"wrap"} rowGap={2}>
+          <Container>
+            <Box display={"flex"} flexWrap={"wrap"}>
               <form onSubmit={handleSubmit(onSubmit)}>
-                <Box display={"flex"} flexWrap={"wrap"} rowGap={2}>
+                <Box display={"flex"} flexWrap={"wrap"} rowGap={1}>
                   <Controller
                     name="employeeId"
                     control={control}
@@ -251,26 +263,27 @@ const EmployeeDrawer = ({
                       />
                     )}
                   />
-                  <Box position={"absolute"} bottom={0} right={0} padding={2}>
-                    <Button
-                      variant="contained"
-                      type="submit"
-                      style={{ margin: "10px" }}
-                      autoFocus
-                    >
+                  <Box
+                    position={"absolute"}
+                    bottom={7}
+                    right={10}
+                    display={"flex"}
+                    columnGap={2}
+                  >
+                    <Button variant="contained" type="submit" autoFocus>
                       Save
                     </Button>
-                    <Button variant="contained" onClick={handleDrawerClose}>
+                    <Button variant="outlined" onClick={handleDrawerClose}>
                       Cancel
                     </Button>
                   </Box>
                 </Box>
               </form>
             </Box>
-          )}
-        </Container>
-      </Drawer>
-    </>
+          </Container>
+        </Drawer>
+      )}
+    </Box>
   );
 };
 

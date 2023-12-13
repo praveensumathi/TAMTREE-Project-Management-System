@@ -19,7 +19,7 @@ function App() {
             <Route index element={<Projects />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/board/:projectId" element={<Board />} />
-            <Route path="/employee" element={<EmployeeComponent />} />
+            <Route path="/employees" element={<EmployeeComponent />} />
           </Route>
         </Routes>
       </Router>
