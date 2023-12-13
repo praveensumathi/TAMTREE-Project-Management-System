@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { createEmployee, getAllEmplyees } from "../http/EmployeeApi";
 import { Employee, Project, Story } from "../types/type";
 import { queryClient } from "../App";
-import { createProject, deleteProject, getAllProjects, getProject, updateProject } from "../http/ProjectApi";
+import { createProject, deleteProject, getAllProjects, getProject, updateProject } from "../http/ProjectApi
 import { createStory, deleteStory, getStories, getStory, updateStory } from "../http/StoryApi";
 
 export const useGetAllEmployee = () => {
