@@ -7,12 +7,14 @@ import "./style.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Employees from "./pages/employee/Employees";
+import { Toaster } from "react-hot-toast";
 
 export const queryClient = new QueryClient();
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <Toaster/>
       <Router>
         <Routes>
           <Route path="/" element={<Layout />}>
