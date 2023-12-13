@@ -162,7 +162,7 @@ export const employee: Employee[] = [
     age: 26,
     gender: "Female",
     contact: "6374723428",
-    location: "Paramathi"
+    address: "Paramathi"
   },
   {
     _id: "db2",
@@ -173,7 +173,7 @@ export const employee: Employee[] = [
     age: 27,
     gender: "Female",
     contact: "9874102536",
-    location: "velur"
+    address: "velur"
   },
   {
     _id: "db3",
@@ -184,8 +184,6 @@ export const employee: Employee[] = [
     age: 22,
     gender: "Male",
     contact: "9513264870",
-    location: "Namakkal"
-
-
+    address: "Namakkal"
   },
 ]
