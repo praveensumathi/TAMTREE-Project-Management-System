@@ -6,7 +6,7 @@ import Board from "./pages/board/Board";
 import "./style.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import EmployeeComponent from "./pages/employee/Employees";
+import Employees from "./pages/employee/Employees";
 
 export const queryClient = new QueryClient();
 
@@ -19,7 +19,7 @@ function App() {
             <Route index element={<Projects />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/board/:projectId" element={<Board />} />
-            <Route path="/employees" element={<EmployeeComponent />} />
+            <Route path="/employees" element={<Employees />} />
           </Route>
         </Routes>
       </Router>

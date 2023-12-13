@@ -210,8 +210,8 @@ const EmployeeDrawer = ({
                     name="gender"
                     control={control}
                     render={({ field }) => (
-                      <FormControl component="fieldset">
-                        <FormLabel sx={{}}>Gender</FormLabel>
+                      <FormControl>
+                        <FormLabel>Gender</FormLabel>
                         <RadioGroup
                           row
                           value={field.value}
@@ -270,10 +270,19 @@ const EmployeeDrawer = ({
                     display={"flex"}
                     columnGap={2}
                   >
-                    <Button variant="contained" type="submit" autoFocus>
+                    <Button
+                      variant="contained"
+                      type="submit"
+                      autoFocus
+                      sx={{ textTransform: "none" }}
+                    >
                       Save
                     </Button>
-                    <Button variant="outlined" onClick={handleDrawerClose}>
+                    <Button
+                      variant="outlined"
+                      onClick={handleDrawerClose}
+                      sx={{ textTransform: "none" }}
+                    >
                       Cancel
                     </Button>
                   </Box>

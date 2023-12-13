@@ -16,13 +16,13 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useState } from "react";
 import { Employee } from "../../types/type";
 import EmployeeDrawer from "../../drawer/EmployeeDrawer";
-import ProjectDialogBox from "../../commonDialogBox/ProjectDialogBox";
 import toast from "react-hot-toast";
 import {
   useGetAllEmployee,
   useDeleteEmployeeMutation,
 } from "../../hooks/CustomRQHooks";
-import CircularProgress from "@mui/material/CircularProgress";
+import DialogBox from "../../commonDialogBox/DialogBox";
+import Loader from "../../common/components/Loader";
 
 const newEmployee: Employee = {
   _id: "",
@@ -94,17 +94,7 @@ const Employees = () => {
   return (
     <>
       {isLoading || isFetching ? (
-        <IconButton
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            height: "100vh",
-            width: "100vw",
-          }}
-        >
-          <CircularProgress />
-        </IconButton>
+        <Loader />
       ) : (
         <>
           <Container>
@@ -135,7 +125,7 @@ const Employees = () => {
                     <TableCell align="center">AGE</TableCell>
                     <TableCell align="center">CONTACT</TableCell>
                     <TableCell align="center">ADDRESS</TableCell>
-                    <TableCell>ACTIONS</TableCell>
+                    <TableCell align="center">ACTIONS</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -151,7 +141,7 @@ const Employees = () => {
                       <TableCell align="center">{employee.age}</TableCell>
                       <TableCell align="center">{employee.contact}</TableCell>
                       <TableCell align="center">{employee.address}</TableCell>
-                      <TableCell>
+                      <TableCell align="center">
                         <IconButton
                           onClick={() => handleEmployeeEditClick(employee)}
                         >
@@ -170,7 +160,7 @@ const Employees = () => {
             </TableContainer>
           </Container>
           {deleteDialogConfirmationOpen && (
-            <ProjectDialogBox
+            <DialogBox
               deleteDialogConfirmationOpen={deleteDialogConfirmationOpen}
               handleDeleteCancel={handleDeleteCancel}
               handleDeleteClickConfirm={handleDeleteConfirmClick}
