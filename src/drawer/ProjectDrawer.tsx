@@ -19,10 +19,9 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs, { Dayjs } from "dayjs";
 import {
   useCreateProjectMutation,
+  useGetStoryBasicInfo,
   useUpdateProjectMutation,
 } from "../hooks/CustomRQHooks";
-
-
 
 const validationSchema = yup.object().shape({
   projectName: yup.string().required("projectName is required"),
@@ -37,9 +36,12 @@ const ProjectDrawer = ({
   projectDetail,
   onDrawerClose,
 }: ProjectProps) => {
-
   const createProjectMutation = useCreateProjectMutation();
   const updateProjectMutation = useUpdateProjectMutation();
+
+  const { data:StoriesData } = useGetStoryBasicInfo(projectDetail._id); 
+
+  const stories = StoriesData || [];
   const {
     control,
     handleSubmit,
@@ -52,9 +54,9 @@ const ProjectDrawer = ({
   });
 
   console.log(projectDetail);
-  
 
   useEffect(() => {
+   
     setValue("projectName", projectDetail?.projectName || "");
     setValue("description", projectDetail?.description || "");
     setValue("startDate", projectDetail?.startDate || null);
@@ -63,8 +65,6 @@ const ProjectDrawer = ({
   }, [projectDetail]);
 
   const onSubmit: SubmitHandler<Project> = async (formData) => {
-   
-
     if (projectDetail) {
       if (projectDetail._id) {
         await updateProjectMutation.mutateAsync(
@@ -85,7 +85,6 @@ const ProjectDrawer = ({
     onDrawerClose();
   };
 
-
   return (
     <>
       {projectDetail && (
@@ -95,11 +94,10 @@ const ProjectDrawer = ({
           open={projectDrawerOpen}
           PaperProps={{
             sx: {
-              width: "500px",
+              width: "400px",
               height: "100%",
             },
           }}
-          
         >
           <Box padding={2} display={"flex"} justifyContent={"space-between"}>
             <Typography variant="h5">
@@ -114,117 +112,115 @@ const ProjectDrawer = ({
 
           <Container>
             {projectDetail && (
-              <Box display={"flex"} flexWrap={"wrap"} rowGap={2}>
+              <Box
+                display={"flex"}
+                flexWrap={"wrap"}
+                rowGap={2}
+                position={"relative"}
+              >
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <Box display={"flex"} flexWrap={"wrap"} rowGap={2}>
-                    <Box padding={1}>
-                      <Controller
-                        name="projectName"
-                        control={control}
-                        render={({ field }) => (
-                          <TextField
-                            fullWidth
-                            label="Project Name"
-                            {...field}
-                            error={!!errors.projectName}
-                            helperText={errors.projectName?.message}
-                            {...register("projectName", {
-                              required: true,
-                            })}
-                          />
-                        )}
-                      />
+                    <TextField
+                      fullWidth
+                      label="Project Name"
+                      error={!!errors.projectName}
+                      helperText={errors.projectName?.message}
+                      {...register("projectName")}
+                    />
+                    <TextField
+                      fullWidth
+                      label="description"
+                      error={!!errors.description}
+                      helperText={errors.description?.message}
+                      {...register("description")}
+                    />
+                    <Controller
+                      name="startDate"
+                      control={control}
+                      rules={{ required: "Start Date is required" }}
+                      render={({ field }) => {
+                        const dateValue = field.value
+                          ? dayjs(field.value)
+                          : null;
+                        return (
+                          <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
+                              {...field}
+                              label="Start Date"
+                              value={dateValue}
+                              sx={{ width: '100%' }} 
+                              onChange={(date: Dayjs | null) => {
+                                const newDateValue = date
+                                  ? date.toDate()
+                                  : null;
+                                field.onChange(newDateValue);
+                              }}
+                            />
+                          </LocalizationProvider>
+                        );
+                      }}
+                    />
+
+                    <Controller
+                      name="endDate"
+                      control={control}
+                      rules={{ required: "End Date is required" }}
+                      render={({ field }) => {
+                        const dateValue = field.value
+                          ? dayjs(field.value)
+                          : null;
+                        return (
+                          <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
+                              {...field}
+                              label="End Date"
+                              sx={{ width: '100%' }} 
+                              value={dateValue}
+                              onChange={(date: Dayjs | null) => {
+                                const newDateValue = date
+                                  ? date.toDate()
+                                  : null;
+                                field.onChange(newDateValue);
+                              }}
+                            />
+                          </LocalizationProvider>
+                        );
+                      }}
+                    />
+                    <TextField
+                      fullWidth
+                      label="Duration"
+                      error={!!errors.duration}
+                      helperText={errors.duration?.message}
+                      {...register("duration")}
+                    />
+                    <Box>
+                      <Box display={"flex"} columnGap={22} alignItems={"center"}>
+                        <Typography variant="h6">Stories</Typography>
+                        <Button variant="contained">Add Story</Button>
+                      </Box>
                     </Box>
-                    <Box padding={1}>
-                      <Controller
-                        name="description"
-                        control={control}
-                        render={({ field }) => (
-                          <TextField
-                            fullWidth
-                            label="description"
-                            {...field}
-                            error={!!errors.description}
-                            helperText={errors.description?.message}
-                            {...register("description", {
-                              required: true,
-                            })}
-                          />
-                        )}
-                      />
-                    </Box>
-                    <Box padding={1}>
-                      <Controller
-                        name="startDate"
-                        control={control}
-                        rules={{ required: "Start Date is required" }}
-                        render={({ field }) => {
-                          const dateValue = field.value
-                            ? dayjs(field.value)
-                            : null;
-                          return (
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                              <DatePicker
-                                {...field}
-                                label="Start Date"
-                                value={dateValue}
-                                onChange={(date: Dayjs | null) => {
-                                  const newDateValue = date
-                                    ? date.toDate()
-                                    : null;
-                                  field.onChange(newDateValue);
-                                }}
-                              />
-                            </LocalizationProvider>
-                          );
-                        }}
-                      />
-                    </Box>
-                    <Box padding={1}>
-                      <Controller
-                        name="endDate"
-                        control={control}
-                        rules={{ required: "End Date is required" }}
-                        render={({ field }) => {
-                          const dateValue = field.value
-                            ? dayjs(field.value)
-                            : null;
-                          return (
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                              <DatePicker
-                                {...field}
-                                label="End Date"
-                                value={dateValue}
-                                onChange={(date: Dayjs | null) => {
-                                  const newDateValue = date
-                                    ? date.toDate()
-                                    : null;
-                                  field.onChange(newDateValue);
-                                }}
-                              />
-                            </LocalizationProvider>
-                          );
-                        }}
-                      />
-                    </Box>
-                    <Box
-                     position={"absolute"}
-                     bottom={7}
-                     right={10}
-                     display={"flex"}
-                     columnGap={2}
+                  </Box>
+                  <Box
+                    display={"flex"}  
+                    columnGap={2}
+                    justifyContent={"flex-end"}
+                  >
+                    <Button
+                      variant="contained"
+                      type="submit"
+                      autoFocus
+                      color="primary"
                     >
-                      <Button variant="contained" type="submit" autoFocus color="primary">
-                        Save
-                      </Button>
-                      <Button
-                        color="primary"
-                        variant="contained"
-                        onClick={onDrawerClose}
-                      >
-                        cancel
-                      </Button>
-                    </Box>
+                      Save
+                    </Button>
+                    <Button
+                      color="primary"
+                      variant="contained"
+                      onClick={onDrawerClose}
+                    >
+                      cancel
+                    </Button>
                   </Box>
                 </form>
               </Box>

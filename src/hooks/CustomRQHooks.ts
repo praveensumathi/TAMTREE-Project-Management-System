@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {  Project, Story } from "../types/type";
 import { queryClient } from "../App";
-import { createStory, deleteStory, getStories, getStory, updateStory } from "../http/StoryApi";
+import { createStory, deleteStory, getStories, getStory, getStoryBasicInfo, updateStory } from "../http/StoryApi";
 import { createProject, deleteProject, fetchProjects, getProject, updateProject } from "../http/ProjectApi";
 
 
@@ -69,6 +69,15 @@ export const useGetAllStories = () => {
     refetchOnWindowFocus: false,
   });
 };
+
+export const useGetStoryBasicInfo = (projectId: string) => {
+  return useQuery({
+    queryKey: ["getStoryBasic"],
+    queryFn: () => getStoryBasicInfo(projectId),
+    refetchOnWindowFocus: false,
+  });
+};
+
 
 export const useGetStoryById = (storyId: string) => {
   return useQuery({

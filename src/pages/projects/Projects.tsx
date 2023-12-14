@@ -110,17 +110,17 @@ if (isError) {
         </Grid>
       
       </Grid>
-      <Grid container spacing={2}>
+      <Grid container spacing={2} >
         {projects!.map((project) => (
-          <Grid item xs={4} key={project._id}>
+          <Grid item xs={12} sm={6} md={4} lg={3} key={project._id}>
             <Card
-              sx={{ minWidth: 175 }}
               onClick={() => {
                 navigate(`/board/${project._id}`);
               }}
             >
               <CardContent>
                 <CardHeader
+                 title={project.projectName}
                   action={
                     <>
                       <IconButton
@@ -143,7 +143,7 @@ if (isError) {
                       </IconButton>
                     </>
                   }
-                  title={project.projectName}
+                 
                 ></CardHeader>
                 <Typography variant="body2" color="text.secondary">
                   Description: {project.description}

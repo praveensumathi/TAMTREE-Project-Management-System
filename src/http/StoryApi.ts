@@ -25,21 +25,22 @@ const getStory = async (storyId: string) =>{
   }
 };
 
-const getStoryBasicInfo = async (projectId: string) =>{
-    try {
-      const response = await http.get<Story>(
-        `/stories/getstorybasicinfo/${projectId}`
-      );
-  
-      if (response.data && response.data._id) {
-        return response.data;
-      } else {
-        throw new Error("Error while get story");
-      }
-    } catch (error) {
-      throw error;
+const getStoryBasicInfo = async (projectId:string) => {
+  try {
+    const response = await http.get(`/stories/getstorybasicinfo/${projectId}`);
+
+    if (response.data && response.data._id) {
+      return response.data;
+    } else {
+      throw new Error("Invalid response structure: Story ID not found");
     }
-  };
+  } catch (error) {
+    console.error("Error fetching story basic info:");
+    throw new Error("Error fetching story basic info");
+  }
+};
+
+
 
 
 

@@ -11,7 +11,7 @@ export type Story = {
   _id: string;
   title:string;
   description: string;
-  project?:Project;
+  project:Project;
 };
 
 export type Task = {
