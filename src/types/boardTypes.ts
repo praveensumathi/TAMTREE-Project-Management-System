@@ -20,7 +20,7 @@ export type ProjectTask = {
   title: string;
   description: string;
   duration: string;
-  status: number;
+  status?: number;
   story?: string;
   assignedTo?: AssignedTo;
 };

@@ -16,7 +16,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddTaskDrawer from "./AddTaskDrawer";
-
+import AddIcon from "@mui/icons-material/Add";
 import {
   UseGetAllProjectDetail,
   useDeleteTaskMutation,
@@ -46,6 +46,7 @@ const projectStatusList = [
     color: "#efd5ff",
   },
 ];
+
 const initialValue = {
   _id: "",
   title: "",
@@ -58,21 +59,17 @@ const initialValue = {
 function Board() {
   const navigate = useNavigate();
   // const { projectId } = useParams();
+
   const [openDrawer, setOpenDrawer] = useState(false);
   const [SelectedStoryId, setSelectedStoryId] = useState("");
-
   const [expanded, setExpanded] = useState<string | false>("");
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
   const [selectedTask, setSelectedTask] = useState<ProjectTask>();
-  const open = Boolean(anchorEl);
 
   const temporaryProjectId: string = "6576e96b62f90fb5fbad3f0d";
 
   const { data: projectData, refetch } =
     UseGetAllProjectDetail(temporaryProjectId);
-  console.log(projectData);
-
   const deleteTaskMutation = useDeleteTaskMutation();
 
   const handleClose = () => {
@@ -182,6 +179,7 @@ function Board() {
     evt.preventDefault();
     evt.currentTarget.classList.remove("dragged-over");
     let id = evt.dataTransfer.getData("text/plain");
+    
     updateTaskStatus(id, status).then(() => refetch());
 
     const children = evt.currentTarget.querySelectorAll(".empty");
@@ -192,7 +190,6 @@ function Board() {
 
   const handleAddTask = (storyId: string) => {
     setSelectedTask(initialValue);
-
     setSelectedStoryId(storyId);
     setOpenDrawer(true);
   };
@@ -284,7 +281,7 @@ function Board() {
   return (
     <>
       <Container maxWidth={false} sx={{ mb: 3 }}>
-        <Breadcrumbs aria-label="breadcrumb">
+        <Breadcrumbs aria-label="breadcrumb" sx={{ mb: 2 }}>
           <Typography>Boards</Typography>
           <Link
             underline="hover"
@@ -342,7 +339,7 @@ function Board() {
                     aria-controls="panel1d-content"
                     id="panel1d-header"
                   >
-                    <Box display={"flex"} gap={4}>
+                    <Box display={"flex"} gap={4} alignItems={"center"}>
                       <Box>
                         <Typography>{s.title}</Typography>
                       </Box>
@@ -351,9 +348,12 @@ function Board() {
                           if (projectStatus.status === "To Do") {
                             return (
                               <Button
+                                size="small"
+                                variant="outlined"
                                 key={projectStatus.status}
                                 onClick={() => handleAddTask(s._id)}
                               >
+                                <AddIcon />
                                 Add Task
                               </Button>
                             );

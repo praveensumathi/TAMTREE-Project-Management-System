@@ -1,4 +1,4 @@
-import  { useEffect, } from "react";
+import { useEffect } from "react";
 import Divider from "@mui/material/Divider";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -18,7 +18,6 @@ const taskValidationSchema = yup.object<ProjectTask>().shape({
   title: yup.string().required(),
   description: yup.string().required(),
   duration: yup.string().required(),
-  status: yup.number().required(),
 });
 
 function AddTaskDrawer({
@@ -44,12 +43,14 @@ function AddTaskDrawer({
       status: 1,
     } as ProjectTask,
   });
-  const createTaskMutation = useCreateTaskMutation();
 
+  const createTaskMutation = useCreateTaskMutation();
   const updateTaskMutation = useUpdateTaskMutation();
+
   const handleCloseClick = () => {
     onClose();
   };
+
   const handleCancel = () => {
     onClose();
   };
@@ -90,8 +91,6 @@ function AddTaskDrawer({
       setValue("title", selectedTask.title);
       setValue("description", selectedTask.description);
       setValue("duration", selectedTask.duration);
-      setValue("status", selectedTask.status);
-
       // setValue("assignedTo", selectedTask.assignedTo);
     }
   }, [selectedTask]);
@@ -149,14 +148,6 @@ function AddTaskDrawer({
                 {...register("duration", { required: true })}
                 error={!!errors.duration}
                 helperText={errors.duration?.message}
-                sx={{ marginBottom: "10px" }}
-              />
-              <TextField
-                fullWidth
-                label="status"
-                {...register("status", { required: true })}
-                error={!!errors.status}
-                helperText={errors.status?.message}
                 sx={{ marginBottom: "10px" }}
               />
 
