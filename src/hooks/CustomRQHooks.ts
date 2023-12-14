@@ -1,11 +1,12 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createEmployee, getAllEmplyees } from "../http/EmployeeApi";
+import { createEmployee, deleteEmployee, getAllEmplyees, updateEmployee } from "../http/EmployeeApi";
 import { Employee } from "../types/type";
 import { queryClient } from "../App";
+import toast from "react-hot-toast";
 
 export const useGetAllEmployee = () => {
   return useQuery({
-    queryKey: ["emplyeeList"],
+    queryKey: ["employeeList"],
     queryFn: getAllEmplyees,
     refetchOnWindowFocus: false,
   });
@@ -20,13 +21,37 @@ export const useCateringfetchProductData = (projectId: string) => {
 };
 
 export const useCreateEmployeeMutation = () => {
-  const createEmployeemutation = useMutation({
+  const createEmployeeMutation = useMutation({
     mutationFn: (newEmployee: Employee) => createEmployee(newEmployee),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["emplyeeList"] });
-      console.log("called inside onSuccess");
+      queryClient.invalidateQueries({ queryKey: ["employeeList"] });
+      toast.success("Employee created successfully");
     },
   });
-
-  return createEmployeemutation;
+  return createEmployeeMutation;
 };
+
+export const useUpdateEmployeeMutation = () => {
+  const updateEmployeeMutation = useMutation({
+    mutationFn: (updatedEmployee: Employee) => {
+      return updateEmployee(updatedEmployee);
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["employeeList"] })
+      toast.success("Employee updated successfully");
+    }
+  })
+  return updateEmployeeMutation
+}
+
+export const useDeleteEmployeeMutation = () => {
+  const deleteEmployeeMutation = useMutation({
+    mutationFn: (id: string) => deleteEmployee(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["employeeList"] })
+      toast.success("Employee deleted successfully");
+    }
+  })
+  return deleteEmployeeMutation
+}

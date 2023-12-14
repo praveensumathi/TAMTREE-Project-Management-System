@@ -15,7 +15,7 @@ import Grid from "@mui/material/Grid";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ProjectDrawer from "../../drawer/ProjectDrawer";
-import ProjectDialogBox from "../../commonDialogBox/ProjectDialogBox";
+import ProjectDialogBox from "../../commonDialogBox/DialogBox";
 
 function Projects() {
   const navigate = useNavigate();

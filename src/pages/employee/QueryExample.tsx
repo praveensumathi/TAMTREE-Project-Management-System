@@ -26,16 +26,16 @@ function EmployeeComponent() {
     email: "john.doe@example.com",
     age: 30,
     gender: "Male",
-    contact: 123456789,
+    contact: "123456789",
     address: "123 Main St, Cityville, State, 12345",
   } as Employee;
 
   const handleAddnewEmployee = async () => {
-    await createEmployeeMutation.mutateAsync(newEmployee, {
+    await createEmployeeMutation.mutateAsync(newEmployee,{
       onError: (error) => console.log(error.message),
     });
   };
-
+ 
   return (
     <>
       {isLoading || (isFetching && <h1>Loading...</h1>)}

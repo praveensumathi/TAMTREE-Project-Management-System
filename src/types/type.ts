@@ -27,7 +27,14 @@ export type ProjectProps = {
   projectDetail: Project;
   onDrawerClose: () => void;
   onSaveClick: (project: Project) => void;
+
 };
+
+export type EmployeeDrawerProps = {
+  isDrawerOpen: boolean;
+  selectedEmployee: Employee | null | undefined;
+  handleDrawerClose: () => void;
+}
 
 //Use here
 export type Employee = {
@@ -38,6 +45,6 @@ export type Employee = {
   email: string;
   age: number;
   gender: string;
-  contact: number;
+  contact: string;
   address: string;
 };
