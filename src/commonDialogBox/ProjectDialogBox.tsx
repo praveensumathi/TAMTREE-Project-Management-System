@@ -7,13 +7,11 @@ import Button from "@mui/material/Button";
 
 type DialogProps = {
   deleteDialogConfirmationOpen: boolean;
-
   handleDeleteCancel: () => void;
-
   handleDeleteClickConfirm: () => void;
 };
 
-function ProjectDialogBox({
+function DialogBox({
   deleteDialogConfirmationOpen,
   handleDeleteCancel,
   handleDeleteClickConfirm,
@@ -31,15 +29,13 @@ function ProjectDialogBox({
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button autoFocus onClick={handleDeleteCancel}>
+        <Button onClick={handleDeleteClickConfirm}>Agree</Button>
+        <Button onClick={handleDeleteCancel} autoFocus>
           Disagree
-        </Button>
-        <Button onClick={handleDeleteClickConfirm} autoFocus>
-          Agree
         </Button>
       </DialogActions>
     </Dialog>
   );
 }
 
-export default ProjectDialogBox;
+export default DialogBox;

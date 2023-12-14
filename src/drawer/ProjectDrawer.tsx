@@ -1,212 +1,239 @@
-import { useEffect } from "react";
-import { SubmitHandler, useForm, useFormState } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { IconButton } from "@mui/material";
-import { useState } from "react";
 import {
   Box,
+  Button,
   Container,
-  Divider,
   Drawer,
+  IconButton,
   TextField,
   Typography,
 } from "@mui/material";
-import { Project, ProjectProps } from "../types/type";
-import Button from "@mui/material/Button";
-
+import { useEffect } from "react";
+import * as yup from "yup";
 import CloseIcon from "@mui/icons-material/Close";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import { Project, ProjectProps } from "../types/type";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import dayjs, { Dayjs } from "dayjs";
+import {
+  useCreateProjectMutation,
+  useUpdateProjectMutation,
+} from "../hooks/CustomRQHooks";
+
+
 
 const validationSchema = yup.object().shape({
-  title: yup.string().required(),
-  description: yup.string().required(),
-  assignedTo: yup.string().required(),
-  status: yup.string().required(),
-  stories: yup.array().of(
-    yup.object().shape({
-      name: yup.string().required(),
-      description: yup.string().required(),
-      // tasks: yup.array().of(yup.object().shape({
-      //   tname:yup.string()
-      // }))
-    })
-  ),
+  projectName: yup.string().required("projectName is required"),
+  description: yup.string().required("description is required"),
+  startDate: yup.date().required("Start Date is required"),
+  endDate: yup.date().required("End Date is required"),
+  duration: yup.string().required("duration is required"),
 });
 
-function ProjectDrawer({
+const ProjectDrawer = ({
   projectDrawerOpen,
   projectDetail,
   onDrawerClose,
-  onSaveClick,
-}: ProjectProps) {
-  const [myProjectDetail, setMyProjectDetail] =
-    useState<Project>(projectDetail);
+}: ProjectProps) => {
 
+  const createProjectMutation = useCreateProjectMutation();
+  const updateProjectMutation = useUpdateProjectMutation();
   const {
-    register,
+    control,
     handleSubmit,
-    formState: { errors },
     setValue,
-  } = useForm({
-    resolver: yupResolver(validationSchema),
+    register,
+    formState: { errors },
+  } = useForm<Project>({
+    resolver: yupResolver(validationSchema) as any,
     mode: "all",
-    defaultValues: {
-      title: "sindhu kitchen",
-      description: "food app",
-      assignedTo: "praveen",
-      status: "completed",
-      stories: [],
-    } as Project,
   });
 
-  const handleDrawerCloseClick = () => {
-    onDrawerClose();
-  };
+  console.log(projectDetail);
+  
 
   useEffect(() => {
-    if (myProjectDetail._id) {
-      setValue("title", myProjectDetail.title);
-      setValue("description", myProjectDetail.description);
-      setValue("assignedTo", myProjectDetail.assignedTo);
-      setValue("status", myProjectDetail.status);
-      if (myProjectDetail.stories) {
-        myProjectDetail.stories.forEach((story, index) => {
-          setValue(`stories.${index}.name`, story.name);
-          setValue(`stories.${index}.description`, story.description);
+    setValue("projectName", projectDetail?.projectName || "");
+    setValue("description", projectDetail?.description || "");
+    setValue("startDate", projectDetail?.startDate || null);
+    setValue("endDate", projectDetail?.endDate || null);
+    setValue("duration", projectDetail?.duration || "");
+  }, [projectDetail]);
+
+  const onSubmit: SubmitHandler<Project> = async (formData) => {
+   
+
+    if (projectDetail) {
+      if (projectDetail._id) {
+        await updateProjectMutation.mutateAsync(
+          {
+            ...formData,
+            _id: projectDetail._id,
+          },
+          {
+            onError: (error) => console.log(error.message),
+          }
+        );
+      } else {
+        await createProjectMutation.mutateAsync(formData, {
+          onError: (error) => console.log(error.message),
         });
       }
     }
-  }, [myProjectDetail, setValue]);
-
-  const submitForm = (formData: Project) => {
-    console.log(formData);
-    onSaveClick(formData);
+    onDrawerClose();
   };
+
 
   return (
     <>
-      <Box>
-        {myProjectDetail && (
-          <Drawer
-            sx={{ position: "relative" }}
-            anchor="right"
-            open={projectDrawerOpen}
-            PaperProps={{
-              sx: {
-                width: "500px",
-                height: "100%",
-              },
-            }}
-          >
-            <Box padding={2} display={"flex"} justifyContent={"space-between"}>
-              <Typography variant="h5">
-                {myProjectDetail._id != "" ? "  Edit Data" : "Add Project"}
-              </Typography>
-              <Box onClick={handleDrawerCloseClick}>
+      {projectDetail && (
+        <Drawer
+          sx={{ position: "relative" }}
+          anchor="right"
+          open={projectDrawerOpen}
+          PaperProps={{
+            sx: {
+              width: "500px",
+              height: "100%",
+            },
+          }}
+          
+        >
+          <Box padding={2} display={"flex"} justifyContent={"space-between"}>
+            <Typography variant="h5">
+              {projectDetail?._id ? "Edit Data" : "Add Project"}
+            </Typography>
+            <Box onClick={onDrawerClose}>
+              <IconButton>
                 <CloseIcon />
-              </Box>
+              </IconButton>
             </Box>
-            <Divider />
-            <Container>
-              <Box py={3}>
-                <form
-                  onSubmit={handleSubmit((formdata) => submitForm(formdata))}
-                >
-                  <TextField
-                    fullWidth
-                    label="Title"
-                    {...register("title", { required: true })}
-                    error={!!errors.title}
-                    helperText={errors.title?.message}
-                    sx={{ marginBottom: "10px" }}
-                  />
-                  <TextField
-                    fullWidth
-                    label="description"
-                    {...register("description", { required: true })}
-                    error={!!errors.description}
-                    helperText={errors.description?.message}
-                    sx={{ marginBottom: "10px" }}
-                  />
-                  <TextField
-                    fullWidth
-                    label="assignedTo"
-                    {...register("assignedTo", { required: true })}
-                    error={!!errors.assignedTo}
-                    helperText={errors.assignedTo?.message}
-                    sx={{ marginBottom: "10px" }}
-                  />
-                  <TextField
-                    fullWidth
-                    label="status"
-                    {...register("status", { required: true })}
-                    error={!!errors.status}
-                    helperText={errors.status?.message}
-                    sx={{ marginBottom: "10px" }}
-                  />
-                  <Typography variant="h5">stories</Typography>
-                  <Box>
-                    {myProjectDetail.stories?.map((story, index) => (
-                      <Box key={index} display={"flex"} alignItems={"center"}>
-                        <TextField
-                          fullWidth
-                          label="name"
-                          {...register(`stories.${index}.name`, {
-                            required: true,
-                          })}
-                          error={!!errors.stories?.[index]?.name}
-                          helperText={errors.stories?.[index]?.name?.message}
-                          sx={{ marginRight: "10px", marginBottom: "10px" }}
-                        />
-                        <TextField
-                          fullWidth
-                          label="description"
-                          {...register(`stories.${index}.description`, {
-                            required: true,
-                          })}
-                          error={!!errors.stories?.[index]?.description}
-                          helperText={
-                            errors.stories?.[index]?.description?.message
-                          }
-                        />
-                        <IconButton
-                          aria-label="settings"
-                          // onClick={() => {
-                          //   handleStoryDeleteClick(story);
-                          // }}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Box>
-                    ))}
-                  </Box>
-                  <Box position={"absolute"} bottom={0} right={0} padding={2}>
-                    <Button
-                      variant="contained"
-                      type="submit"
-                      color="primary"
-                      style={{ margin: "10px" }}
+          </Box>
+
+          <Container>
+            {projectDetail && (
+              <Box display={"flex"} flexWrap={"wrap"} rowGap={2}>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                  <Box display={"flex"} flexWrap={"wrap"} rowGap={2}>
+                    <Box padding={1}>
+                      <Controller
+                        name="projectName"
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            fullWidth
+                            label="Project Name"
+                            {...field}
+                            error={!!errors.projectName}
+                            helperText={errors.projectName?.message}
+                            {...register("projectName", {
+                              required: true,
+                            })}
+                          />
+                        )}
+                      />
+                    </Box>
+                    <Box padding={1}>
+                      <Controller
+                        name="description"
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            fullWidth
+                            label="description"
+                            {...field}
+                            error={!!errors.description}
+                            helperText={errors.description?.message}
+                            {...register("description", {
+                              required: true,
+                            })}
+                          />
+                        )}
+                      />
+                    </Box>
+                    <Box padding={1}>
+                      <Controller
+                        name="startDate"
+                        control={control}
+                        rules={{ required: "Start Date is required" }}
+                        render={({ field }) => {
+                          const dateValue = field.value
+                            ? dayjs(field.value)
+                            : null;
+                          return (
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                              <DatePicker
+                                {...field}
+                                label="Start Date"
+                                value={dateValue}
+                                onChange={(date: Dayjs | null) => {
+                                  const newDateValue = date
+                                    ? date.toDate()
+                                    : null;
+                                  field.onChange(newDateValue);
+                                }}
+                              />
+                            </LocalizationProvider>
+                          );
+                        }}
+                      />
+                    </Box>
+                    <Box padding={1}>
+                      <Controller
+                        name="endDate"
+                        control={control}
+                        rules={{ required: "End Date is required" }}
+                        render={({ field }) => {
+                          const dateValue = field.value
+                            ? dayjs(field.value)
+                            : null;
+                          return (
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                              <DatePicker
+                                {...field}
+                                label="End Date"
+                                value={dateValue}
+                                onChange={(date: Dayjs | null) => {
+                                  const newDateValue = date
+                                    ? date.toDate()
+                                    : null;
+                                  field.onChange(newDateValue);
+                                }}
+                              />
+                            </LocalizationProvider>
+                          );
+                        }}
+                      />
+                    </Box>
+                    <Box
+                     position={"absolute"}
+                     bottom={7}
+                     right={10}
+                     display={"flex"}
+                     columnGap={2}
                     >
-                      Save
-                    </Button>
-                    <Button
-                      color="primary"
-                      variant="contained"
-                      type="submit"
-                      onClick={handleDrawerCloseClick}
-                    >
-                      cancel
-                    </Button>
+                      <Button variant="contained" type="submit" autoFocus color="primary">
+                        Save
+                      </Button>
+                      <Button
+                        color="primary"
+                        variant="contained"
+                        onClick={onDrawerClose}
+                      >
+                        cancel
+                      </Button>
+                    </Box>
                   </Box>
                 </form>
               </Box>
-            </Container>
-          </Drawer>
-        )}
-      </Box>
+            )}
+          </Container>
+        </Drawer>
+      )}
     </>
   );
-}
+};
 
 export default ProjectDrawer;

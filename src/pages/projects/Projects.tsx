@@ -1,6 +1,7 @@
-import { projects } from "../../seed-data/seed-data";
-import { Project } from "../../types/type";
+
+import { Project} from "../../types/type";
 import {
+  Button,
   Card,
   CardContent,
   Container,
@@ -11,39 +12,45 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import CardHeader from "@mui/material/CardHeader";
 import Grid from "@mui/material/Grid";
-
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ProjectDrawer from "../../drawer/ProjectDrawer";
 import ProjectDialogBox from "../../commonDialogBox/ProjectDialogBox";
 
-function Projects() {
+import { useDeleteProjectMutation, useGetAllProject } from "../../hooks/CustomRQHooks";
+import Loader from "../../commonDialogBox/Loader";
+
+const newProject: Project = {
+        _id: "", 
+        projectName:"project",
+        description:"project",
+        startDate:new Date(),
+        endDate: new Date(),
+        duration:" months"
+};
+
+const Projects= () =>{
   const navigate = useNavigate();
 
-  const [myProjectData, setMyProjectData] = useState<Project[]>(projects);
-  const [projectDetails, setProjectDetails] = useState<Project>();
-  const [projectDrawerOpen, setProjectDrawerOpen] = useState(false);
+  const { data: projectData, isLoading, isError, isFetching } = useGetAllProject();
+ const projects = projectData || [];
+  const deleteProjectMutation = useDeleteProjectMutation();
+
+
+  const [selectedProject, setSelectedProject] = useState<Project| null >(null);
+  const [projectDrawerOpen, setProjectDrawerOpen] = useState<boolean>(false);
   const [deleteDialogConfirmationOpen, setDeleteDialogConfirmationOpen] =
     useState(false);
-  const [deleteConfirmation, setDeleteConfirmation] =
-    useState<Project | null>();
+    const [deleteConfirmation, setDeleteConfirmation] = useState<Project | null>(null);
 
-  const handleEditClick = (project: Project) => {
-    setProjectDetails(project);
+    const handleEditProjectClick = (project:Project) => {
+      setSelectedProject(project);
+      setProjectDrawerOpen(true);
+    }
+
+   const handleAddProjectClick = async () => {
+    setSelectedProject(newProject);
     setProjectDrawerOpen(true);
-  };
-  const handleDeleteCancel = () => {
-    setDeleteDialogConfirmationOpen(false);
-  };
-
-  const handleDeleteClickConfirm = () => {
-    setMyProjectData((prevProjects) => {
-      const updatedProjects = prevProjects.filter(
-        (project) => project._id !== deleteConfirmation?._id
-      );
-      return updatedProjects;
-    });
-    setDeleteDialogConfirmationOpen(false);
   };
 
   const handleProjectDeleteClick = (project: Project) => {
@@ -51,23 +58,63 @@ function Projects() {
     setDeleteDialogConfirmationOpen(true);
   };
 
-  const handleSaveClick = (updatedProject: Project) => {
-    setMyProjectData((prevProjects) => {
-      const updatedProjects = prevProjects.map((project) =>
-        project._id === updatedProject._id ? updatedProject : project
-      );
-      return updatedProjects;
-    });
-
-    setProjectDrawerOpen(false);
+  const handleDeleteCancel = () => {
+    setDeleteDialogConfirmationOpen(false);
   };
+
+  const handleDeleteConfirmClick = async () => {
+    setDeleteDialogConfirmationOpen(true);
+
+    if (deleteConfirmation?._id) {
+      await deleteProjectMutation.mutateAsync(deleteConfirmation._id, {
+        onError: (error) => console.log(error.message),
+      });
+      setDeleteConfirmation(null);
+      setDeleteDialogConfirmationOpen(false);
+    }
+  };
+
+
+if (isError) {
+  return <div>Error fetching projects</div>;
+}
   return (
+    <>
+    {isLoading || isFetching ? (
+      <Loader loadingText="Fetching data..."  />
+    ) : (
+   <>
     <Container>
+      <Grid
+        container
+        direction="row"
+        justifyContent="space-between"
+        alignItems="flex-start"
+        paddingBottom={3}
+      >
+        <Grid>
+          <Typography variant="h5">Projects</Typography>
+        </Grid>
+
+        <Grid>
+          <Button
+            variant="contained"
+            color="secondary"
+             onClick={(e) => {
+              e.stopPropagation();
+              handleAddProjectClick();
+            }}
+          >
+            Add project
+          </Button>
+        </Grid>
+      
+      </Grid>
       <Grid container spacing={2}>
-        {myProjectData.map((project) => (
-          <Grid item xs={8} key={project._id}>
+        {projects!.map((project) => (
+          <Grid item xs={4} key={project._id}>
             <Card
-              sx={{ minWidth: 275 }}
+              sx={{ minWidth: 175 }}
               onClick={() => {
                 navigate(`/board/${project._id}`);
               }}
@@ -89,49 +136,54 @@ function Projects() {
                         aria-label="settings"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleEditClick(project);
+                          handleEditProjectClick(project);
                         }}
                       >
                         <EditIcon />
                       </IconButton>
                     </>
                   }
-                  title={project.title}
+                  title={project.projectName}
                 ></CardHeader>
                 <Typography variant="body2" color="text.secondary">
                   Description: {project.description}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Assigned to: {project.assignedTo}
-                </Typography>
+  Start Date: {project.startDate instanceof Date ? project.startDate.toDateString() : ''}
+</Typography>
+<Typography variant="body2" color="text.secondary">
+  End Date: {project.endDate instanceof Date ? project.endDate.toDateString() : ''}
+</Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Status: {project.status}
+                  Duration:{project.duration}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Story Count: {project.stories?.length}
-                </Typography>
+                
               </CardContent>
             </Card>
           </Grid>
         ))}
       </Grid>
-
+      {deleteDialogConfirmationOpen && (
       <ProjectDialogBox
         deleteDialogConfirmationOpen={deleteDialogConfirmationOpen}
         handleDeleteCancel={handleDeleteCancel}
-        handleDeleteClickConfirm={handleDeleteClickConfirm}
+        handleDeleteClickConfirm={handleDeleteConfirmClick}
       />
-
+      )}
       {projectDrawerOpen && (
         <ProjectDrawer
           projectDrawerOpen={projectDrawerOpen}
-          projectDetail={projectDetails!}
+          projectDetail={selectedProject!}
           onDrawerClose={() => setProjectDrawerOpen(false)}
-          onSaveClick={handleSaveClick}
         />
       )}
+
     </Container>
+    </>
+    )}
+    </>
   );
 }
+
 
 export default Projects;

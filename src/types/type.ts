@@ -1,17 +1,17 @@
 export type Project = {
-  _id?: string;
-  title: string;
+  _id: string;
+  projectName: string;
   description: string;
-  assignedTo: string;
-  status: string;
-  stories?: Storie[];
+ startDate:Date | null;
+ endDate:Date | null;
+duration:string;
 };
 
-export type Storie = {
-  _id?: string;
-  name: string;
+export type Story = {
+  _id: string;
+  title:string;
   description: string;
-  tasks?: Task[];
+  project?:Project;
 };
 
 export type Task = {
@@ -26,7 +26,6 @@ export type ProjectProps = {
   projectDrawerOpen: boolean;
   projectDetail: Project;
   onDrawerClose: () => void;
-  onSaveClick: (project: Project) => void;
 };
 
 //Use here
@@ -41,3 +40,5 @@ export type Employee = {
   contact: number;
   address: string;
 };
+
+
