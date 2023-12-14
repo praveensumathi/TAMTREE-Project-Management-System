@@ -1,4 +1,4 @@
-import { Project } from "../types/type";
+import { Employee, Project } from "../types/type";
 
 export const projects: Project[] = [
   {
@@ -20,7 +20,6 @@ export const projects: Project[] = [
             description: "About header section description",
             duration: "1 month",
             status: 1,
-          
           },
           {
             _id: "task2",
@@ -28,7 +27,6 @@ export const projects: Project[] = [
             description: "About body section description",
             duration: "2 month",
             status: 2,
-           
           },
           {
             _id: "task3_1",
@@ -36,7 +34,6 @@ export const projects: Project[] = [
             description: "About body section description",
             duration: "2 month",
             status: 2,
-           
           },
         ],
       },
@@ -82,7 +79,6 @@ export const projects: Project[] = [
             description: "Contact header section description",
             duration: "1 month",
             status: 1,
-           
           },
           {
             _id: "task6",
@@ -90,7 +86,6 @@ export const projects: Project[] = [
             description: "Contact body section description",
             duration: "2 month",
             status: 3,
-           
           },
         ],
       },
@@ -105,7 +100,6 @@ export const projects: Project[] = [
             description: "Home header section description",
             duration: "1 month",
             status: 4,
-          
           },
           {
             _id: "task8",
@@ -113,7 +107,6 @@ export const projects: Project[] = [
             description: "Home body section description",
             duration: "2 month",
             status: 1,
-          
           },
         ],
       },
@@ -138,7 +131,6 @@ export const projects: Project[] = [
             description: "Footer header section description",
             duration: "1 month",
             status: 1,
-    
           },
           {
             _id: "task10",
@@ -146,12 +138,9 @@ export const projects: Project[] = [
             description: "Footer body section description",
             duration: "2 month",
             status: 3,
-            
           },
         ],
       },
     ],
   },
 ];
-
-// export const employees

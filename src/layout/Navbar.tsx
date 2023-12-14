@@ -25,7 +25,7 @@ const menus = [
     url: "/projects",
   },
   {
-    name: "Employees",
+    name: "Employee",
     url: "/employees",
   },
 ];

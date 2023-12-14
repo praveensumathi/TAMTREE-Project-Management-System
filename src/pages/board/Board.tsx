@@ -6,7 +6,6 @@ import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 // import { useParams } from "react-router-dom";
 import { useState } from "react";
-
 import { Button, Card, CardContent, CardHeader } from "@mui/material";
 import CustomAccordion from "../../common/components/CustomAccordion";
 import React from "react";
@@ -179,7 +178,7 @@ function Board() {
     evt.preventDefault();
     evt.currentTarget.classList.remove("dragged-over");
     let id = evt.dataTransfer.getData("text/plain");
-    
+
     updateTaskStatus(id, status).then(() => refetch());
 
     const children = evt.currentTarget.querySelectorAll(".empty");
