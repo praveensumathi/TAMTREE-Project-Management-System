@@ -6,10 +6,10 @@ const getStories = async () => {
     const response = await http.get<Story[]>("stories/getstories");
 
     return response.data;
-  } catch (error) {}
+  } catch (error) { }
 };
 
-const getStory = async (storyId: string) =>{
+const getStory = async (storyId: string) => {
   try {
     const response = await http.get<Story>(
       `/stories/getstory/${storyId}`
@@ -25,11 +25,13 @@ const getStory = async (storyId: string) =>{
   }
 };
 
-const getStoryBasicInfo = async (projectId:string) => {
+const getStoryByProjectID = async (projectId: string) => {
   try {
     const response = await http.get(`/stories/getstorybasicinfo/${projectId}`);
-
+    console.log(response.data);
+    console.log(projectId);
     if (response.data && response.data._id) {
+
       return response.data;
     } else {
       throw new Error("Invalid response structure: Story ID not found");
@@ -44,7 +46,7 @@ const getStoryBasicInfo = async (projectId:string) => {
 
 
 
-const createStory = async (newStory:Story) => {
+const createStory = async (newStory: Story) => {
   try {
     const response = await http.post<Story>(
       "stories/createstory",
@@ -64,11 +66,11 @@ const createStory = async (newStory:Story) => {
 
 
 const updateStory = async (storyId: string,
-  updatedstory:Story) =>{
+  updatedstory: Story) => {
   try {
     const response = await http.put<Story>(
       `/stories/updatestory/${storyId}`,
-    updatedstory
+      updatedstory
     );
 
     if (response.data && response.data._id) {
@@ -81,7 +83,7 @@ const updateStory = async (storyId: string,
   }
 };
 
-const deleteStory = async (storyId: string) =>{
+const deleteStory = async (storyId: string) => {
   try {
     const response = await http.delete<Story>(
       `/stories/deletestory/${storyId}`
@@ -99,4 +101,4 @@ const deleteStory = async (storyId: string) =>{
 
 
 
-export {getStories,createStory,updateStory,deleteStory,getStory,getStoryBasicInfo};
+export { getStories, createStory, updateStory, deleteStory, getStory, getStoryByProjectID };

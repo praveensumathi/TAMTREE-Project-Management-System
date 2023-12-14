@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import {  Project, Story } from "../types/type";
+import { Project, Story } from "../types/type";
 import { queryClient } from "../App";
-import { createStory, deleteStory, getStories, getStory, getStoryBasicInfo, updateStory } from "../http/StoryApi";
+import { createStory, deleteStory, getStories, getStory, getStoryByProjectID, updateStory } from "../http/StoryApi";
 import { createProject, deleteProject, fetchProjects, getProject, updateProject } from "../http/ProjectApi";
 
 
@@ -72,8 +72,8 @@ export const useGetAllStories = () => {
 
 export const useGetStoryBasicInfo = (projectId: string) => {
   return useQuery({
-    queryKey: ["getStoryBasic"],
-    queryFn: () => getStoryBasicInfo(projectId),
+    queryKey: ["storyList"],
+    queryFn: () => getStoryByProjectID(projectId),
     refetchOnWindowFocus: false,
   });
 };
@@ -99,9 +99,9 @@ export const useCreateStoryMutation = () => {
 
 export const useUpdateStoryMutation = () => {
   const updateStoryMutation = useMutation({
-    mutationFn: (updatedStory:Story) => {
+    mutationFn: (updatedStory: Story) => {
       if (updatedStory._id) {
-        return updateStory(updatedStory._id,updatedStory);
+        return updateStory(updatedStory._id, updatedStory);
       } else {
         throw new Error("Invalid story object - missing _id");
       }

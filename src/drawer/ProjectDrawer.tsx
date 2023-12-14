@@ -7,12 +7,12 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import * as yup from "yup";
 import CloseIcon from "@mui/icons-material/Close";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { Project, ProjectProps } from "../types/type";
+import { Project, ProjectProps, Story } from "../types/type";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -22,6 +22,7 @@ import {
   useGetStoryBasicInfo,
   useUpdateProjectMutation,
 } from "../hooks/CustomRQHooks";
+import Delete from "@mui/icons-material/Delete";
 
 const validationSchema = yup.object().shape({
   projectName: yup.string().required("projectName is required"),
@@ -39,9 +40,12 @@ const ProjectDrawer = ({
   const createProjectMutation = useCreateProjectMutation();
   const updateProjectMutation = useUpdateProjectMutation();
 
-  const { data:StoriesData } = useGetStoryBasicInfo(projectDetail._id); 
+  const [stories, setStories] = useState<
+    { title?: string; description?: string }[]
+  >([]);
+  const { data: StoriesData } = useGetStoryBasicInfo(projectDetail._id);
 
-  const stories = StoriesData || [];
+  const storiesBasiInfo = StoriesData || [];
   const {
     control,
     handleSubmit,
@@ -56,13 +60,34 @@ const ProjectDrawer = ({
   console.log(projectDetail);
 
   useEffect(() => {
-   
     setValue("projectName", projectDetail?.projectName || "");
     setValue("description", projectDetail?.description || "");
     setValue("startDate", projectDetail?.startDate || null);
     setValue("endDate", projectDetail?.endDate || null);
     setValue("duration", projectDetail?.duration || "");
   }, [projectDetail]);
+
+  const handleAddStory = () => {
+    setStories([...stories, { title: "", description: "" }]);
+  };
+  const handleDeleteStory = (index: number) => {
+    const updatedStories = [...stories];
+    updatedStories.splice(index, 1);
+    setStories(updatedStories);
+  };
+
+  const handleStoryChange = (
+    index: number,
+    field: keyof { title?: string; description?: string },
+    value: string
+  ) => {
+    const updatedStories = [...stories];
+    updatedStories[index] = {
+      ...updatedStories[index],
+      [field]: value,
+    };
+    setStories(updatedStories);
+  };
 
   const onSubmit: SubmitHandler<Project> = async (formData) => {
     if (projectDetail) {
@@ -148,7 +173,7 @@ const ProjectDrawer = ({
                               {...field}
                               label="Start Date"
                               value={dateValue}
-                              sx={{ width: '100%' }} 
+                              sx={{ width: "100%" }}
                               onChange={(date: Dayjs | null) => {
                                 const newDateValue = date
                                   ? date.toDate()
@@ -174,7 +199,7 @@ const ProjectDrawer = ({
                             <DatePicker
                               {...field}
                               label="End Date"
-                              sx={{ width: '100%' }} 
+                              sx={{ width: "100%" }}
                               value={dateValue}
                               onChange={(date: Dayjs | null) => {
                                 const newDateValue = date
@@ -195,15 +220,52 @@ const ProjectDrawer = ({
                       {...register("duration")}
                     />
                     <Box>
-                      <Box display={"flex"} columnGap={22} alignItems={"center"}>
+                      <Box
+                        display={"flex"}
+                        columnGap={22}
+                        alignItems={"center"}
+                      >
                         <Typography variant="h6">Stories</Typography>
-                        <Button variant="contained">Add Story</Button>
+                        <Button variant="contained" onClick={handleAddStory}>
+                          Add Story
+                        </Button>
                       </Box>
+                      {stories.map((story, index) => (
+                        <Box
+                          key={index}
+                          display="flex"
+                          gap={2}
+                          marginTop={1}
+                        >
+                          <TextField
+                            label={`Title`}
+                            value={story.title || ""}
+                            onChange={(e) =>
+                              handleStoryChange(index, "title", e.target.value)
+                            }
+                          />
+                          <TextField
+                            label={`Description`}
+                            value={story.description || ""}
+                            onChange={(e) =>
+                              handleStoryChange(
+                                index,
+                                "description",
+                                e.target.value
+                              )
+                            }
+                          />
+                          <IconButton onClick={() => handleDeleteStory(index)}>
+                            <Delete />
+                          </IconButton>
+                        </Box>
+                      ))}
                     </Box>
                   </Box>
                   <Box
-                    display={"flex"}  
-                    columnGap={2}
+                    display={"flex"}
+                    marginTop={2}
+                    gap={2}
                     justifyContent={"flex-end"}
                   >
                     <Button

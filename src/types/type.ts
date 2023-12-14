@@ -2,16 +2,16 @@ export type Project = {
   _id: string;
   projectName: string;
   description: string;
- startDate:Date | null;
- endDate:Date | null;
-duration:string;
+  startDate: Date | null;
+  endDate: Date | null;
+  duration: string;
 };
 
 export type Story = {
   _id: string;
-  title:string;
+  title: string;
   description: string;
-  project:Project;
+  project: Project;
 };
 
 export type Task = {
@@ -41,4 +41,10 @@ export type Employee = {
   address: string;
 };
 
+export type ProjectFormData = Project & {
+  stories?: { title?: string; description?: string }[];
+};
 
+export type StoryCounts = {
+  [projectId: string]: number;
+}
