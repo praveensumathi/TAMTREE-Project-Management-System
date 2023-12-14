@@ -92,6 +92,4 @@ const deleteProject = async (projectId: string) =>{
   }
 };
 
-
-
 export {getAllProjects,fetchProjects,createProject,updateProject,deleteProject,getProject};
