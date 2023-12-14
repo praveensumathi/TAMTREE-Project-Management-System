@@ -2,9 +2,9 @@ export type Project = {
   _id: string;
   projectName: string;
   description: string;
- startDate:Date;
- endDate:Date;
- duration:string; 
+ startDate:Date | null;
+ endDate:Date | null;
+duration:string;
 };
 
 export type Story = {
@@ -26,7 +26,6 @@ export type ProjectProps = {
   projectDrawerOpen: boolean;
   projectDetail: Project;
   onDrawerClose: () => void;
-  onSaveClick: (project: Project) => void;
 };
 
 //Use here
@@ -41,3 +40,5 @@ export type Employee = {
   contact: number;
   address: string;
 };
+
+

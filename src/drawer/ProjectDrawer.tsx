@@ -7,281 +7,233 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import * as yup from "yup";
 import CloseIcon from "@mui/icons-material/Close";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { Project, ProjectProps, Storie } from "../types/type";
-import Delete from "@mui/icons-material/Delete";
+import { Project, ProjectProps } from "../types/type";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import dayjs, { Dayjs } from "dayjs";
+import {
+  useCreateProjectMutation,
+  useUpdateProjectMutation,
+} from "../hooks/CustomRQHooks";
+
+
 
 const validationSchema = yup.object().shape({
-  title: yup.string().required("title is required"),
+  projectName: yup.string().required("projectName is required"),
   description: yup.string().required("description is required"),
-  assignedTo: yup.string().required("assignedto is required"),
-  status: yup.string().required("status is required"),
-  stories: yup.array().of(
-    yup.object().shape({
-      name: yup.string().required(),
-      description: yup.string().required(),
-    })
-  ),
+  startDate: yup.date().required("Start Date is required"),
+  endDate: yup.date().required("End Date is required"),
+  duration: yup.string().required("duration is required"),
 });
 
 const ProjectDrawer = ({
   projectDrawerOpen,
-  selectedProject,
+  projectDetail,
   onDrawerClose,
-  handleProjectUpdate
 }: ProjectProps) => {
+
+  const createProjectMutation = useCreateProjectMutation();
+  const updateProjectMutation = useUpdateProjectMutation();
   const {
     control,
     handleSubmit,
     setValue,
-   
     register,
-    formState: { errors }
+    formState: { errors },
   } = useForm<Project>({
     resolver: yupResolver(validationSchema) as any,
-    mode: "all"
+    mode: "all",
   });
 
-  const initialStories: Storie[] = selectedProject?.stories || [];
-
-  const [stories, setStories] = useState<Storie[]>(initialStories);
-  const [storyIndices, setStoryIndices] = useState<number[]>(initialStories.map((_, index) => index));
-
+  console.log(projectDetail);
+  
 
   useEffect(() => {
- 
-      setValue("title", selectedProject?.title ||"");
-      setValue("description", selectedProject?.description||"");
-      setValue("assignedTo", selectedProject?.assignedTo||"");
-      setValue("status", selectedProject?.status||"");
-      if (selectedProject && selectedProject.stories) {
-        selectedProject.stories.forEach((story, index) => {
-          setValue(`stories.${index}.name`, story?.name || "");
-          setValue(`stories.${index}.description`, story?.description || "");
-        });
-      }
-  }, [selectedProject]);
+    setValue("projectName", projectDetail?.projectName || "");
+    setValue("description", projectDetail?.description || "");
+    setValue("startDate", projectDetail?.startDate || null);
+    setValue("endDate", projectDetail?.endDate || null);
+    setValue("duration", projectDetail?.duration || "");
+  }, [projectDetail]);
 
   const onSubmit: SubmitHandler<Project> = async (formData) => {
-    const updatedProject: Project =({ ...selectedProject, ...formData,stories });
-    handleProjectUpdate(updatedProject);
+   
+
+    if (projectDetail) {
+      if (projectDetail._id) {
+        await updateProjectMutation.mutateAsync(
+          {
+            ...formData,
+            _id: projectDetail._id,
+          },
+          {
+            onError: (error) => console.log(error.message),
+          }
+        );
+      } else {
+        await createProjectMutation.mutateAsync(formData, {
+          onError: (error) => console.log(error.message),
+        });
+      }
+    }
     onDrawerClose();
   };
 
-  const handleAddStory = () => {
-    const newStories = [...stories, { name: "", description: "" }];
-    const newIndices = [...storyIndices, stories.length];
-    setStories(newStories);
-    setStoryIndices(newIndices);
-  };
-
-  const handleRemoveStory = (indexToRemove: number) => {
-    const updatedStories = stories.filter((_, index) => index !== indexToRemove);
-    const updatedIndices = storyIndices.filter((index) => index !== indexToRemove);
-
-    setStories(updatedStories);
-    setStoryIndices(updatedIndices);
-  };
-
-
-  
 
   return (
     <>
-     {selectedProject && (
-          <Drawer
-            sx={{ position: "relative" }}
-            anchor="right"
-            open={projectDrawerOpen}
-            PaperProps={{
-              sx: {
-                width: "500px",
-                height: "100%",
-              },
-            }}
-            onClose={onDrawerClose}
-          >
-            <Box padding={2} display={"flex"} justifyContent={"space-between"}>
-              <Typography variant="h5">
-                {selectedProject._id ? "Edit Data" : "Add Project"}
-              </Typography>
-              <Box onClick={onDrawerClose}>
+      {projectDetail && (
+        <Drawer
+          sx={{ position: "relative" }}
+          anchor="right"
+          open={projectDrawerOpen}
+          PaperProps={{
+            sx: {
+              width: "500px",
+              height: "100%",
+            },
+          }}
+          
+        >
+          <Box padding={2} display={"flex"} justifyContent={"space-between"}>
+            <Typography variant="h5">
+              {projectDetail?._id ? "Edit Data" : "Add Project"}
+            </Typography>
+            <Box onClick={onDrawerClose}>
+              <IconButton>
                 <CloseIcon />
-              </Box>
+              </IconButton>
             </Box>
-            
-            <Container>
-              {selectedProject&& (<Box display={"flex"} flexWrap={"wrap"} rowGap={2} >
-                <form
-                  onSubmit={handleSubmit(onSubmit)}
-                >
+          </Box>
+
+          <Container>
+            {projectDetail && (
+              <Box display={"flex"} flexWrap={"wrap"} rowGap={2}>
+                <form onSubmit={handleSubmit(onSubmit)}>
                   <Box display={"flex"} flexWrap={"wrap"} rowGap={2}>
-                  <Box padding={1} >
-                  <Controller
-                    name="title"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        fullWidth
-                        label="title"
-                        {...field}
-                        error={!!errors.title}
-                        helperText={errors.title?.message}
-                        {...register("title", {
-                          required: true,
-                        })}
+                    <Box padding={1}>
+                      <Controller
+                        name="projectName"
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            fullWidth
+                            label="Project Name"
+                            {...field}
+                            error={!!errors.projectName}
+                            helperText={errors.projectName?.message}
+                            {...register("projectName", {
+                              required: true,
+                            })}
+                          />
+                        )}
                       />
-                    )}
-                  />
-                  </Box>
-                  <Box padding={1}>
-                  <Controller
-                    name="description"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        fullWidth
-                        label="description"
-                        {...field}
-                        error={!!errors.description}
-                        helperText={errors.description?.message}
-                        {...register("description", {
-                          required: true,
-                        })}
+                    </Box>
+                    <Box padding={1}>
+                      <Controller
+                        name="description"
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            fullWidth
+                            label="description"
+                            {...field}
+                            error={!!errors.description}
+                            helperText={errors.description?.message}
+                            {...register("description", {
+                              required: true,
+                            })}
+                          />
+                        )}
                       />
-                    )}
-                  />
-                  </Box>
-                  <Box padding={1} >
-                  <Controller
-                    name="status"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        fullWidth
-                        label="status"
-                        {...field}
-                        error={!!errors.status}
-                        helperText={errors.status?.message}
-                        {...register("status", {
-                          required: true,
-                        })}
+                    </Box>
+                    <Box padding={1}>
+                      <Controller
+                        name="startDate"
+                        control={control}
+                        rules={{ required: "Start Date is required" }}
+                        render={({ field }) => {
+                          const dateValue = field.value
+                            ? dayjs(field.value)
+                            : null;
+                          return (
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                              <DatePicker
+                                {...field}
+                                label="Start Date"
+                                value={dateValue}
+                                onChange={(date: Dayjs | null) => {
+                                  const newDateValue = date
+                                    ? date.toDate()
+                                    : null;
+                                  field.onChange(newDateValue);
+                                }}
+                              />
+                            </LocalizationProvider>
+                          );
+                        }}
                       />
-                    )}
-                  />
-                  </Box>
-                  <Box padding={1} >
-                  <Controller
-                    name="assignedTo"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        fullWidth
-                        label="assigned To"
-                        {...field}
-                        error={!!errors.assignedTo}
-                        helperText={errors.assignedTo?.message}
-                        {...register("assignedTo", {
-                          required: true,
-                        })}
+                    </Box>
+                    <Box padding={1}>
+                      <Controller
+                        name="endDate"
+                        control={control}
+                        rules={{ required: "End Date is required" }}
+                        render={({ field }) => {
+                          const dateValue = field.value
+                            ? dayjs(field.value)
+                            : null;
+                          return (
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                              <DatePicker
+                                {...field}
+                                label="End Date"
+                                value={dateValue}
+                                onChange={(date: Dayjs | null) => {
+                                  const newDateValue = date
+                                    ? date.toDate()
+                                    : null;
+                                  field.onChange(newDateValue);
+                                }}
+                              />
+                            </LocalizationProvider>
+                          );
+                        }}
                       />
-                    )}
-                  />
-                  </Box>
-                  <Box display={"flex"} gap={30} marginBottom={"10px"}>
-
-                  <Typography variant="h5" >Stories</Typography>
-                  <Button variant="contained" onClick={handleAddStory}>Add Story</Button>
-
-                  </Box>
-                  <Box>
-                    {storyIndices.map((index) => (
-                      <Box key={index} display={"flex"} gap={2}justifyContent={"space-between"} alignItems={"center"} marginBottom={"10px"}>
-                        <Box>
-                        <Controller
-                    name={`stories.${index}.name`}
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        fullWidth
-                        label="name"
-                        {...field}
-                        error={!!errors.stories?.[index]?.name}
-                        helperText={errors.stories?.[index]?.name?.message}
-                        {...register(`stories.${index}.name`, {
-                          required: true,
-                        })}
-                      />
-                    )}
-                  />
-                        </Box>
-                        <Box>
-                        <Controller
-                    name={`stories.${index}.description`}
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        fullWidth
-                        label="description"
-                        {...field}
-                        error={!!errors.stories?.[index]?.description}
-                        helperText={errors.stories?.[index]?.description?.message}
-                        {...register(`stories.${index}.description`, {
-                          required: true,
-                        })}
-                      />
-                    )}
-                  />
-                        </Box>
-                        <IconButton
-                          aria-label="settings"
-                          onClick={() => handleRemoveStory(index)}
-                        >
-                          <Delete />
-                        </IconButton>
-                        
-                      </Box>
-                      
-                    ))}
-                    
-                  </Box>
-                  <Box display="flex"
-                    justifyContent="flex-end"
-                    gap={1}
-                    marginTop={2} >
-                    
-                    <Button
-                      variant="contained"
-                      type="submit"
-                      color="primary"
-                      
+                    </Box>
+                    <Box
+                     position={"absolute"}
+                     bottom={7}
+                     right={10}
+                     display={"flex"}
+                     columnGap={2}
                     >
-                      Save
-                    </Button>
-                    <Button
-                      color="primary"
-                      variant="contained"
-                      onClick={onDrawerClose}
-                    >
-                      cancel
-                    </Button>
-                    
-                  </Box>
+                      <Button variant="contained" type="submit" autoFocus color="primary">
+                        Save
+                      </Button>
+                      <Button
+                        color="primary"
+                        variant="contained"
+                        onClick={onDrawerClose}
+                      >
+                        cancel
+                      </Button>
+                    </Box>
                   </Box>
                 </form>
               </Box>
-              )}
-              
-            </Container>
-          </Drawer>
-        )}
-     
+            )}
+          </Container>
+        </Drawer>
+      )}
     </>
   );
-}
+};
 
 export default ProjectDrawer;

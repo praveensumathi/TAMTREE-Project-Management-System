@@ -9,6 +9,21 @@ const getAllProjects = async () => {
   } catch (error) {}
 };
 
+
+const fetchProjects = async () => {
+    try {
+      const projectsData = await getAllProjects();
+      const parsedProjects = projectsData!.map((project) => ({
+        ...project,
+        startDate: project.startDate ? new Date(project.startDate) : null,
+        endDate: project.endDate ? new Date(project.endDate) : null,
+      }));
+      return parsedProjects;
+    } catch (error) {
+      throw error;
+    }
+  };
+
 const getProject = async (projectId: string) =>{
   try {
     const response = await http.get<Project>(
@@ -79,4 +94,4 @@ const deleteProject = async (projectId: string) =>{
 
 
 
-export {getAllProjects,createProject,updateProject,deleteProject,getProject};
+export {getAllProjects,fetchProjects,createProject,updateProject,deleteProject,getProject};

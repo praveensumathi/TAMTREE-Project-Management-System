@@ -1,38 +1,8 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createEmployee, getAllEmplyees } from "../http/EmployeeApi";
-import { Employee, Project, Story } from "../types/type";
+import {  Project, Story } from "../types/type";
 import { queryClient } from "../App";
-
 import { createStory, deleteStory, getStories, getStory, updateStory } from "../http/StoryApi";
-import { createProject, deleteProject, getAllProjects, getProject, updateProject } from "../http/ProjectApi";
-
-export const useGetAllEmployee = () => {
-  return useQuery({
-    queryKey: ["emplyeeList"],
-    queryFn: getAllEmplyees,
-    refetchOnWindowFocus: false,
-  });
-};
-
-export const useCateringfetchProductData = (projectId: string) => {
-  return useQuery({
-    queryKey: ["fetchProducts"],
-    //queryFn: () => getAllEmplyees(projectId),
-    refetchOnWindowFocus: false,
-  });
-};
-
-export const useCreateEmployeeMutation = () => {
-  const createEmployeemutation = useMutation({
-    mutationFn: (newEmployee: Employee) => createEmployee(newEmployee),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["emplyeeList"] });
-      console.log("called inside onSuccess");
-    },
-  });
-
-  return createEmployeemutation;
-};
+import { createProject, deleteProject, fetchProjects, getProject, updateProject } from "../http/ProjectApi";
 
 
 // Project query
@@ -40,7 +10,7 @@ export const useCreateEmployeeMutation = () => {
 export const useGetAllProject = () => {
   return useQuery({
     queryKey: ["projectList"],
-    queryFn: getAllProjects,
+    queryFn: fetchProjects,
     refetchOnWindowFocus: false,
   });
 };
@@ -74,7 +44,7 @@ export const useUpdateProjectMutation = () => {
     },
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["updateProject"] })
+      queryClient.invalidateQueries({ queryKey: ["projectList"] })
     }
   })
   return updateProjectMutation
@@ -84,7 +54,7 @@ export const useDeleteProjectMutation = () => {
   const deleteProjectMutation = useMutation({
     mutationFn: (projectid: string) => deleteProject(projectid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["deleteProject"] })
+      queryClient.invalidateQueries({ queryKey: ["projectList"] })
     }
   })
   return deleteProjectMutation
