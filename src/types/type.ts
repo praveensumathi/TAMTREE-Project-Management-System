@@ -1,25 +1,10 @@
+import { ProjectTask } from "./boardTypes";
+
 export type Project = {
   _id?: string;
   title: string;
   description: string;
   assignedTo: string;
-  status: string;
-  stories?: Storie[];
-};
-
-export type Storie = {
-  _id?: string;
-  name: string;
-  description: string;
-  tasks?: Task[];
-};
-
-export type Task = {
-  _id?: string;
-  tname: string;
-  description: string;
-  duration: string;
-  status: number;
 };
 
 export type ProjectProps = {
@@ -28,13 +13,14 @@ export type ProjectProps = {
   onDrawerClose: () => void;
   onSaveClick: (project: Project) => void;
 };
+
 export type ITaskDrawerProps = {
   openDrawer: boolean;
   onClose: () => void;
-  onNewSave: (task: Task, storyId: string) => void;
-  selectedTask: Task;
+  selectedTask: ProjectTask;
   SelectedStoryId: string;
-}
+  onSuccessSave: () => void;
+};
 
 //Use here
 export type Employee = {

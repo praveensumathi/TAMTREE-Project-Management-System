@@ -4,28 +4,25 @@ import Link from "@mui/material/Link";
 import { useNavigate } from "react-router-dom";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
-import { useParams } from "react-router-dom";
-import { projects } from "../../seed-data/seed-data";
-import { Project, Task } from "../../types/type";
-import { useState, useEffect } from "react";
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
-} from "@mui/material";
+// import { useParams } from "react-router-dom";
+import { useState } from "react";
+
+import { Button, Card, CardContent, CardHeader } from "@mui/material";
 import CustomAccordion from "../../common/components/CustomAccordion";
 import React from "react";
-import Drawer from "@mui/material/Drawer";
+
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-
 import AddTaskDrawer from "./AddTaskDrawer";
-import Projects from "../projects/Projects";
-import { set } from "react-hook-form";
+
+import {
+  UseGetAllProjectDetail,
+  useDeleteTaskMutation,
+} from "../../hooks/CustomRQHooks";
+import { ProjectTask } from "../../types/boardTypes";
+import { updateTaskStatus } from "../../http/TaskApi";
 
 const projectStatusList = [
   {
@@ -49,26 +46,34 @@ const projectStatusList = [
     color: "#efd5ff",
   },
 ];
+const initialValue = {
+  _id: "",
+  title: "",
+  description: "",
+  duration: "",
+  status: 0,
+  story: "",
+};
 
 function Board() {
   const navigate = useNavigate();
-  const { projectId } = useParams();
+  // const { projectId } = useParams();
   const [openDrawer, setOpenDrawer] = useState(false);
   const [SelectedStoryId, setSelectedStoryId] = useState("");
 
-  const [selectedProjectData, setSelectedProjectData] = useState<
-    Project | undefined
-  >(undefined);
   const [expanded, setExpanded] = useState<string | false>("");
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const [selectedTask, setSelectedTask] = useState<Task>();
+  const [selectedTask, setSelectedTask] = useState<ProjectTask>();
   const open = Boolean(anchorEl);
 
-  useEffect(() => {
-    const project = projects.find((project) => project._id! == projectId)!;
-    setSelectedProjectData(project);
-  }, [projectId]);
+  const temporaryProjectId: string = "6576e96b62f90fb5fbad3f0d";
+
+  const { data: projectData, refetch } =
+    UseGetAllProjectDetail(temporaryProjectId);
+  console.log(projectData);
+
+  const deleteTaskMutation = useDeleteTaskMutation();
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -76,20 +81,29 @@ function Board() {
 
   const handleCardEditClick = (
     event: React.MouseEvent<HTMLElement>,
-    task: Task
+    task: ProjectTask
   ) => {
     event.stopPropagation();
     setSelectedTask(task);
     setOpenDrawer(true);
   };
 
-  const handleDelete = (event: React.MouseEvent<HTMLElement>) => {
+  const handleDelete = async (
+    event: React.MouseEvent<HTMLElement>,
+    taskId: string
+  ) => {
     event.stopPropagation();
+    await deleteTaskMutation.mutateAsync(taskId, {
+      onError: (error) => console.log(error.message),
+      onSuccess: () => refetch(),
+    });
+
     handleClose();
   };
+
   const handleIconButton = (
     event: React.MouseEvent<HTMLElement>,
-    task: Task
+    task: ProjectTask
   ) => {
     event.stopPropagation();
     setSelectedTask(task);
@@ -164,30 +178,11 @@ function Board() {
     evt.dataTransfer.dropEffect = "move";
   };
 
-  const onDrop = (evt: any, status: any) => {
+  const onDrop = (evt: any, status: number) => {
     evt.preventDefault();
     evt.currentTarget.classList.remove("dragged-over");
     let id = evt.dataTransfer.getData("text/plain");
-
-    var _stories = selectedProjectData?.stories ?? [];
-
-    var updatedStories = _stories.map((story) => {
-      story.tasks?.map((task) => {
-        if (task._id == id.toString()) {
-          task.status = status;
-        }
-        return task;
-      });
-
-      return story;
-    });
-
-    var _selectedProjectedData = {
-      ...selectedProjectData,
-      stories: [...updatedStories],
-    } as Project;
-
-    setSelectedProjectData({ ..._selectedProjectedData });
+    updateTaskStatus(id, status).then(() => refetch());
 
     const children = evt.currentTarget.querySelectorAll(".empty");
     children.forEach((child: any) => {
@@ -196,31 +191,17 @@ function Board() {
   };
 
   const handleAddTask = (storyId: string) => {
+    setSelectedTask(initialValue);
+
     setSelectedStoryId(storyId);
     setOpenDrawer(true);
   };
 
-  const handleNewTaskSaveProcess = (newTask: any, selectedStoryId: any) => {
-    setSelectedProjectData((prevData) => {
-      if (!prevData) return prevData;
-
-      const updatedStories = prevData.stories?.map((story) => {
-        if (story._id === selectedStoryId) {
-          return {
-            ...story,
-            tasks: [...(story.tasks || []), newTask],
-          };
-        }
-        return story;
-      });
-      console.log(updatedStories);
-      return { ...prevData, stories: updatedStories };
-    });
-
-    setOpenDrawer(false);
-  };
-
-  const renderTasks = (taskList: Task[], status: number, color: string) => {
+  const renderTasks = (
+    taskList: ProjectTask[],
+    status: number,
+    color: string
+  ) => {
     return (
       <Box
         className={`small-box`}
@@ -234,7 +215,7 @@ function Board() {
           <Box className="container">
             <Box className="drag_column">
               <Box className="drag_row">
-                {taskList?.map((task: Task) => (
+                {taskList?.map((task: ProjectTask) => (
                   <>
                     <Card
                       elevation={3}
@@ -260,7 +241,7 @@ function Board() {
                           </IconButton>
                         }
                         title={
-                          <Typography variant="body1">{task.tname}</Typography>
+                          <Typography variant="body1">{task.title}</Typography>
                         }
                       ></CardHeader>
                       <CardContent sx={{ pt: 0 }}>
@@ -281,7 +262,9 @@ function Board() {
                         "aria-labelledby": "basic-button",
                       }}
                     >
-                      <MenuItem onClick={handleDelete}>Delete</MenuItem>
+                      <MenuItem onClick={(e) => handleDelete(e, task._id!)}>
+                        Delete
+                      </MenuItem>
                     </Menu>
                   </>
                 ))}
@@ -311,7 +294,7 @@ function Board() {
           >
             projects
           </Link>
-          <Typography>{selectedProjectData?.title}</Typography>
+          <Typography>{projectData?.projectName}</Typography>
         </Breadcrumbs>
         <>
           <Box display={"flex"} gap={2}>
@@ -346,9 +329,9 @@ function Board() {
         </>
 
         <Box className="container">
-          {selectedProjectData && (
+          {projectData && (
             <Box mt={1}>
-              {selectedProjectData.stories?.map((s) => (
+              {projectData.stories?.map((s) => (
                 <CustomAccordion.Accordion
                   // expanded={expanded === s._id}
 
@@ -361,7 +344,7 @@ function Board() {
                   >
                     <Box display={"flex"} gap={4}>
                       <Box>
-                        <Typography>{s.name}</Typography>
+                        <Typography>{s.title}</Typography>
                       </Box>
                       <Box>
                         {projectStatusList.map((projectStatus) => {
@@ -369,7 +352,7 @@ function Board() {
                             return (
                               <Button
                                 key={projectStatus.status}
-                                onClick={() => handleAddTask(s._id!)}
+                                onClick={() => handleAddTask(s._id)}
                               >
                                 Add Task
                               </Button>
@@ -417,9 +400,9 @@ function Board() {
       <AddTaskDrawer
         openDrawer={openDrawer}
         onClose={() => setOpenDrawer(false)}
-        onNewSave={handleNewTaskSaveProcess}
-        SelectedStoryId={SelectedStoryId!}
+        SelectedStoryId={SelectedStoryId}
         selectedTask={selectedTask!}
+        onSuccessSave={() => refetch()}
       />
     </>
   );

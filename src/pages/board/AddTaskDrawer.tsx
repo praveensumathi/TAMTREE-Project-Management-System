@@ -1,17 +1,21 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, } from "react";
 import Divider from "@mui/material/Divider";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import CloseIcon from "@mui/icons-material/Close";
 import { Box, Drawer, Typography } from "@mui/material";
-import { ITaskDrawerProps, Task } from "../../types/type";
+import { ITaskDrawerProps } from "../../types/type";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import {
+  useCreateTaskMutation,
+  useUpdateTaskMutation,
+} from "../../hooks/CustomRQHooks";
+import { ProjectTask } from "../../types/boardTypes";
 
-const taskValidationSchema = yup.object<Task>().shape({
-  _id: yup.string(),
-  tname: yup.string().required(),
+const taskValidationSchema = yup.object<ProjectTask>().shape({
+  title: yup.string().required(),
   description: yup.string().required(),
   duration: yup.string().required(),
   status: yup.number().required(),
@@ -20,42 +24,75 @@ const taskValidationSchema = yup.object<Task>().shape({
 function AddTaskDrawer({
   openDrawer,
   onClose,
-  onNewSave,
   selectedTask,
   SelectedStoryId,
+  onSuccessSave,
 }: ITaskDrawerProps) {
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
+    reset,
   } = useForm({
     resolver: yupResolver(taskValidationSchema),
     mode: "all",
     defaultValues: {
-      tname: "About header section",
-      description: "About header section description",
-      duration: "1 month",
+      title: "",
+      description: "",
+      duration: "",
       status: 1,
-    } as Task,
+    } as ProjectTask,
   });
+  const createTaskMutation = useCreateTaskMutation();
 
+  const updateTaskMutation = useUpdateTaskMutation();
   const handleCloseClick = () => {
     onClose();
   };
   const handleCancel = () => {
     onClose();
   };
-  const submitForm = (formdata: any) => {
-    onNewSave(formdata, SelectedStoryId);
+
+  const submitForm = async (formData: ProjectTask) => {
+    try {
+      if (selectedTask?._id) {
+        await updateTaskMutation.mutateAsync(
+          { ...formData, _id: selectedTask._id },
+          {
+            onError: (error) => console.log(error.message),
+            onSuccess: () => {
+              onSuccessSave();
+              reset();
+            },
+          }
+        );
+        onClose();
+      } else {
+        formData.story = SelectedStoryId;
+        await createTaskMutation.mutateAsync(formData, {
+          onError: (error) => console.log(error.message),
+          onSuccess: () => {
+            onSuccessSave();
+            reset();
+          },
+        });
+      }
+
+      onClose();
+    } catch (error) {
+      console.error(error);
+    }
   };
+
   useEffect(() => {
     if (selectedTask?._id) {
-      setValue("_id", selectedTask?._id);
-      setValue("tname", selectedTask.tname);
+      setValue("title", selectedTask.title);
       setValue("description", selectedTask.description);
       setValue("duration", selectedTask.duration);
       setValue("status", selectedTask.status);
+
+      // setValue("assignedTo", selectedTask.assignedTo);
     }
   }, [selectedTask]);
 
@@ -92,18 +129,10 @@ function AddTaskDrawer({
             <form onSubmit={handleSubmit((formdata) => submitForm(formdata))}>
               <TextField
                 fullWidth
-                label="id"
-                {...register("_id", { required: true })}
-                error={!!errors._id}
-                helperText={errors._id?.message}
-                sx={{ marginBottom: "10px" }}
-              />
-              <TextField
-                fullWidth
                 label="tname"
-                {...register("tname", { required: true })}
-                error={!!errors.tname}
-                helperText={errors.tname?.message}
+                {...register("title", { required: true })}
+                error={!!errors.title}
+                helperText={errors.title?.message}
                 sx={{ marginBottom: "10px" }}
               />
               <TextField
