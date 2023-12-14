@@ -4,12 +4,24 @@ import Link from "@mui/material/Link";
 import { useNavigate } from "react-router-dom";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
-import { useParams } from "react-router-dom";
-import { projects } from "../../seed-data/seed-data";
-import { Project, Task } from "../../types/type";
-import { useState, useEffect } from "react";
-import { Card, CardContent } from "@mui/material";
+// import { useParams } from "react-router-dom";
+import { useState } from "react";
+import { Button, Card, CardContent, CardHeader } from "@mui/material";
 import CustomAccordion from "../../common/components/CustomAccordion";
+import React from "react";
+
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import AddTaskDrawer from "./AddTaskDrawer";
+import AddIcon from "@mui/icons-material/Add";
+import {
+  UseGetAllProjectDetail,
+  useDeleteTaskMutation,
+} from "../../hooks/CustomRQHooks";
+import { ProjectTask } from "../../types/boardTypes";
+import { updateTaskStatus } from "../../http/TaskApi";
 
 const projectStatusList = [
   {
@@ -34,18 +46,65 @@ const projectStatusList = [
   },
 ];
 
+const initialValue = {
+  _id: "",
+  title: "",
+  description: "",
+  duration: "",
+  status: 0,
+  story: "",
+};
+
 function Board() {
   const navigate = useNavigate();
+  // const { projectId } = useParams();
 
-  const { projectId } = useParams();
-  const [selectedProjectedData, setSelectedProjectedData] = useState<Project>();
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const [SelectedStoryId, setSelectedStoryId] = useState("");
   const [expanded, setExpanded] = useState<string | false>("");
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedTask, setSelectedTask] = useState<ProjectTask>();
 
-  useEffect(() => {
-    const project = projects.find((project) => project._id! == projectId)!;
-    setSelectedProjectedData(project!);
-  }, [projectId]);
+  const temporaryProjectId: string = "6576e96b62f90fb5fbad3f0d";
 
+  const { data: projectData, refetch } =
+    UseGetAllProjectDetail(temporaryProjectId);
+  const deleteTaskMutation = useDeleteTaskMutation();
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleCardEditClick = (
+    event: React.MouseEvent<HTMLElement>,
+    task: ProjectTask
+  ) => {
+    event.stopPropagation();
+    setSelectedTask(task);
+    setOpenDrawer(true);
+  };
+
+  const handleDelete = async (
+    event: React.MouseEvent<HTMLElement>,
+    taskId: string
+  ) => {
+    event.stopPropagation();
+    await deleteTaskMutation.mutateAsync(taskId, {
+      onError: (error) => console.log(error.message),
+      onSuccess: () => refetch(),
+    });
+
+    handleClose();
+  };
+
+  const handleIconButton = (
+    event: React.MouseEvent<HTMLElement>,
+    task: ProjectTask
+  ) => {
+    event.stopPropagation();
+    setSelectedTask(task);
+    setAnchorEl(event.currentTarget);
+  };
 
   const onDragStart = (evt: any) => {
     let element = evt.currentTarget;
@@ -65,7 +124,6 @@ function Board() {
   // };
 
   const onDragEnter = (evt: any) => {
-    
     console.log("enter");
 
     evt.preventDefault();
@@ -95,7 +153,6 @@ function Board() {
   };
 
   const onDragLeave = (evt: any) => {
-    
     let currentTarget = evt.currentTarget;
     let newTarget = evt.relatedTarget;
     if (newTarget.parentNode === currentTarget || newTarget === currentTarget)
@@ -117,30 +174,12 @@ function Board() {
     evt.dataTransfer.dropEffect = "move";
   };
 
-  const onDrop = (evt: any, status: any) => {
+  const onDrop = (evt: any, status: number) => {
     evt.preventDefault();
     evt.currentTarget.classList.remove("dragged-over");
     let id = evt.dataTransfer.getData("text/plain");
 
-    var _stories = selectedProjectedData?.stories ?? [];
-
-    var updatedStories = _stories.map((story) => {
-      story.tasks?.map((task) => {
-        if (task._id == id.toString()) {
-          task.status = status;
-        }
-        return task;
-      });
-
-      return story;
-    });
-
-    var _selectedProjectedData = {
-      ...selectedProjectedData,
-      stories: [...updatedStories],
-    } as Project;
-
-    setSelectedProjectedData({ ..._selectedProjectedData });
+    updateTaskStatus(id, status).then(() => refetch());
 
     const children = evt.currentTarget.querySelectorAll(".empty");
     children.forEach((child: any) => {
@@ -148,7 +187,17 @@ function Board() {
     });
   };
 
-  const renderTasks = (taskList: Task[], status: number, color: string) => {
+  const handleAddTask = (storyId: string) => {
+    setSelectedTask(initialValue);
+    setSelectedStoryId(storyId);
+    setOpenDrawer(true);
+  };
+
+  const renderTasks = (
+    taskList: ProjectTask[],
+    status: number,
+    color: string
+  ) => {
     return (
       <Box
         className={`small-box`}
@@ -162,7 +211,7 @@ function Board() {
           <Box className="container">
             <Box className="drag_column">
               <Box className="drag_row">
-                {taskList?.map((task: Task) => (
+                {taskList?.map((task: ProjectTask) => (
                   <>
                     <Card
                       elevation={3}
@@ -176,15 +225,43 @@ function Board() {
                       id={task._id}
                       draggable
                       onDragStart={onDragStart}
+                      onClick={(e) => handleCardEditClick(e, task)}
                     >
-                      <CardContent>
-                        <Box>
-                          <Typography>{task.tname}</Typography>
-                          <Box className="days">{task.description}</Box>
-                          <Box className="time">{task.duration}</Box>
-                        </Box>
+                      <CardHeader
+                        action={
+                          <IconButton
+                            id="basic-button"
+                            onClick={(e) => handleIconButton(e, task)}
+                          >
+                            <MoreVertIcon />
+                          </IconButton>
+                        }
+                        title={
+                          <Typography variant="body1">{task.title}</Typography>
+                        }
+                      ></CardHeader>
+                      <CardContent sx={{ pt: 0 }}>
+                        <Typography variant="body2" color={"text.secondary"}>
+                          {task.description}
+                        </Typography>
+                        <Typography variant="body2" color={"text.secondary"}>
+                          {task.duration}
+                        </Typography>
                       </CardContent>
                     </Card>
+                    <Menu
+                      id="basic-menu"
+                      anchorEl={anchorEl}
+                      open={Boolean(anchorEl) && task._id == selectedTask?._id}
+                      onClose={handleClose}
+                      MenuListProps={{
+                        "aria-labelledby": "basic-button",
+                      }}
+                    >
+                      <MenuItem onClick={(e) => handleDelete(e, task._id!)}>
+                        Delete
+                      </MenuItem>
+                    </Menu>
                   </>
                 ))}
               </Box>
@@ -196,96 +273,137 @@ function Board() {
   };
 
   const handleChange =
-    (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
+    (panel: string) => (_event: React.SyntheticEvent, newExpanded: boolean) => {
       setExpanded(newExpanded ? panel : false);
     };
 
   return (
-    <Container maxWidth={false} sx={{ mb: 3 }}>
-      <Breadcrumbs aria-label="breadcrumb">
-        <Typography>Boards</Typography>
-        <Link
-          underline="hover"
-          color="inherit"
-          href="/"
-          onClick={() => navigate("/projects")}
-        >
-          projects
-        </Link>
-        <Typography>{selectedProjectedData?.title}</Typography>
-      </Breadcrumbs>
-      <>
-        <Box display={"flex"} gap={2}>
-          {projectStatusList.map((projectStatus, index) => (
-            <Box
-              key={index}
-              sx={{
-                backgroundColor: projectStatus.color,
-                p: 2,
-                width: "24%",
-              }}
-            >
-              <Typography variant="h6">{projectStatus.status}</Typography>
-              <Typography
-                variant="subtitle2"
-                sx={{ opacity: 0.6, lineHeight: 1, fontWeight: "lighter" }}
+    <>
+      <Container maxWidth={false} sx={{ mb: 3 }}>
+        <Breadcrumbs aria-label="breadcrumb" sx={{ mb: 2 }}>
+          <Typography>Boards</Typography>
+          <Link
+            underline="hover"
+            color="inherit"
+            href="/"
+            onClick={() => navigate("/projects")}
+          >
+            projects
+          </Link>
+          <Typography>{projectData?.projectName}</Typography>
+        </Breadcrumbs>
+        <>
+          <Box display={"flex"} gap={2}>
+            {projectStatusList.map((projectStatus, index) => (
+              <Box
+                key={index}
+                sx={{
+                  backgroundColor: projectStatus.color,
+                  p: 2,
+                  width: "24%",
+                }}
               >
-                {projectStatus.description}
-              </Typography>
-            </Box>
-          ))}
-        </Box>
-      </>
+                <Box display={"flex"} gap={10}>
+                  <Box>
+                    <Typography variant="h6">{projectStatus.status}</Typography>
 
-      <Box className="container">
-        {selectedProjectedData && (
-          <Box mt={1}>
-            {selectedProjectedData.stories?.map((s) => (
-              <CustomAccordion.Accordion
-                // expanded={expanded === s._id}
-                expanded
-                onChange={handleChange(s._id!)}
-              >
-                <CustomAccordion.AccordionSummary
-                  aria-controls="panel1d-content"
-                  id="panel1d-header"
-                >
-                  <Typography>{s.name}</Typography>
-                </CustomAccordion.AccordionSummary>
-                <CustomAccordion.AccordionDetails>
-                  <Box display={"flex"} gap={2}>
-                    {s.tasks &&
-                      renderTasks(
-                        s.tasks.filter((t) => t.status == 1),
-                        1,
-                        "#ff7ecd"
-                      )}
-                    {s.tasks &&
-                      renderTasks(
-                        s.tasks.filter((t) => t.status == 2),
-                        2,
-                        "#fdffb6"
-                      )}
-                    {s.tasks &&
-                      renderTasks(
-                        s.tasks.filter((t) => t.status == 3),
-                        3,
-                        "#caffbf"
-                      )}
-                    {s.tasks &&
-                      renderTasks(
-                        s.tasks.filter((t) => t.status == 4),
-                        4,
-                        "#ce81ff"
-                      )}
+                    <Typography
+                      variant="subtitle2"
+                      sx={{
+                        opacity: 0.6,
+                        lineHeight: 1,
+                        fontWeight: "lighter",
+                      }}
+                    >
+                      {projectStatus.description}
+                    </Typography>
                   </Box>
-                </CustomAccordion.AccordionDetails>
-              </CustomAccordion.Accordion>
+                </Box>
+              </Box>
             ))}
           </Box>
-        )}
-      </Box>
-    </Container>
+        </>
+
+        <Box className="container">
+          {projectData && (
+            <Box mt={1}>
+              {projectData.stories?.map((s) => (
+                <CustomAccordion.Accordion
+                  // expanded={expanded === s._id}
+
+                  expanded
+                  onChange={handleChange(s._id!)}
+                >
+                  <CustomAccordion.AccordionSummary
+                    aria-controls="panel1d-content"
+                    id="panel1d-header"
+                  >
+                    <Box display={"flex"} gap={4} alignItems={"center"}>
+                      <Box>
+                        <Typography>{s.title}</Typography>
+                      </Box>
+                      <Box>
+                        {projectStatusList.map((projectStatus) => {
+                          if (projectStatus.status === "To Do") {
+                            return (
+                              <Button
+                                size="small"
+                                variant="outlined"
+                                key={projectStatus.status}
+                                onClick={() => handleAddTask(s._id)}
+                              >
+                                <AddIcon />
+                                Add Task
+                              </Button>
+                            );
+                          }
+                        })}
+                      </Box>
+                    </Box>
+                  </CustomAccordion.AccordionSummary>
+                  <CustomAccordion.AccordionDetails>
+                    <Box display={"flex"} gap={2}>
+                      {s.tasks &&
+                        renderTasks(
+                          s.tasks.filter((t) => t.status == 1),
+                          1,
+                          "#ff7ecd"
+                        )}
+                      {s.tasks &&
+                        renderTasks(
+                          s.tasks.filter((t) => t.status == 2),
+                          2,
+                          "#fdffb6"
+                        )}
+                      {s.tasks &&
+                        renderTasks(
+                          s.tasks.filter((t) => t.status == 3),
+                          3,
+                          "#caffbf"
+                        )}
+                      {s.tasks &&
+                        renderTasks(
+                          s.tasks.filter((t) => t.status == 4),
+                          4,
+                          "#ce81ff"
+                        )}
+                    </Box>
+                  </CustomAccordion.AccordionDetails>
+                </CustomAccordion.Accordion>
+              ))}
+            </Box>
+          )}
+        </Box>
+      </Container>
+
+      <AddTaskDrawer
+        openDrawer={openDrawer}
+        onClose={() => setOpenDrawer(false)}
+        SelectedStoryId={SelectedStoryId}
+        selectedTask={selectedTask!}
+        onSuccessSave={() => refetch()}
+      />
+    </>
   );
 }
 

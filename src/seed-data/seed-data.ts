@@ -16,21 +16,21 @@ export const projects: Project[] = [
         tasks: [
           {
             _id: "task1",
-            tname: "About header section",
+            title: "About header section",
             description: "About header section description",
             duration: "1 month",
             status: 1,
           },
           {
             _id: "task2",
-            tname: "About body section",
+            title: "About body section",
             description: "About body section description",
             duration: "2 month",
             status: 2,
           },
           {
             _id: "task3_1",
-            tname: "About body section update update",
+            title: "About body section update update",
             description: "About body section description",
             duration: "2 month",
             status: 2,
@@ -75,19 +75,17 @@ export const projects: Project[] = [
         tasks: [
           {
             _id: "task5",
-            tname: "Contact header section",
+            title: "Contact header section",
             description: "Contact header section description",
             duration: "1 month",
             status: 1,
-
           },
           {
             _id: "task6",
-            tname: "Contact body section",
+            title: "Contact body section",
             description: "Contact body section description",
             duration: "2 month",
             status: 3,
-
           },
         ],
       },
@@ -98,19 +96,17 @@ export const projects: Project[] = [
         tasks: [
           {
             _id: "task7",
-            tname: "Home header section",
+            title: "Home header section",
             description: "Home header section description",
             duration: "1 month",
             status: 4,
-
           },
           {
             _id: "task8",
-            tname: "Home body section",
+            title: "Home body section",
             description: "Home body section description",
             duration: "2 month",
             status: 1,
-
           },
         ],
       },
@@ -131,59 +127,20 @@ export const projects: Project[] = [
         tasks: [
           {
             _id: "task9",
-            tname: "Footer header section",
+            title: "Footer header section",
             description: "Footer header section description",
             duration: "1 month",
             status: 1,
-
           },
           {
             _id: "task10",
-            tname: "Footer body section",
+            title: "Footer body section",
             description: "Footer body section description",
             duration: "2 month",
             status: 3,
-
           },
         ],
       },
     ],
   },
 ];
-
-
-export const employee: Employee[] = [
-  {
-    _id: "db1",
-    employeeId: "employeId1",
-    firstName: "kavi",
-    lastName: "priya",
-    email: "kaviinfotechit@gmail.com",
-    age: 26,
-    gender: "Female",
-    contact: "6374723428",
-    address: "Paramathi"
-  },
-  {
-    _id: "db2",
-    employeeId: "employeId2",
-    firstName: "soundharya",
-    lastName: "siva",
-    email: "sountarya@gmail.com",
-    age: 27,
-    gender: "Female",
-    contact: "9874102536",
-    address: "velur"
-  },
-  {
-    _id: "db3",
-    employeeId: "employeId3",
-    firstName: "logesh",
-    lastName: "logesh",
-    email: "logesh@gmail.com",
-    age: 22,
-    gender: "Male",
-    contact: "9513264870",
-    address: "Namakkal"
-  },
-]

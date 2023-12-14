@@ -40,9 +40,6 @@ function ProjectDrawer({
   onDrawerClose,
   onSaveClick,
 }: ProjectProps) {
-  const [myProjectDetail, setMyProjectDetail] =
-    useState<Project>(projectDetail);
-
   const {
     register,
     handleSubmit,
@@ -65,19 +62,19 @@ function ProjectDrawer({
   };
 
   useEffect(() => {
-    if (myProjectDetail._id) {
-      setValue("title", myProjectDetail.title);
-      setValue("description", myProjectDetail.description);
-      setValue("assignedTo", myProjectDetail.assignedTo);
-      setValue("status", myProjectDetail.status);
-      if (myProjectDetail.stories) {
-        myProjectDetail.stories.forEach((story, index) => {
+    if (projectDetail._id) {
+      setValue("title", projectDetail.title);
+      setValue("description", projectDetail.description);
+      setValue("assignedTo", projectDetail.assignedTo);
+      setValue("status", projectDetail.status);
+      if (projectDetail.stories) {
+        projectDetail.stories.forEach((story, index) => {
           setValue(`stories.${index}.name`, story.name);
           setValue(`stories.${index}.description`, story.description);
         });
       }
     }
-  }, [myProjectDetail, setValue]);
+  }, [projectDetail, setValue]);
 
   const submitForm = (formData: Project) => {
     console.log(formData);
@@ -87,7 +84,7 @@ function ProjectDrawer({
   return (
     <>
       <Box>
-        {myProjectDetail && (
+        {projectDetail && (
           <Drawer
             sx={{ position: "relative" }}
             anchor="right"
@@ -101,7 +98,7 @@ function ProjectDrawer({
           >
             <Box padding={2} display={"flex"} justifyContent={"space-between"}>
               <Typography variant="h5">
-                {myProjectDetail._id != "" ? "  Edit Data" : "Add Project"}
+                {projectDetail._id != "" ? "  Edit Data" : "Add Project"}
               </Typography>
               <Box onClick={handleDrawerCloseClick}>
                 <CloseIcon />
@@ -147,7 +144,7 @@ function ProjectDrawer({
                   />
                   <Typography variant="h5">stories</Typography>
                   <Box>
-                    {myProjectDetail.stories?.map((story, index) => (
+                    {projectDetail.stories?.map((story, index) => (
                       <Box key={index} display={"flex"} alignItems={"center"}>
                         <TextField
                           fullWidth
