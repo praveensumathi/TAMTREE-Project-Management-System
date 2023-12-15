@@ -28,23 +28,12 @@ const getStory = async (storyId: string) => {
 const getStoryByProjectID = async (projectId: string) => {
   try {
     const response = await http.get(`/stories/getstorybasicinfo/${projectId}`);
-    console.log(response.data);
-    console.log(projectId);
-    if (response.data && response.data._id) {
-
-      return response.data;
-    } else {
-      throw new Error("Invalid response structure: Story ID not found");
-    }
+    return response.data;
   } catch (error) {
     console.error("Error fetching story basic info:");
     throw new Error("Error fetching story basic info");
   }
 };
-
-
-
-
 
 const createStory = async (newStory: Story) => {
   try {

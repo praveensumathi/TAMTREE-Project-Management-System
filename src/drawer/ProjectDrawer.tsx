@@ -19,8 +19,11 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs, { Dayjs } from "dayjs";
 import {
   useCreateProjectMutation,
-  useGetStoryBasicInfo,
+  useCreateStoryMutation,
+  useDeleteStoryMutation,
+  useGetStoryByProjectId,
   useUpdateProjectMutation,
+  useUpdateStoryMutation,
 } from "../hooks/CustomRQHooks";
 import Delete from "@mui/icons-material/Delete";
 
@@ -35,17 +38,17 @@ const validationSchema = yup.object().shape({
 const ProjectDrawer = ({
   projectDrawerOpen,
   projectDetail,
+  projectStories,
   onDrawerClose,
 }: ProjectProps) => {
   const createProjectMutation = useCreateProjectMutation();
   const updateProjectMutation = useUpdateProjectMutation();
+  const createStoryMutation = useCreateStoryMutation();
+  const deleteStoryMutation = useDeleteStoryMutation();
+  const updateStoryMutation = useUpdateStoryMutation();
 
-  const [stories, setStories] = useState<
-    { title?: string; description?: string }[]
-  >([]);
-  const { data: StoriesData } = useGetStoryBasicInfo(projectDetail._id);
+  const [stories, setStories] = useState<Story[]>([]);
 
-  const storiesBasiInfo = StoriesData || [];
   const {
     control,
     handleSubmit,
@@ -57,7 +60,19 @@ const ProjectDrawer = ({
     mode: "all",
   });
 
-  console.log(projectDetail);
+  useEffect(() => {
+    if (projectDetail?._id) {
+      setStories(
+        projectStories[projectDetail._id]?.map((story) => ({
+          _id: story._id,
+          title: story.title,
+          description: story.description,
+        })) || []
+      );
+    } else {
+      setStories([]);
+    }
+  }, [projectDetail, projectStories]);
 
   useEffect(() => {
     setValue("projectName", projectDetail?.projectName || "");
@@ -67,13 +82,27 @@ const ProjectDrawer = ({
     setValue("duration", projectDetail?.duration || "");
   }, [projectDetail]);
 
-  const handleAddStory = () => {
+  const handleAddStory = (e: React.FormEvent) => {
+    e.preventDefault();
     setStories([...stories, { title: "", description: "" }]);
   };
-  const handleDeleteStory = (index: number) => {
-    const updatedStories = [...stories];
-    updatedStories.splice(index, 1);
-    setStories(updatedStories);
+
+  const handleDeleteStory = async (index: number, story: Story) => {
+    const storyId = story._id;
+    console.log("deleting");
+    console.log(storyId);
+
+    if (storyId !== undefined) {
+      try {
+        await deleteStoryMutation.mutateAsync(storyId, {});
+
+        const updatedStories = [...stories];
+        updatedStories.splice(index, 1);
+        setStories(updatedStories);
+      } catch (error) {
+        console.error("Error deleting story:", error);
+      }
+    }
   };
 
   const handleStoryChange = (
@@ -90,9 +119,12 @@ const ProjectDrawer = ({
   };
 
   const onSubmit: SubmitHandler<Project> = async (formData) => {
-    if (projectDetail) {
+    try {
+      let updatedProject: any;
+      console.log(formData);
+
       if (projectDetail._id) {
-        await updateProjectMutation.mutateAsync(
+        updatedProject = await updateProjectMutation.mutateAsync(
           {
             ...formData,
             _id: projectDetail._id,
@@ -102,12 +134,35 @@ const ProjectDrawer = ({
           }
         );
       } else {
-        await createProjectMutation.mutateAsync(formData, {
+        updatedProject = await createProjectMutation.mutateAsync(formData, {
           onError: (error) => console.log(error.message),
         });
       }
+      await Promise.all(
+        stories.map(async (story) => {
+          if (story._id) {
+            const updatedData = await updateStoryMutation.mutateAsync({
+              _id: story._id,
+              project: updatedProject,
+              title: story.title || "",
+              description: story.description || "",
+            });
+            return updatedData;
+          } else {
+            const createdData = await createStoryMutation.mutateAsync({
+              project: updatedProject,
+              title: story.title || "",
+              description: story.description || "",
+            });
+            return createdData;
+          }
+        })
+      );
+
+      onDrawerClose();
+    } catch (error) {
+      console.error("Error submitting data:", error);
     }
-    onDrawerClose();
   };
 
   return (
@@ -226,17 +281,16 @@ const ProjectDrawer = ({
                         alignItems={"center"}
                       >
                         <Typography variant="h6">Stories</Typography>
-                        <Button variant="contained" onClick={handleAddStory}>
+                        <Button
+                          variant="contained"
+                          onClick={handleAddStory}
+                          type="button"
+                        >
                           Add Story
                         </Button>
                       </Box>
                       {stories.map((story, index) => (
-                        <Box
-                          key={index}
-                          display="flex"
-                          gap={2}
-                          marginTop={1}
-                        >
+                        <Box key={index} display="flex" gap={2} marginTop={1}>
                           <TextField
                             label={`Title`}
                             value={story.title || ""}
@@ -255,7 +309,12 @@ const ProjectDrawer = ({
                               )
                             }
                           />
-                          <IconButton onClick={() => handleDeleteStory(index)}>
+                          <IconButton
+                            onClick={() => {
+                              handleDeleteStory(index, story);
+                              console.log(story);
+                            }}
+                          >
                             <Delete />
                           </IconButton>
                         </Box>

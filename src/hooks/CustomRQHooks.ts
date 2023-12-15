@@ -5,8 +5,6 @@ import { createStory, deleteStory, getStories, getStory, getStoryByProjectID, up
 import { createProject, deleteProject, fetchProjects, getProject, updateProject } from "../http/ProjectApi";
 
 
-// Project query
-
 export const useGetAllProject = () => {
   return useQuery({
     queryKey: ["projectList"],
@@ -70,7 +68,7 @@ export const useGetAllStories = () => {
   });
 };
 
-export const useGetStoryBasicInfo = (projectId: string) => {
+export const useGetStoryByProjectId = (projectId: string) => {
   return useQuery({
     queryKey: ["storyList"],
     queryFn: () => getStoryByProjectID(projectId),
@@ -81,7 +79,7 @@ export const useGetStoryBasicInfo = (projectId: string) => {
 
 export const useGetStoryById = (storyId: string) => {
   return useQuery({
-    queryKey: ["getStory"],
+    queryKey: ["storyList"],
     queryFn: () => getStory(storyId),
     refetchOnWindowFocus: false,
   });
@@ -108,7 +106,7 @@ export const useUpdateStoryMutation = () => {
     },
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["updateStory"] })
+      queryClient.invalidateQueries({ queryKey: ["storyList"] })
     }
   })
   return updateStoryMutation
@@ -118,7 +116,7 @@ export const useDeleteStoryMutation = () => {
   const deleteStoryMutation = useMutation({
     mutationFn: (storyId: string) => deleteStory(storyId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["deleteStory"] })
+      queryClient.invalidateQueries({ queryKey: ["storyList"] })
     }
   })
   return deleteStoryMutation

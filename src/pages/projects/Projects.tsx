@@ -1,4 +1,4 @@
-import { Project, StoryCounts } from "../../types/type";
+import { Project, Story } from "../../types/type";
 import {
   Button,
   Card,
@@ -21,6 +21,7 @@ import ProjectDialogBox from "../../commonDialogBox/ProjectDialogBox";
 import {
   useDeleteProjectMutation,
   useGetAllProject,
+  useGetProjectById,
 } from "../../hooks/CustomRQHooks";
 import Loader from "../../commonDialogBox/Loader";
 import { getStoryByProjectID } from "../../http/StoryApi";
@@ -36,44 +37,11 @@ const newProject: Project = {
 
 const Projects = () => {
   const navigate = useNavigate();
+  const deleteProjectMutation = useDeleteProjectMutation();
 
-  const {
-    data: projectData,
-    isLoading,
-    isError,
-    isFetching,
-  } = useGetAllProject();
+  const { data: projectData, isLoading, isFetching } = useGetAllProject();
 
   const projects = projectData || [];
-
-  useEffect(() => {
-    const getStoryData = async () => {
-      try {
-        const countsObject: StoryCounts = {};
-
-        // Fetch story count for each project
-        for (const project of projects) {
-          const storyData = await getStoryByProjectID(project._id);
-          const storyCount = storyData.length;
-
-          // Use the functional update form to ensure the latest state
-          setStoryCounts((prevCounts) => ({
-            ...prevCounts,
-            [project._id]: storyCount,
-          }));
-        }
-      } catch (error) {
-        console.error("Error fetching story data:", error);
-      }
-    };
-
-    getStoryData();
-  }, [projects]);
-
-  const deleteProjectMutation = useDeleteProjectMutation();
-  const [storyCounts, setStoryCounts] = useState<{
-    [projectId: string]: number;
-  }>({});
 
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [projectDrawerOpen, setProjectDrawerOpen] = useState<boolean>(false);
@@ -82,6 +50,34 @@ const Projects = () => {
   const [deleteConfirmation, setDeleteConfirmation] = useState<Project | null>(
     null
   );
+  const [projectStories, setProjectStories] = useState<{
+    [projectId: string]: Story[];
+  }>({});
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const storiesPromises = projects.map(async (project) => {
+          const stories = await getStoryByProjectID(project._id);
+          return { projectId: project._id, stories: stories };
+        });
+
+        const storiesResults: { projectId: string; stories: Story[] }[] =
+          await Promise.all(storiesPromises);
+
+        const storiesObject: { [projectId: string]: Story[] } =
+          storiesResults.reduce((acc, { projectId, stories }) => {
+            acc[projectId] = stories;
+            return acc;
+          }, {} as { [projectId: string]: Story[] });
+
+        setProjectStories(storiesObject);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [projectStories]); // Add dependencies here
 
   const handleEditProjectClick = (project: Project) => {
     setSelectedProject(project);
@@ -114,9 +110,6 @@ const Projects = () => {
     }
   };
 
-  if (isError) {
-    return <div>Error fetching projects</div>;
-  }
   return (
     <>
       {isLoading || isFetching ? (
@@ -200,10 +193,11 @@ const Projects = () => {
                       <Typography variant="body2" color="text.secondary">
                         Duration:{project.duration}
                       </Typography>
-                      <Box display={"flex"}>
+                      <Box display={"flex"} columnGap={2}>
                         <Typography variant="body2" color="text.secondary">
-                          Story Count: {storyCounts[project._id] || 0}
+                          story Count:{projectStories[project._id]?.length || 0}
                         </Typography>
+
                         <VisibilityIcon />
                       </Box>
                     </CardContent>
@@ -222,6 +216,7 @@ const Projects = () => {
               <ProjectDrawer
                 projectDrawerOpen={projectDrawerOpen}
                 projectDetail={selectedProject!}
+                projectStories={projectStories}
                 onDrawerClose={() => setProjectDrawerOpen(false)}
               />
             )}
