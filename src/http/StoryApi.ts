@@ -28,7 +28,6 @@ const getStory = async (storyId: string) =>{
 const getStoryBasicInfo = async (projectId:string) => {
   try {
     const response = await http.get(`/stories/getstorybasicinfo/${projectId}`);
-
     if (response.data && response.data._id) {
       return response.data;
     } else {
