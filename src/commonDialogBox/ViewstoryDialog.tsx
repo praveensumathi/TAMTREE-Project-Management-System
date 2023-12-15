@@ -10,10 +10,6 @@ import {
 } from '@mui/material';
 import { Storie, ViewDialogProps } from '../types/type';
 
-
-
-
-
 const ViewDialogBox: React.FC<ViewDialogProps> = ({ open, onClose, stories }) => {
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="view-dialog-title">

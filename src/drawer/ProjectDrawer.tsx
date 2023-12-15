@@ -95,7 +95,7 @@ useEffect(() => {
       setValue(`${storyIndex}.description`, description);
     });
   }
-}, [projectDetail, storiesData, setValue]);
+}, [projectDetail,storiesData, setValue]);
 
 
 
