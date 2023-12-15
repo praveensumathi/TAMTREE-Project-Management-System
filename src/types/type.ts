@@ -2,16 +2,16 @@ export type Project = {
   _id: string;
   projectName: string;
   description: string;
- startDate:Date | null;
- endDate:Date | null;
-duration:string;
+  startDate: Date | null;
+  endDate: Date | null;
+  duration: string;
 };
 
 export type Story = {
-  _id: string;
-  title:string;
+  _id?: string;
+  title: string;
   description: string;
-  project:Project;
+  project?: Project;
 };
 
 export type Task = {
@@ -25,6 +25,7 @@ export type Task = {
 export type ProjectProps = {
   projectDrawerOpen: boolean;
   projectDetail: Project;
+  projectStories: { [projectId: string]: Story[] };  // Add projectStories prop
   onDrawerClose: () => void;
 };
 
@@ -41,4 +42,10 @@ export type Employee = {
   address: string;
 };
 
+export type ProjectFormData = Project & {
+  stories?: { id?: string, title?: string; description?: string }[];
+};
 
+// export type StoryCounts = {
+//   [projectId: string]: number;
+// }

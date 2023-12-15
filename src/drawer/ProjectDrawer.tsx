@@ -7,25 +7,25 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 import * as yup from "yup";
 import CloseIcon from "@mui/icons-material/Close";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import {  ProjectProps } from "../types/type";
+import { Project, ProjectProps, Story } from "../types/type";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs, { Dayjs } from "dayjs";
 import {
   useCreateProjectMutation,
-  useUpdateProjectMutation,
-  useGetStoryBasicInfo,
   useCreateStoryMutation,
-  useUpdateStoryMutation,
   useDeleteStoryMutation,
-} from '../hooks/CustomRQHooks';
-import { Project, Story } from '../types/type';
+  useGetStoryByProjectId,
+  useUpdateProjectMutation,
+  useUpdateStoryMutation,
+} from "../hooks/CustomRQHooks";
+import Delete from "@mui/icons-material/Delete";
 
 type FormData = Project & {
   stories: Story[];
@@ -34,85 +34,98 @@ type FormData = Project & {
 const ProjectDrawer: React.FC<ProjectProps> = ({
   projectDrawerOpen,
   projectDetail,
+  projectStories,
   onDrawerClose,
 }: ProjectProps) => {
   const createProjectMutation = useCreateProjectMutation();
   const updateProjectMutation = useUpdateProjectMutation();
   const createStoryMutation = useCreateStoryMutation();
-  const updateStoryMutation = useUpdateStoryMutation();
   const deleteStoryMutation = useDeleteStoryMutation();
-  const { data: storiesData, refetch: refetchStories } = useGetStoryBasicInfo(
-    projectDetail?._id || ""
-  );
+  const updateStoryMutation = useUpdateStoryMutation();
 
-  const stories = (storiesData as Story[])?.filter(
-    (story: Story) => story.project._id === projectDetail!._id
-  ) || [];
+  const [stories, setStories] = useState<Story[]>([]);
 
-  const validationSchema = yup.object().shape({
-    projectName: yup.string().required('Project Name is required'),
-    description: yup.string().required('Description is required'),
-    startDate: yup.date().required('Start Date is required'),
-    endDate: yup.date().required('End Date is required'),
-    duration: yup.string().required('Duration is required'),
-    stories: yup.array().of(
-      yup.object().shape({
-        title: yup.string().required('Story Title is required'),
-        description: yup.string().required('Story Description is required'),
-      })
-    ),
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    register,
+    formState: { errors },
+  } = useForm<Project>({
+    resolver: yupResolver(validationSchema) as any,
+    mode: "all",
   });
 
- 
-const {
-  control,
-  register,
-  handleSubmit,
-  setValue,
-  formState: { errors },
-} = useForm<FormData>({
-  resolver: yupResolver(validationSchema) as any,
-  mode: 'all',
-});
+  useEffect(() => {
+    if (projectDetail?._id) {
+      setStories(
+        projectStories[projectDetail._id]?.map((story) => ({
+          _id: story._id,
+          title: story.title,
+          description: story.description,
+        })) || []
+      );
+    } else {
+      setStories([]);
+    }
+  }, [projectDetail, projectStories]);
 
-  
+  useEffect(() => {
+    setValue("projectName", projectDetail?.projectName || "");
+    setValue("description", projectDetail?.description || "");
+    setValue("startDate", projectDetail?.startDate || null);
+    setValue("endDate", projectDetail?.endDate || null);
+    setValue("duration", projectDetail?.duration || "");
+  }, [projectDetail]);
 
+  const handleAddStory = (e: React.FormEvent) => {
+    e.preventDefault();
+    setStories([...stories, { title: "", description: "" }]);
+  };
 
-useEffect(() => {
-  if (projectDetail && storiesData as Story[]) {
-    setValue('projectName', projectDetail.projectName || '');
-    setValue('description', projectDetail.description || '');
-    setValue('startDate', projectDetail.startDate || null);
-    setValue('endDate', projectDetail.endDate || null);
-    setValue('duration', projectDetail.duration || '');
+  const handleDeleteStory = async (index: number, story: Story) => {
+    const storyId = story._id;
+    console.log("deleting");
+    console.log(storyId);
 
-    storiesData.forEach((story: Story, index: number) => {
-      const storyIndex = `stories[${index}]`;
-      const title = story.title || '';
-      const description = story.description || '';
-
-      setValue(`${storyIndex}.title`, title);
-      setValue(`${storyIndex}.description`, description);
-    });
-  }
-}, [projectDetail,storiesData, setValue]);
-
-
-
-    const onSubmit: SubmitHandler<any> = async (formData) => {
+    if (storyId !== undefined) {
       try {
-        if (projectDetail?._id) {
-          await updateProjectMutation.mutateAsync(
-            {
-              ...formData,
-              _id: projectDetail?._id,
-            },
-            {
-              onError: (error) => console.log(error.message),
-            }
-          );
-        } else {
-          await createProjectMutation.mutateAsync(formData, {
+        await deleteStoryMutation.mutateAsync(storyId, {});
+
+        const updatedStories = [...stories];
+        updatedStories.splice(index, 1);
+        setStories(updatedStories);
+      } catch (error) {
+        console.error("Error deleting story:", error);
+      }
+    }
+  };
+
+  const handleStoryChange = (
+    index: number,
+    field: keyof { title?: string; description?: string },
+    value: string
+  ) => {
+    const updatedStories = [...stories];
+    updatedStories[index] = {
+      ...updatedStories[index],
+      [field]: value,
+    };
+    setStories(updatedStories);
+  };
+
+  const onSubmit: SubmitHandler<Project> = async (formData) => {
+    try {
+      let updatedProject: any;
+      console.log(formData);
+
+      if (projectDetail._id) {
+        updatedProject = await updateProjectMutation.mutateAsync(
+          {
+            ...formData,
+            _id: projectDetail._id,
+          },
+          {
             onError: (error) => console.log(error.message),
           });
         }
@@ -129,25 +142,41 @@ useEffect(() => {
               });
             }
           }
-        }
-        refetchStories();
-      } catch (error) {
-        console.error('Error while saving:', error);
-      }
-      onDrawerClose();
-    };
-
-    const onDeleteStory = async (storyId: string) => {
-      try {
-        await deleteStoryMutation.mutateAsync(storyId, {
+        );
+      } else {
+        updatedProject = await createProjectMutation.mutateAsync(formData, {
           onError: (error) => console.log(error.message),
         });
         refetchStories();
       } catch (error) {
         console.error('Error while deleting story:', error);
       }
-    };
-  
+      await Promise.all(
+        stories.map(async (story) => {
+          if (story._id) {
+            const updatedData = await updateStoryMutation.mutateAsync({
+              _id: story._id,
+              project: updatedProject,
+              title: story.title || "",
+              description: story.description || "",
+            });
+            return updatedData;
+          } else {
+            const createdData = await createStoryMutation.mutateAsync({
+              project: updatedProject,
+              title: story.title || "",
+              description: story.description || "",
+            });
+            return createdData;
+          }
+        })
+      );
+
+      onDrawerClose();
+    } catch (error) {
+      console.error("Error submitting data:", error);
+    }
+  };
 
   return (
     <>
@@ -212,7 +241,7 @@ useEffect(() => {
                               {...field}
                               label="Start Date"
                               value={dateValue}
-                              sx={{ width: '100%' }} 
+                              sx={{ width: "100%" }}
                               onChange={(date: Dayjs | null) => {
                                 const newDateValue = date
                                   ? date.toDate()
@@ -238,7 +267,7 @@ useEffect(() => {
                             <DatePicker
                               {...field}
                               label="End Date"
-                              sx={{ width: '100%' }} 
+                              sx={{ width: "100%" }}
                               value={dateValue}
                               onChange={(date: Dayjs | null) => {
                                 const newDateValue = date
@@ -259,36 +288,56 @@ useEffect(() => {
                       {...register("duration")}
                     />
                     <Box>
-                      <Box display={"flex"} columnGap={22} alignItems={"center"}>
+                      <Box
+                        display={"flex"}
+                        columnGap={22}
+                        alignItems={"center"}
+                      >
                         <Typography variant="h6">Stories</Typography>
-                        <Button variant="contained">Add Story</Button>
+                        <Button
+                          variant="contained"
+                          onClick={handleAddStory}
+                          type="button"
+                        >
+                          Add Story
+                        </Button>
                       </Box>
-                      {stories.map((story: Story, index: number) => (
-                      <Box key={story._id} display="flex" alignItems="center" rowGap={2}>
-                        <TextField
-                          fullWidth
-                          label="Story title"
-                          error={!!(errors.stories && errors.stories[index]?.title)}
-                          helperText={(errors.stories && errors.stories[index]?.title?.message) || ''}
-                          {...register(`stories.${index}.title` as const)}
-                        />
-                        <TextField
-                          fullWidth
-                          label="Description"
-                          error={!!(errors.stories && errors.stories[index]?.description)}
-                          helperText={(errors.stories && errors.stories[index]?.description?.message) || ''}
-                          {...register(`stories.${index}.description` as const)}
-                        />
-                        <IconButton onClick={() => onDeleteStory(story._id)}>
-                          Delete
-                        </IconButton>
-                      </Box>
-                    ))}
+                      {stories.map((story, index) => (
+                        <Box key={index} display="flex" gap={2} marginTop={1}>
+                          <TextField
+                            label={`Title`}
+                            value={story.title || ""}
+                            onChange={(e) =>
+                              handleStoryChange(index, "title", e.target.value)
+                            }
+                          />
+                          <TextField
+                            label={`Description`}
+                            value={story.description || ""}
+                            onChange={(e) =>
+                              handleStoryChange(
+                                index,
+                                "description",
+                                e.target.value
+                              )
+                            }
+                          />
+                          <IconButton
+                            onClick={() => {
+                              handleDeleteStory(index, story);
+                              console.log(story);
+                            }}
+                          >
+                            <Delete />
+                          </IconButton>
+                        </Box>
+                      ))}
                     </Box>
                   </Box>
                   <Box
-                    display={"flex"}  
-                    columnGap={2}
+                    display={"flex"}
+                    marginTop={2}
+                    gap={2}
                     justifyContent={"flex-end"}
                   >
                     <Button
