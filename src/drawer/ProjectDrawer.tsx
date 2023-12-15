@@ -22,8 +22,6 @@ import {
   useUpdateProjectMutation,
 } from "../hooks/CustomRQHooks";
 
-
-
 const validationSchema = yup.object().shape({
   projectName: yup.string().required("projectName is required"),
   description: yup.string().required("description is required"),
