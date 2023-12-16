@@ -289,20 +289,13 @@ const ProjectDrawer = ({
                       {...register("duration")}
                     />
                     <Box>
-                      <Box
-                        display={"flex"}
-                        columnGap={22}
-                        alignItems={"center"}
-                      >
+                      <Box display={"flex"} flexDirection={"row"} gap={20}>
                         <Typography variant="h6">Stories</Typography>
-                        <Button
-                          variant="contained"
-                          onClick={handleAddStory}
-                          type="button"
-                        >
+                        <Button variant="contained" onClick={handleAddStory}>
                           Add Story
                         </Button>
                       </Box>
+
                       {stories.map((story, index) => (
                         <Box key={index} display="flex" gap={2} marginTop={1}>
                           <TextField
@@ -364,7 +357,7 @@ const ProjectDrawer = ({
         </Drawer>
       )}
     </>
-  )
+  );
 };
 
 export default ProjectDrawer;
