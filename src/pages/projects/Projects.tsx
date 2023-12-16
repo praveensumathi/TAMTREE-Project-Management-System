@@ -11,7 +11,6 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
-import CardHeader from "@mui/material/CardHeader";
 import Grid from "@mui/material/Grid";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -32,7 +31,7 @@ const newProject: Project = {
   description: "project",
   startDate: new Date(),
   endDate: new Date(),
-  duration: " months",
+  duration: "months",
 };
 
 const Projects = () => {
@@ -158,33 +157,54 @@ const Projects = () => {
                     onClick={() => {
                       navigate(`/board/${project._id}`);
                     }}
+                    sx={{
+                      borderRadius: "8px",
+                      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                    }}
                   >
-                    <CardContent>
-                      <CardHeader
-                        title={project.projectName}
-                        action={
-                          <>
-                            <IconButton
-                              aria-label="settings"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleProjectDeleteClick(project);
-                              }}
-                            >
-                              <DeleteIcon />
-                            </IconButton>
-                            <IconButton
-                              aria-label="settings"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleEditProjectClick(project);
-                              }}
-                            >
-                              <EditIcon />
-                            </IconButton>
-                          </>
-                        }
-                      ></CardHeader>
+                    <CardContent
+                      sx={{
+                        padding: 2,
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            maxWidth: "70%",
+                          }}
+                        >
+                          {project.projectName}
+                        </Typography>
+                        <Box sx={{ display: "flex" }}>
+                          <IconButton
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleProjectDeleteClick(project);
+                            }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                          <IconButton
+                            aria-label="settings"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditProjectClick(project);
+                            }}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        </Box>
+                      </Box>
                       <Typography variant="body2" color="text.secondary">
                         Description: {project.description}
                       </Typography>
@@ -203,11 +223,15 @@ const Projects = () => {
                       <Typography variant="body2" color="text.secondary">
                         Duration:{project.duration}
                       </Typography>
-                      <Box display={"flex"} columnGap={2}>
+                      <Box
+                        display={"flex"}
+                        gap={2}
+                        flexDirection={"row"}
+                        alignItems={"center"}
+                      >
                         <Typography variant="body2" color="text.secondary">
                           story Count:{projectStories[project._id]?.length || 0}
                         </Typography>
-
                         <IconButton
                           aria-label="settings"
                           onClick={(e) => {

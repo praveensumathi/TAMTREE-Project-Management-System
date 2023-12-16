@@ -69,7 +69,7 @@ const ProjectDrawer = ({
         })) || []
       );
     } else {
-      setStories([]);
+      setStories([{ title: "", description: "" }]);
     }
   }, [projectDetail]);
 
