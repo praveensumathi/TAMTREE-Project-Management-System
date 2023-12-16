@@ -306,14 +306,14 @@ const ProjectDrawer = ({
                       {stories.map((story, index) => (
                         <Box key={index} display="flex" gap={2} marginTop={1}>
                           <TextField
-                            label={`Title`}
+                            label={"Title"}
                             value={story.title || ""}
                             onChange={(e) =>
                               handleStoryChange(index, "title", e.target.value)
                             }
                           />
                           <TextField
-                            label={`Description`}
+                            label={"Description"}
                             value={story.description || ""}
                             onChange={(e) =>
                               handleStoryChange(
@@ -364,7 +364,7 @@ const ProjectDrawer = ({
         </Drawer>
       )}
     </>
-  );
+  )
 };
 
 export default ProjectDrawer;

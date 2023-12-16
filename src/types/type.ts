@@ -25,7 +25,7 @@ export type Task = {
 export type ProjectProps = {
   projectDrawerOpen: boolean;
   projectDetail: Project;
-  projectStories: { [projectId: string]: Story[] };  // Add projectStories prop
+  projectStories: { [projectId: string]: Story[] };  
   onDrawerClose: () => void;
 };
 
@@ -49,3 +49,9 @@ export type ProjectFormData = Project & {
 // export type StoryCounts = {
 //   [projectId: string]: number;
 // }
+
+export type ViewDialogProps = {
+  open: boolean;
+  onClose: () => void;
+  stories: Story[];
+}
