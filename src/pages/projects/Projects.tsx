@@ -56,6 +56,11 @@ const Projects = () => {
     [projectId: string]: Story[];
   }>({});
 
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [selectedProjectStories, setSelectedProjectStories] = useState<Story[]>(
+    []
+  );
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -228,10 +233,11 @@ const Projects = () => {
                       <Typography variant="body2" color="text.secondary">
                         Duration:{project.duration}
                       </Typography>
-                      <Box display="flex" alignItems="center" gap={2}>
+                      <Box display={"flex"} columnGap={2}>
                         <Typography variant="body2" color="text.secondary">
-                          Story Count:{projectStories[project._id]?.length || 0}
+                          story Count:{projectStories[project._id]?.length || 0}
                         </Typography>
+
                         <IconButton
                           aria-label="settings"
                           onClick={(e) => {
@@ -262,7 +268,6 @@ const Projects = () => {
                 onDrawerClose={() => setProjectDrawerOpen(false)}
               />
             )}
-
             {viewDialogOpen && (
               <ViewDialogBox
                 open={viewDialogOpen}
