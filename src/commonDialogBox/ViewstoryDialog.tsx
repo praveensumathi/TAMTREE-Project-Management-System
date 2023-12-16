@@ -7,21 +7,24 @@ import {
   Divider,
   Button,
   DialogActions,
+  Box,
+
 } from '@mui/material';
-import { Storie, ViewDialogProps } from '../types/type';
+import {  Story, ViewDialogProps } from '../types/type';
 
 const ViewDialogBox: React.FC<ViewDialogProps> = ({ open, onClose, stories }) => {
   return (
-    <Dialog open={open} onClose={onClose} aria-labelledby="view-dialog-title">
+    
+    <Dialog open={open} onClose={onClose} aria-labelledby="view-dialog-title"  maxWidth="xs" fullWidth >
+     
       <DialogTitle id="view-dialog-title">Stories</DialogTitle>
-      <DialogContent>
-        {stories.map((story:Storie) => (
-          <div key={story._id}>
-            <Typography variant="subtitle1">{`Story Number: ${story._id}`}</Typography>
-            <Typography variant="subtitle2">{`Name: ${story.name}`}</Typography>
-            <Typography variant="body2">{`Description: ${story.description}`}</Typography>
-            <Divider />
-          </div>
+      <DialogContent> 
+        {stories.map((story:Story, index) => (
+         <Box key={story._id} textAlign={"center"}>
+         <Typography variant="subtitle1">{`Story Number: ${index + 1}`}</Typography>
+         <Typography variant="subtitle2">{`Name: ${story.title}`}</Typography>
+         <Divider />
+       </Box>
         ))}
       </DialogContent>
       <DialogActions>
@@ -30,6 +33,7 @@ const ViewDialogBox: React.FC<ViewDialogProps> = ({ open, onClose, stories }) =>
         </Button>
       </DialogActions>
     </Dialog>
+   
   );
 };
 

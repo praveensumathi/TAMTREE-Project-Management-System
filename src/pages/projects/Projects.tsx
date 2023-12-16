@@ -21,10 +21,10 @@ import ProjectDialogBox from "../../commonDialogBox/ProjectDialogBox";
 import {
   useDeleteProjectMutation,
   useGetAllProject,
-  useGetProjectById,
 } from "../../hooks/CustomRQHooks";
 import Loader from "../../commonDialogBox/Loader";
 import { getStoryByProjectID } from "../../http/StoryApi";
+import ViewDialogBox from "../../commonDialogBox/ViewstoryDialog";
 
 const newProject: Project = {
   _id: "",
@@ -53,6 +53,11 @@ const Projects = () => {
   const [projectStories, setProjectStories] = useState<{
     [projectId: string]: Story[];
   }>({});
+
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [selectedProjectStories, setSelectedProjectStories] = useState<Story[]>(
+    []
+  );
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -77,8 +82,7 @@ const Projects = () => {
     };
 
     fetchData();
-  }, [projectStories]); // Add dependencies here
-
+  }, [projectStories]);
   const handleEditProjectClick = (project: Project) => {
     setSelectedProject(project);
     setProjectDrawerOpen(true);
@@ -108,6 +112,12 @@ const Projects = () => {
       setDeleteConfirmation(null);
       setDeleteDialogConfirmationOpen(false);
     }
+  };
+
+  const handleViewStoriesClick = (projectId: string) => {
+    const stories = projectStories[projectId] || [];
+    setSelectedProjectStories(stories);
+    setViewDialogOpen(true);
   };
 
   return (
@@ -193,12 +203,19 @@ const Projects = () => {
                       <Typography variant="body2" color="text.secondary">
                         Duration:{project.duration}
                       </Typography>
-                      <Box display={"flex"} columnGap={2}>
+                      <Box display="flex" alignItems="center" gap={2}>
                         <Typography variant="body2" color="text.secondary">
-                          story Count:{projectStories[project._id]?.length || 0}
+                          Story Count:{projectStories[project._id]?.length || 0}
                         </Typography>
-
-                        <VisibilityIcon />
+                        <IconButton
+                          aria-label="settings"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewStoriesClick(project._id);
+                          }}
+                        >
+                          <VisibilityIcon />
+                        </IconButton>
                       </Box>
                     </CardContent>
                   </Card>
@@ -218,6 +235,14 @@ const Projects = () => {
                 projectDetail={selectedProject!}
                 projectStories={projectStories}
                 onDrawerClose={() => setProjectDrawerOpen(false)}
+              />
+            )}
+
+            {viewDialogOpen && (
+              <ViewDialogBox
+                open={viewDialogOpen}
+                onClose={() => setViewDialogOpen(false)}
+                stories={selectedProjectStories}
               />
             )}
           </Container>
