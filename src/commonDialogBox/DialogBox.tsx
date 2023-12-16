@@ -7,9 +7,7 @@ import Button from "@mui/material/Button";
 
 type DialogProps = {
   deleteDialogConfirmationOpen: boolean;
-
   handleDeleteCancel: () => void;
-
   handleDeleteClickConfirm: () => void;
 };
 
