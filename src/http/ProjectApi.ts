@@ -78,15 +78,12 @@ const updateProject = async (projectId: string,
 
 const deleteProject = async (projectId: string) => {
   try {
+    console.log("deleting");
+
     const response = await http.delete<Project>(
       `projects/deleteproject/${projectId}`
     );
-
-    if (response.data && response.data._id) {
-      return response.data;
-    } else {
-      throw new Error("Error while delete project");
-    }
+    console.log(response.data);
   } catch (error) {
     throw error;
   }

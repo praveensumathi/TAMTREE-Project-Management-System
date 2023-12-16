@@ -75,14 +75,11 @@ const updateStory = async (storyId: string,
 const deleteStory = async (storyId: string) => {
   try {
     const response = await http.delete<Story>(
-      `/stories/deletestory/${storyId}`
+      `stories/deletestory/${storyId}`
     );
+    return response.data
 
-    if (response.data && response.data._id) {
-      return response.data;
-    } else {
-      throw new Error("Error while delete story");
-    }
+
   } catch (error) {
     throw error;
   }

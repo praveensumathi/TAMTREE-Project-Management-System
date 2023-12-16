@@ -15,7 +15,7 @@ export const useGetAllProject = () => {
 
 export const useGetProjectById = (projectId: string) => {
   return useQuery({
-    queryKey: ["getProject"],
+    queryKey: ["projectList"],
     queryFn: () => getProject(projectId),
     refetchOnWindowFocus: false,
   });
@@ -52,6 +52,7 @@ export const useDeleteProjectMutation = () => {
   const deleteProjectMutation = useMutation({
     mutationFn: (projectid: string) => deleteProject(projectid),
     onSuccess: () => {
+      console.log("succees");
       queryClient.invalidateQueries({ queryKey: ["projectList"] })
     }
   })

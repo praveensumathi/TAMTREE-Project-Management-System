@@ -20,8 +20,8 @@ import ProjectDialogBox from "../../commonDialogBox/ProjectDialogBox";
 
 import {
   useDeleteProjectMutation,
+  useDeleteStoryMutation,
   useGetAllProject,
-  useGetProjectById,
 } from "../../hooks/CustomRQHooks";
 import Loader from "../../commonDialogBox/Loader";
 import { getStoryByProjectID } from "../../http/StoryApi";
@@ -38,6 +38,7 @@ const newProject: Project = {
 const Projects = () => {
   const navigate = useNavigate();
   const deleteProjectMutation = useDeleteProjectMutation();
+  const deleteStoryMutation = useDeleteStoryMutation();
 
   const { data: projectData, isLoading, isFetching } = useGetAllProject();
 
@@ -53,6 +54,7 @@ const Projects = () => {
   const [projectStories, setProjectStories] = useState<{
     [projectId: string]: Story[];
   }>({});
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -75,9 +77,8 @@ const Projects = () => {
         console.error("Error fetching data:", error);
       }
     };
-
     fetchData();
-  }, [projectStories]); // Add dependencies here
+  }, [projects]);
 
   const handleEditProjectClick = (project: Project) => {
     setSelectedProject(project);
@@ -102,11 +103,38 @@ const Projects = () => {
     setDeleteDialogConfirmationOpen(true);
 
     if (deleteConfirmation?._id) {
-      await deleteProjectMutation.mutateAsync(deleteConfirmation._id, {
-        onError: (error) => console.log(error.message),
-      });
-      setDeleteConfirmation(null);
-      setDeleteDialogConfirmationOpen(false);
+      try {
+        console.log("Before prject delete log block");
+
+        await deleteProjectMutation.mutateAsync(deleteConfirmation._id);
+        console.log("After prject delete log block");
+
+        const storiesToDelete = projectStories[deleteConfirmation._id] || [];
+        console.log("Deleting project ID:", deleteConfirmation?._id);
+        storiesToDelete.forEach((story) => {
+          console.log("Deleting story ID:", story._id);
+        });
+
+        const deleteStoriesPromises = storiesToDelete.map(async (story) => {
+          if (story && story._id) {
+            try {
+              console.log("story deleteion processing");
+
+              await deleteStoryMutation.mutateAsync(story._id);
+            } catch (error) {
+              console.error("Error deleting story:", error);
+            }
+          }
+        });
+
+        await Promise.all(deleteStoriesPromises);
+        console.log("after story delete log block");
+      } catch (error) {
+        console.error("Error deleting project and stories:", error);
+      } finally {
+        setDeleteConfirmation(null);
+        setDeleteDialogConfirmationOpen(false);
+      }
     }
   };
 

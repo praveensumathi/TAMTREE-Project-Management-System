@@ -21,7 +21,6 @@ import {
   useCreateProjectMutation,
   useCreateStoryMutation,
   useDeleteStoryMutation,
-  useGetStoryByProjectId,
   useUpdateProjectMutation,
   useUpdateStoryMutation,
 } from "../hooks/CustomRQHooks";
@@ -72,7 +71,7 @@ const ProjectDrawer = ({
     } else {
       setStories([]);
     }
-  }, [projectDetail, projectStories]);
+  }, [projectDetail]);
 
   useEffect(() => {
     setValue("projectName", projectDetail?.projectName || "");
@@ -82,40 +81,55 @@ const ProjectDrawer = ({
     setValue("duration", projectDetail?.duration || "");
   }, [projectDetail]);
 
-  const handleAddStory = (e: React.FormEvent) => {
-    e.preventDefault();
-    setStories([...stories, { title: "", description: "" }]);
+  const handleAddStory = () => {
+    setStories((prevStories) => [
+      ...prevStories,
+      { title: "", description: "" },
+    ]);
   };
 
+  useEffect(() => {
+    if (projectDetail?._id) {
+      setStories(
+        projectStories[projectDetail._id]?.map((story) => ({
+          _id: story._id || "",
+          title: story.title || "",
+          description: story.description || "",
+        })) || []
+      );
+    }
+  }, []);
+  console.log(stories);
+
   const handleDeleteStory = async (index: number, story: Story) => {
-    const storyId = story._id;
-    console.log("deleting");
-    console.log(storyId);
+    try {
+      const storyId = story._id;
 
-    if (storyId !== undefined) {
-      try {
-        await deleteStoryMutation.mutateAsync(storyId, {});
-
-        const updatedStories = [...stories];
-        updatedStories.splice(index, 1);
-        setStories(updatedStories);
-      } catch (error) {
-        console.error("Error deleting story:", error);
+      if (storyId) {
+        const deletingStory = await deleteStoryMutation.mutateAsync(storyId);
+        console.log(deletingStory);
       }
+      const updatedStories = [...stories];
+      updatedStories.splice(index, 1);
+      setStories(updatedStories);
+    } catch (error) {
+      console.error("Error deleting story:", error);
     }
   };
 
   const handleStoryChange = (
     index: number,
-    field: keyof { title?: string; description?: string },
+    field: keyof Story,
     value: string
   ) => {
-    const updatedStories = [...stories];
-    updatedStories[index] = {
-      ...updatedStories[index],
-      [field]: value,
-    };
-    setStories(updatedStories);
+    setStories((prevStories) => {
+      const updatedStories = [...prevStories];
+      updatedStories[index] = {
+        ...updatedStories[index],
+        [field]: value,
+      };
+      return updatedStories;
+    });
   };
 
   const onSubmit: SubmitHandler<Project> = async (formData) => {
@@ -151,8 +165,8 @@ const ProjectDrawer = ({
           } else {
             const createdData = await createStoryMutation.mutateAsync({
               project: updatedProject,
-              title: story.title || "",
-              description: story.description || "",
+              title: story.title || " ",
+              description: story.description || " ",
             });
             return createdData;
           }
