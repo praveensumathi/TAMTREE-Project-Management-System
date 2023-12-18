@@ -240,6 +240,7 @@ const ProjectDrawer = ({
                               {...field}
                               label="Start Date"
                               value={dateValue}
+                              format="DD/MM/YYYY"
                               sx={{ width: "100%" }}
                               onChange={(date: Dayjs | null) => {
                                 const newDateValue = date
@@ -268,6 +269,7 @@ const ProjectDrawer = ({
                               label="End Date"
                               sx={{ width: "100%" }}
                               value={dateValue}
+                              format="DD/MM/YYYY"
                               onChange={(date: Dayjs | null) => {
                                 const newDateValue = date
                                   ? date.toDate()

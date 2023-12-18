@@ -56,7 +56,7 @@ const calculateDateDifference = (
   const months = Math.floor(remainingDaysAfterYears / 30);
   const days = remainingDaysAfterYears % 30;
 
-  if (years <= 1 && months <= 1 && days <= 1) {
+  if (years === 1 && months === 1 && days === 1) {
     return `${years} year ${months} month ${days} day`;
   } else {
     return `${years} years ${months} months ${days} days`;
