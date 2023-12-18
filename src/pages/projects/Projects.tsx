@@ -24,7 +24,6 @@ import {
 import Loader from "../../common/components/Loader";
 import { getStoryByProjectID } from "../../http/StoryApi";
 import ViewDialogBox from "../../commonDialogBox/ViewStoryDialogBox";
-import dayjs from "dayjs";
 
 const newProject: Project = {
   _id: "",
@@ -34,34 +33,6 @@ const newProject: Project = {
   endDate: new Date(),
 };
 
-const calculateDateDifference = (
-  startDate: Date | null,
-  endDate: Date | null
-) => {
-  if (!startDate || !endDate) {
-    return "Invalid date";
-  }
-
-  const start = dayjs(startDate);
-  const end = dayjs(endDate);
-
-  const duration = end.diff(start, "day");
-
-  if (duration < 0) {
-    return "End date is before start date";
-  }
-
-  const years = Math.floor(duration / 365);
-  const remainingDaysAfterYears = duration % 365;
-  const months = Math.floor(remainingDaysAfterYears / 30);
-  const days = remainingDaysAfterYears % 30;
-
-  if (years === 1 && months === 1 && days === 1) {
-    return `${years} year ${months} month ${days} day`;
-  } else {
-    return `${years} years ${months} months ${days} days`;
-  }
-};
 const Projects = () => {
   const navigate = useNavigate();
   const deleteProjectMutation = useDeleteProjectMutation();
@@ -145,6 +116,38 @@ const Projects = () => {
     const stories = projectStories[projectId] || [];
     setSelectedProjectStories(stories);
     setViewDialogOpen(true);
+  };
+  const calculateDuration = (startDate: Date | null, endDate: Date | null) => {
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      let years = end.getFullYear() - start.getFullYear();
+      let months = end.getMonth() - start.getMonth();
+      let days = end.getDate() - start.getDate();
+
+      if (days < 0) {
+        const lastMonth = new Date(end.getFullYear(), end.getMonth(), 0);
+        days = lastMonth.getDate() - start.getDate() + end.getDate();
+        months--;
+      }
+
+      if (months < 0) {
+        months = months + 12;
+        years--;
+      }
+
+      const yearString = years > 1 ? "years" : "year";
+      const monthString = months > 1 ? "months" : "month";
+      const dayString = days > 1 ? "days" : "day";
+
+      const yearPart = years > 0 ? `${years} ${yearString} ` : "";
+      const monthPart = months > 0 ? `${months} ${monthString} ` : "";
+      const dayPart = days > 0 ? `${days} ${dayString}` : "";
+
+      return `${yearPart}${monthPart}${dayPart}`;
+    }
+    return "";
   };
 
   return (
@@ -252,10 +255,7 @@ const Projects = () => {
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
                         Duration:{" "}
-                        {calculateDateDifference(
-                          project.startDate,
-                          project.endDate
-                        )}
+                        {calculateDuration(project.startDate, project.endDate)}
                       </Typography>
 
                       <Box
