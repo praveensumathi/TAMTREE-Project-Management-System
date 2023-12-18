@@ -25,7 +25,7 @@ export type Task = {
 export type ProjectProps = {
   projectDrawerOpen: boolean;
   projectDetail: Project;
-  projectStories: { [projectId: string]: Story[] };  
+  projectStories: { [projectId: string]: Story[] };
   onDrawerClose: () => void;
 };
 
@@ -41,14 +41,6 @@ export type Employee = {
   contact: number;
   address: string;
 };
-
-export type ProjectFormData = Project & {
-  stories?: { id?: string, title?: string; description?: string }[];
-};
-
-// export type StoryCounts = {
-//   [projectId: string]: number;
-// }
 
 export type ViewDialogProps = {
   open: boolean;

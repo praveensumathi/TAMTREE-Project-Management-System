@@ -52,11 +52,11 @@ const Projects = () => {
   const [projectStories, setProjectStories] = useState<{
     [projectId: string]: Story[];
   }>({});
-
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [selectedProjectStories, setSelectedProjectStories] = useState<Story[]>(
     []
   );
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -81,7 +81,8 @@ const Projects = () => {
     };
 
     fetchData();
-  }, [projectStories]);
+  }, [projects]);
+
   const handleEditProjectClick = (project: Project) => {
     setSelectedProject(project);
     setProjectDrawerOpen(true);
@@ -176,11 +177,13 @@ const Projects = () => {
                       >
                         <Typography
                           variant="h6"
+                          title={project.projectName}
                           sx={{
                             overflow: "hidden",
                             textOverflow: "ellipsis",
                             whiteSpace: "nowrap",
                             maxWidth: "70%",
+                            cursor: "pointer",
                           }}
                         >
                           {project.projectName}
