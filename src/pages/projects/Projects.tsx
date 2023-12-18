@@ -16,7 +16,6 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import ProjectDrawer from "../../drawer/ProjectDrawer";
 import ProjectDialogBox from "../../commonDialogBox/ProjectDialogBox";
-
 import {
   useDeleteProjectMutation,
   useGetAllProject,
@@ -31,7 +30,6 @@ const newProject: Project = {
   description: "project",
   startDate: new Date(),
   endDate: new Date(),
-  duration: "months",
 };
 
 const Projects = () => {
@@ -52,6 +50,7 @@ const Projects = () => {
   const [projectStories, setProjectStories] = useState<{
     [projectId: string]: Story[];
   }>({});
+
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [selectedProjectStories, setSelectedProjectStories] = useState<Story[]>(
     []
@@ -79,7 +78,6 @@ const Projects = () => {
         console.error("Error fetching data:", error);
       }
     };
-
     fetchData();
   }, [projects]);
 
@@ -224,7 +222,7 @@ const Projects = () => {
                           : ""}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        Duration:{project.duration}
+                        Duration:{project._id}
                       </Typography>
                       <Box
                         display={"flex"}

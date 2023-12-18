@@ -31,7 +31,6 @@ const validationSchema = yup.object().shape({
   description: yup.string().required("description is required"),
   startDate: yup.date().required("Start Date is required"),
   endDate: yup.date().required("End Date is required"),
-  duration: yup.string().required("duration is required"),
 });
 
 const ProjectDrawer = ({
@@ -78,7 +77,6 @@ const ProjectDrawer = ({
     setValue("description", projectDetail?.description || "");
     setValue("startDate", projectDetail?.startDate || null);
     setValue("endDate", projectDetail?.endDate || null);
-    setValue("duration", projectDetail?.duration || "");
   }, [projectDetail]);
 
   const handleAddStory = () => {
@@ -99,7 +97,6 @@ const ProjectDrawer = ({
       );
     }
   }, []);
-  console.log(stories);
 
   const handleDeleteStory = async (index: number, story: Story) => {
     try {
@@ -280,13 +277,6 @@ const ProjectDrawer = ({
                           </LocalizationProvider>
                         );
                       }}
-                    />
-                    <TextField
-                      fullWidth
-                      label="Duration"
-                      error={!!errors.duration}
-                      helperText={errors.duration?.message}
-                      {...register("duration")}
                     />
                     <Box>
                       <Box display={"flex"} flexDirection={"row"} gap={20}>
