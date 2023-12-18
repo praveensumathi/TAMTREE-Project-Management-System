@@ -1,18 +1,43 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
+<<<<<<< HEAD
 import { Project, Story } from "../types/type";
 import { queryClient } from "../App";
 import { createStory, deleteStory, getStories, getStory, getStoryByProjectID, updateStory } from "../http/StoryApi";
 import { createProject, deleteProject, fetchProjects, getProject, updateProject } from "../http/ProjectApi";
+=======
+import {
+  createTask,
+  updateTask,
+  deleteTask,
+  getAllProjectDetail,
+} from "../http/TaskApi";
+import { queryClient } from "../App";
+import { ProjectTask } from "../types/boardTypes";
+import {
+  createEmployee,
+  deleteEmployee,
+  getAllEmplyees,
+  updateEmployee,
+} from "../http/EmployeeApi";
+import { Employee } from "../types/type";
+import toast from "react-hot-toast";
+>>>>>>> a72ab5b166f1a3ca8d01ee4d999ea9f8a253c3b5
 
 
 export const useGetAllProject = () => {
   return useQuery({
+<<<<<<< HEAD
     queryKey: ["projectList"],
     queryFn: fetchProjects,
+=======
+    queryKey: ["employeeList"],
+    queryFn: getAllEmplyees,
+>>>>>>> a72ab5b166f1a3ca8d01ee4d999ea9f8a253c3b5
     refetchOnWindowFocus: false,
   });
 };
 
+<<<<<<< HEAD
 export const useGetProjectById = (projectId: string) => {
   return useQuery({
     queryKey: ["projectList"],
@@ -123,3 +148,70 @@ export const useDeleteStoryMutation = () => {
   return deleteStoryMutation
 }
 
+=======
+export const useCreateEmployeeMutation = () => {
+  const createEmployeeMutation = useMutation({
+    mutationFn: (newEmployee: Employee) => createEmployee(newEmployee),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["employeeList"] });
+      toast.success("Employee created successfully");
+    },
+  });
+  return createEmployeeMutation;
+};
+
+export const useUpdateEmployeeMutation = () => {
+  const updateEmployeeMutation = useMutation({
+    mutationFn: (updatedEmployee: Employee) => {
+      return updateEmployee(updatedEmployee);
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["employeeList"] });
+      toast.success("Employee updated successfully");
+    },
+  });
+  return updateEmployeeMutation;
+};
+
+export const useDeleteEmployeeMutation = () => {
+  const deleteEmployeeMutation = useMutation({
+    mutationFn: (id: string) => deleteEmployee(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["employeeList"] });
+      toast.success("Employee deleted successfully");
+    },
+  });
+  return deleteEmployeeMutation;
+};
+
+// task
+export const useCreateTaskMutation = () => {
+  const createTaskMutation = useMutation({
+    mutationFn: (newTask: ProjectTask) => createTask(newTask),
+  });
+  return createTaskMutation;
+};
+
+export const useUpdateTaskMutation = () => {
+  const updateTaskMutation = useMutation({
+    mutationFn: (updatedTaskData: ProjectTask) => updateTask(updatedTaskData),
+  });
+  return updateTaskMutation;
+};
+
+export const useDeleteTaskMutation = () => {
+  const deleteTaskMutation = useMutation({
+    mutationFn: (taskId: string) => deleteTask(taskId),
+  });
+  return deleteTaskMutation;
+};
+
+export const UseGetAllProjectDetail = (projectId: string) => {
+  return useQuery({
+    queryKey: ["projectDetail"],
+    queryFn: () => getAllProjectDetail(projectId),
+    refetchOnWindowFocus: false,
+  });
+};
+>>>>>>> a72ab5b166f1a3ca8d01ee4d999ea9f8a253c3b5

@@ -15,6 +15,7 @@ import Grid from "@mui/material/Grid";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import ProjectDrawer from "../../drawer/ProjectDrawer";
+<<<<<<< HEAD
 import ProjectDialogBox from "../../commonDialogBox/ProjectDialogBox";
 import {
   useDeleteProjectMutation,
@@ -23,6 +24,9 @@ import {
 import Loader from "../../commonDialogBox/Loader";
 import { getStoryByProjectID } from "../../http/StoryApi";
 import ViewDialogBox from "../../commonDialogBox/ViewstoryDialog";
+=======
+import ProjectDialogBox from "../../commonDialogBox/DialogBox";
+>>>>>>> a72ab5b166f1a3ca8d01ee4d999ea9f8a253c3b5
 
 const newProject: Project = {
   _id: "",
