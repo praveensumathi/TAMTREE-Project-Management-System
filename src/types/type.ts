@@ -6,7 +6,6 @@ export type Project = {
   description: string;
   startDate: Date | null;
   endDate: Date | null;
-  duration: string;
 };
 
 export type Story = {

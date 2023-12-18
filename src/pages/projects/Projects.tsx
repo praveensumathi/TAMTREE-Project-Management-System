@@ -24,6 +24,7 @@ import {
 import Loader from "../../common/components/Loader";
 import { getStoryByProjectID } from "../../http/StoryApi";
 import ViewDialogBox from "../../commonDialogBox/ViewStoryDialogBox";
+import dayjs from "dayjs";
 
 const newProject: Project = {
   _id: "",
@@ -31,9 +32,36 @@ const newProject: Project = {
   description: "project",
   startDate: new Date(),
   endDate: new Date(),
-  duration: "months",
 };
 
+const calculateDateDifference = (
+  startDate: Date | null,
+  endDate: Date | null
+) => {
+  if (!startDate || !endDate) {
+    return "Invalid date";
+  }
+
+  const start = dayjs(startDate);
+  const end = dayjs(endDate);
+
+  const duration = end.diff(start, "day");
+
+  if (duration < 0) {
+    return "End date is before start date";
+  }
+
+  const years = Math.floor(duration / 365);
+  const remainingDaysAfterYears = duration % 365;
+  const months = Math.floor(remainingDaysAfterYears / 30);
+  const days = remainingDaysAfterYears % 30;
+
+  if (years <= 1 && months <= 1 && days <= 1) {
+    return `${years} year ${months} month ${days} day`;
+  } else {
+    return `${years} years ${months} months ${days} days`;
+  }
+};
 const Projects = () => {
   const navigate = useNavigate();
   const deleteProjectMutation = useDeleteProjectMutation();
@@ -175,11 +203,10 @@ const Projects = () => {
                         }}
                       >
                         <Typography
-                          variant="h6" 
+                          variant="h6"
                           title={project.projectName}
-                          
                           sx={{
-                            cursor:"pointer",
+                            cursor: "pointer",
                             overflow: "hidden",
                             textOverflow: "ellipsis",
                             whiteSpace: "nowrap",
@@ -192,7 +219,7 @@ const Projects = () => {
                           <IconButton
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleProjectDeleteClick(project);
+                              handleProjectDeleteClick(project!);
                             }}
                           >
                             <DeleteIcon />
@@ -201,7 +228,7 @@ const Projects = () => {
                             aria-label="settings"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleEditProjectClick(project);
+                              handleEditProjectClick(project!);
                             }}
                           >
                             <EditIcon />
@@ -224,8 +251,13 @@ const Projects = () => {
                           : ""}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        Duration:{project.duration}
+                        Duration:{" "}
+                        {calculateDateDifference(
+                          project.startDate,
+                          project.endDate
+                        )}
                       </Typography>
+
                       <Box
                         display={"flex"}
                         gap={2}
