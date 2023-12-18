@@ -118,6 +118,39 @@ const Projects = () => {
     setViewDialogOpen(true);
   };
 
+  const calculateDuration = (startDate: Date | null, endDate: Date | null) => {
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      let years = end.getFullYear() - start.getFullYear();
+      let months = end.getMonth() - start.getMonth();
+      let days = end.getDate() - start.getDate();
+
+      if (days < 0) {
+        const lastMonth = new Date(end.getFullYear(), end.getMonth(), 0);
+        days = lastMonth.getDate() - start.getDate() + end.getDate();
+        months--;
+      }
+
+      if (months < 0) {
+        months = months + 12;
+        years--;
+      }
+
+      const yearString = years > 1 ? "years" : "year";
+      const monthString = months > 1 ? "months" : "month";
+      const dayString = days > 1 ? "days" : "day";
+
+      const yearPart = years > 0 ? `${years} ${yearString} ` : "";
+      const monthPart = months > 0 ? `${months} ${monthString} ` : "";
+      const dayPart = days > 0 ? `${days} ${dayString}` : "";
+
+      return `${yearPart}${monthPart}${dayPart}`;
+    }
+    return "";
+  };
+
   return (
     <>
       {isLoading || isFetching ? (
@@ -222,7 +255,8 @@ const Projects = () => {
                           : ""}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        Duration:{project._id}
+                        Duration:{" "}
+                        {calculateDuration(project.startDate, project.endDate)}
                       </Typography>
                       <Box
                         display={"flex"}
