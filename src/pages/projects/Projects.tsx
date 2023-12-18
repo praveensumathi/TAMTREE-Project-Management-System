@@ -179,6 +179,7 @@ const Projects = () => {
                           title={project.projectName}
                           
                           sx={{
+                            cursor:"pointer",
                             overflow: "hidden",
                             textOverflow: "ellipsis",
                             whiteSpace: "nowrap",

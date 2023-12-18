@@ -86,6 +86,7 @@ export const useDeleteTaskMutation = () => {
   return deleteTaskMutation;
 };
 
+
 export const UseGetAllProjectDetail = (projectId: string) => {
   return useQuery({
     queryKey: ["projectDetail"],
@@ -115,6 +116,7 @@ export const useCreateProjectMutation = () => {
     mutationFn: (newProject: Project) => createProject(newProject),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projectList"] });
+      toast.success("Project created successfully");
     },
   });
   return createProjectMutation;
@@ -131,7 +133,8 @@ export const useUpdateProjectMutation = () => {
     },
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["projectList"] })
+      queryClient.invalidateQueries({ queryKey: ["projectList"] });
+      toast.success("Project updated successfully");
     }
   })
   return updateProjectMutation
@@ -141,8 +144,8 @@ export const useDeleteProjectMutation = () => {
   const deleteProjectMutation = useMutation({
     mutationFn: (projectid: string) => deleteProject(projectid),
     onSuccess: () => {
-      console.log("succees");
-      queryClient.invalidateQueries({ queryKey: ["projectList"] })
+      queryClient.invalidateQueries({ queryKey: ["projectList"] });
+      toast.success("Project deleted successfully");
     }
   })
   return deleteProjectMutation
@@ -206,7 +209,8 @@ export const useDeleteStoryMutation = () => {
   const deleteStoryMutation = useMutation({
     mutationFn: (storyId: string) => deleteStory(storyId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["storyList"] })
+      queryClient.invalidateQueries({ queryKey: ["storyList"] });
+      toast.success("Story deleted successfully");
     }
   })
   return deleteStoryMutation
