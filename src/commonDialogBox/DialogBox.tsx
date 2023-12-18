@@ -38,8 +38,4 @@ function DialogBox({
   );
 }
 
-<<<<<<< HEAD:src/commonDialogBox/ProjectDialogBox.tsx
 export default DialogBox;
-=======
-export default DialogBox;
->>>>>>> a72ab5b166f1a3ca8d01ee4d999ea9f8a253c3b5:src/commonDialogBox/DialogBox.tsx

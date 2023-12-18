@@ -1,17 +1,14 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-<<<<<<< HEAD
 import { Project, Story } from "../types/type";
 import { queryClient } from "../App";
 import { createStory, deleteStory, getStories, getStory, getStoryByProjectID, updateStory } from "../http/StoryApi";
 import { createProject, deleteProject, fetchProjects, getProject, updateProject } from "../http/ProjectApi";
-=======
 import {
   createTask,
   updateTask,
   deleteTask,
   getAllProjectDetail,
 } from "../http/TaskApi";
-import { queryClient } from "../App";
 import { ProjectTask } from "../types/boardTypes";
 import {
   createEmployee,
@@ -21,23 +18,16 @@ import {
 } from "../http/EmployeeApi";
 import { Employee } from "../types/type";
 import toast from "react-hot-toast";
->>>>>>> a72ab5b166f1a3ca8d01ee4d999ea9f8a253c3b5
 
 
 export const useGetAllProject = () => {
   return useQuery({
-<<<<<<< HEAD
     queryKey: ["projectList"],
     queryFn: fetchProjects,
-=======
-    queryKey: ["employeeList"],
-    queryFn: getAllEmplyees,
->>>>>>> a72ab5b166f1a3ca8d01ee4d999ea9f8a253c3b5
     refetchOnWindowFocus: false,
   });
 };
 
-<<<<<<< HEAD
 export const useGetProjectById = (projectId: string) => {
   return useQuery({
     queryKey: ["projectList"],
@@ -148,7 +138,14 @@ export const useDeleteStoryMutation = () => {
   return deleteStoryMutation
 }
 
-=======
+export const useGetAllEmployee = () => {
+  return useQuery({
+    queryKey: ["employeeList"],
+    queryFn: getAllEmplyees,
+    refetchOnWindowFocus: false,
+  });
+};
+
 export const useCreateEmployeeMutation = () => {
   const createEmployeeMutation = useMutation({
     mutationFn: (newEmployee: Employee) => createEmployee(newEmployee),
@@ -214,4 +211,3 @@ export const UseGetAllProjectDetail = (projectId: string) => {
     refetchOnWindowFocus: false,
   });
 };
->>>>>>> a72ab5b166f1a3ca8d01ee4d999ea9f8a253c3b5
