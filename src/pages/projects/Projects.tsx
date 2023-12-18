@@ -81,7 +81,7 @@ const Projects = () => {
     };
 
     fetchData();
-  }, [projectStories]);
+  }, [projects]);
   const handleEditProjectClick = (project: Project) => {
     setSelectedProject(project);
     setProjectDrawerOpen(true);
@@ -175,7 +175,9 @@ const Projects = () => {
                         }}
                       >
                         <Typography
-                          variant="h6"
+                          variant="h6" 
+                          title={project.projectName}
+                          
                           sx={{
                             overflow: "hidden",
                             textOverflow: "ellipsis",
