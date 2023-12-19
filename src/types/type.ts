@@ -1,18 +1,25 @@
 import { ProjectTask } from "./boardTypes";
 
 export type Project = {
+  _id: string;
+  projectName: string;
+  description: string;
+  startDate: Date | null;
+  endDate: Date | null;
+};
+
+export type Story = {
   _id?: string;
   title: string;
   description: string;
-  assignedTo: string;
+  project?: Project;
 };
 
 export type ProjectProps = {
   projectDrawerOpen: boolean;
   projectDetail: Project;
+  projectStories: { [projectId: string]: Story[] };
   onDrawerClose: () => void;
-  onSaveClick: (project: Project) => void;
-
 };
 
 export type ITaskDrawerProps = {
@@ -41,3 +48,9 @@ export type Employee = {
   contact: string;
   address: string;
 };
+
+export type ViewDialogProps = {
+  open: boolean;
+  onClose: () => void;
+  stories: Story[];
+}
