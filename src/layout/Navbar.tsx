@@ -54,6 +54,7 @@ const NavBar = () => {
           <IconButton edge="start" color="inherit" onClick={handleDrawerOpen}>
             <MenuIcon fontSize="large" />
           </IconButton>
+          
           <Box padding={1}>
             <img
               src={
